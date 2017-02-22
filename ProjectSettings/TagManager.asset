@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - Food
   - Item
+  - Chest
   layers:
   - Default
   - TransparentFX
