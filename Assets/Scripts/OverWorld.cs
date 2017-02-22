@@ -10,12 +10,10 @@ namespace ProceduralRoguelike
         // Child references for keeping an organized heirarchy.
         private Transform floorHolder;
 
-        private void Start()
+        private void Awake()
         {
             // Get child references.
             floorHolder = transform.Find("Floor");
-
-            SetupOverWorld(new Vector2(15, 15), new Vector2(0, 0));
         }
 
         /// <summary>
@@ -26,13 +24,16 @@ namespace ProceduralRoguelike
         /// <param name="position">Position to center starting location at.</param>
 		public void SetupOverWorld(Vector2 size, Vector2 position)
         {
-            var halfHeight = (int)size.y / 2;
-            var halfWidth = (int)size.x / 2;
+            // Center tiles on position.
+            var startY = 1 - ((int)size.y + 1) / 2 + (int)position.y;
+            var startX = 1 - ((int)size.x + 1) / 2 + (int)position.x;
+            var endY = (int)size.y - ((int)size.y + 1) / 2 + (int)position.y;
+            var endX = (int)size.x - ((int)size.x + 1) / 2 + (int)position.x;
 
             // Place floor tiles in "m x n" rectangle.
-            for (int y = -halfHeight; y <= halfHeight; ++y)
+            for (int y = startY; y <= endY; ++y)
             {
-                for (int x = -halfWidth; x <= halfWidth; ++x)
+                for (int x = startX; x <= endX; ++x)
                 {
                     GameObject instance = Instantiate(floorTiles, new Vector3(x, y, 0),
                         Quaternion.identity) as GameObject;
