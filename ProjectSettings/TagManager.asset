@@ -48,6 +48,9 @@ TagManager:
   - name: Floor
     uniqueID: 3778287923
     locked: 0
+  - name: Walls
+    uniqueID: 3664255603
+    locked: 0
   - name: Items
     uniqueID: 1198678327
     locked: 0
