@@ -6,6 +6,7 @@ namespace ProceduralRoguelike
 {
     public class GameManager : MonoBehaviour
     {
+        // Singleton instance.
         private static GameManager _instance = null;
         public static GameManager Instance
         {
@@ -15,7 +16,7 @@ namespace ProceduralRoguelike
 
         private void Awake()
         {
-            // enforce singleton pattern
+            // Enforce singleton pattern.
             if (Instance == null)
             {
                 Instance = this;

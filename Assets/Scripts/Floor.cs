@@ -8,14 +8,13 @@ namespace ProceduralRoguelike
     [RequireComponent (typeof (SpriteRenderer))]
     public class Floor : MonoBehaviour
     {
-        [SerializeField] private FloorTiles floorTiles;
+        [SerializeField] private TileSet floorTiles;
 
         private void Start()
         {
-            // randomly select a floor sprite from FloorTiles data
+            // Get a random floor tile sprite.
             SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-            Sprite[] sprites = floorTiles.Sprites();
-            spriteRenderer.sprite = sprites[Random.Range(0, sprites.Length)];
+            spriteRenderer.sprite = floorTiles.RandomSprite;
         }
     }
 }
