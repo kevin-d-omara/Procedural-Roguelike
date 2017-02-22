@@ -40,7 +40,6 @@ namespace ProceduralRoguelike
 
             if (hit.transform == null)
             {
-                // Movement not blocked.
                 StartCoroutine(SmoothMovement(end));
                 return true;
             }
@@ -69,32 +68,23 @@ namespace ProceduralRoguelike
         /// <summary>
         /// Attempts to move the object in the specified direction.
         /// </summary>
-        /// <typeparam name="T">Type of component to interact with if blocked.</typeparam>
         /// <param name="xDir">How far in the x-direction to move.</param>
         /// <param name="yDir">How far in the y-direction to move.</param>
-        protected virtual void AttemptMove<T>(int xDir, int yDir)
-            where T : Component
+        protected virtual void AttemptMove(int xDir, int yDir)
         {
             RaycastHit2D hit;
             bool canMove = Move(xDir, yDir, out hit);
 
+            // if (hit.transform == null) { return; }
             if (canMove) { return; }
-            //if (hit.transform == null) { return; }
 
-            T hitComponent = hit.transform.GetComponent<T>();
-
-            if (!canMove && hitComponent != null)
-            {
-                OnCantMove(hitComponent);
-            }
+            OnCantMove(hit.transform.gameObject);
         }
 
         /// <summary>
-        /// Action to take when blocked by an interactable object.
+        /// Action taken when blocked.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="component"></param>
-        protected abstract void OnCantMove<T>(T component)
-            where T : Component;
+        /// <param name="blockingObject">Object blocking the movement.</param>
+        protected abstract void OnCantMove(GameObject blockingObject);
     }
 }
