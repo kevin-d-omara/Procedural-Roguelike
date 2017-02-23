@@ -107,7 +107,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveTime: 0.1
-  isMoving: 0
+  waitTime: 0.1
   blockingLayer:
     serializedVersion: 2
     m_Bits: 0

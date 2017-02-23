@@ -17,6 +17,8 @@ namespace ProceduralRoguelike
 
         private void Move()
         {
+            if (IsMoving) { return; }
+
             var horizontal = 0;
             var vertical = 0;
 

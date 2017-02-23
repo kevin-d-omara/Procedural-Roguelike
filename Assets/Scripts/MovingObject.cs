@@ -6,13 +6,18 @@ namespace ProceduralRoguelike
 {
     public abstract class MovingObject : MonoBehaviour
     {
-        public float moveTime = 0.1f;           //Time it will take object to move, in seconds.
-        public bool isMoving = false;
-        public LayerMask blockingLayer;         //Layer on which collision will be checked.
+        public bool IsMoving { get; private set; }
 
-        private BoxCollider2D boxCollider;      //The BoxCollider2D component attached to this object.
-        private Rigidbody2D rb2D;               //The Rigidbody2D component attached to this object.
-        private float inverseMoveTime;          //Used to make movement more efficient.
+        // Time (seconds) it takes the object to move.
+        [SerializeField] private float moveTime = 0.1f;
+                         private float inverseMoveTime;
+        // Time (seconds) to wait before the next movement is allowed.
+        [SerializeField] private float waitTime = 0.1f;
+
+        // Layer on which collision will be checked.
+        [SerializeField] private LayerMask blockingLayer;
+        private BoxCollider2D boxCollider;
+        private Rigidbody2D rb2D;
 
         protected virtual void Start()
         {
@@ -41,6 +46,7 @@ namespace ProceduralRoguelike
 
             if (hit.transform == null)
             {
+                // Successfully start moving.
                 StartCoroutine(SmoothMovement(end));
                 return true;
             }
@@ -54,6 +60,8 @@ namespace ProceduralRoguelike
         /// <param name="end">Position to move to.</param>
         protected IEnumerator SmoothMovement(Vector3 end)
         {
+            var totalMoveTime = 0f;
+
             var sqrRemainingDistance = (transform.position - end).sqrMagnitude;
 
             while (sqrRemainingDistance > float.Epsilon)
@@ -62,10 +70,12 @@ namespace ProceduralRoguelike
                     inverseMoveTime * Time.deltaTime);
                 rb2D.MovePosition(newPostion);
                 sqrRemainingDistance = (transform.position - end).sqrMagnitude;
+                totalMoveTime += Time.deltaTime;
                 yield return null;
             }
 
-            isMoving = false;
+            yield return new WaitForSeconds(waitTime);
+            IsMoving = false;
         }
 
         /// <summary>
@@ -75,14 +85,14 @@ namespace ProceduralRoguelike
         /// <param name="yDir">How far in the y-direction to move.</param>
         protected virtual void AttemptMove(int xDir, int yDir)
         {
-            if (isMoving) { return; }
+            if (IsMoving) { return; }
 
             RaycastHit2D hit;
             bool canMove = Move(xDir, yDir, out hit);
 
             if (canMove)
             {
-                isMoving = true;
+                IsMoving = true;
                 return;
             }
 
