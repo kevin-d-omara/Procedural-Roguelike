@@ -6,9 +6,11 @@ namespace ProceduralRoguelike
 {
 	public class OverWorld : MonoBehaviour
 	{
-        [SerializeField] private GameObject floorTiles;
+        [SerializeField] private GameObject floorTilePrefab;
         // Child references for keeping an organized heirarchy.
         private Transform floorHolder;
+
+        Dictionary<Vector3, GameObject> floorTiles = new Dictionary<Vector3, GameObject>();
 
         private void Awake()
         {
@@ -35,9 +37,41 @@ namespace ProceduralRoguelike
             {
                 for (int x = startX; x <= endX; ++x)
                 {
-                    GameObject instance = Instantiate(floorTiles, new Vector3(x, y, 0),
-                        Quaternion.identity) as GameObject;
-                    instance.transform.SetParent(floorHolder);
+                    AddFloorTile(new Vector2(x, y));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Creates a new floor tile at the position specified and handles bookkeeping.
+        /// </summary>
+        private void AddFloorTile(Vector2 position)
+        {
+            var positionV3 = new Vector3(position.x, position.y, 0);
+
+            GameObject instance = Instantiate(floorTilePrefab, positionV3, Quaternion.identity)
+                as GameObject;
+            instance.transform.SetParent(floorHolder);
+            floorTiles.Add(positionV3, instance);
+        }
+
+        /// <summary>
+        /// Checks the tiles surrounding 'location' and creates tiles which are not yet revealed.
+        /// </summary>
+        /// <param name="offsets">List of offsets specifying pattern to reveal.</param>
+        /// <param name="location">Location in the world to center the offsets.</param>
+        public void RevealFogOfWar(List<Vector2> offsets, Vector2 location)
+        {
+            foreach (Vector2 offset in offsets)
+            {
+                var position = location + offset;
+
+                GameObject tile;
+                if (floorTiles.TryGetValue(position, out tile))
+                { }
+                else
+                {
+                    AddFloorTile(position);
                 }
             }
         }
