@@ -15,10 +15,12 @@ namespace ProceduralRoguelike
         {
             OrthogonalOffsets = new List<Vector2>
             {
+                // Counter-clockwise from +x-axis.
                 new Vector2(1,0), new Vector2(0,1), new Vector2(-1,0), new Vector2(0,-1)
             };
             DiagonalOffsets = new List<Vector2>
             {
+                // Counter-clockwise from 1st quadrant.
                 new Vector2(1,1), new Vector2(-1,1), new Vector2(-1,-1), new Vector2(1,-1)
             };
             SurroundingOffsets = new List<Vector2>
@@ -80,15 +82,13 @@ namespace ProceduralRoguelike
                 var currentNode = frontier.Dequeue();
                 offsets.Add(currentNode.Position);
 
+                var newCost = currentNode.Cost + 1;
                 // Stop expanding from this node if it has surpassed the radius.
-                if (currentNode.Cost >= radius) { continue; }
+                if (newCost > radius) { continue; }
 
                 // Expand into orthogonal posiitons.
-                var newCost = currentNode.Cost + 1;
-                foreach (Vector2 offset in currentNode.GetPositionsFrom(OrthogonalOffsets))
+                foreach (Vector2 newPosition in currentNode.GetPositionsFrom(OrthogonalOffsets))
                 {
-                    var newPosition = currentNode.Position + offset;
-
                     Node nextNode;
                     if (visited.TryGetValue(newPosition, out nextNode))
                     {
@@ -106,17 +106,18 @@ namespace ProceduralRoguelike
                     }
                 }
 
-                bool usedDiagonalDiscount = false;
+                bool usedDiagonalDiscount = true;
                 if (currentNode.usedDiagonalDiscount)
                 {
                     ++newCost;
-                    usedDiagonalDiscount = true;
+                    // Stop expanding from this node if it has surpassed the radius.
+                    if (newCost > radius) { continue; }
+
+                    usedDiagonalDiscount = false;
                 }
                 // Expand into diagonal positions.
-                foreach (Vector2 offset in currentNode.GetPositionsFrom(DiagonalOffsets))
+                foreach (Vector2 newPosition in currentNode.GetPositionsFrom(DiagonalOffsets))
                 {
-                    var newPosition = currentNode.Position + offset;
-
                     Node nextNode;
                     if (visited.TryGetValue(newPosition, out nextNode))
                     {
