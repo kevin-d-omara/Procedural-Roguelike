@@ -18,6 +18,16 @@ namespace ProceduralRoguelike
             floorHolder = transform.Find("Floor");
         }
 
+        private void OnEnable()
+        {
+            Player.OnSuccessfulMove += RevealFogOfWar;
+        }
+
+        private void OnDisable()
+        {
+            Player.OnSuccessfulMove -= RevealFogOfWar;
+        }
+
         /// <summary>
         /// Creates the starting location of the OverWorld. This is an "m x n" rectangle of floor
         /// tiles centered at the specified position.
@@ -58,9 +68,9 @@ namespace ProceduralRoguelike
         /// <summary>
         /// Checks the tiles surrounding 'location' and creates tiles which are not yet revealed.
         /// </summary>
-        /// <param name="offsets">List of offsets specifying pattern to reveal.</param>
         /// <param name="location">Location in the world to center the offsets.</param>
-        public void RevealFogOfWar(List<Vector2> offsets, Vector2 location)
+        /// <param name="offsets">List of offsets specifying pattern to reveal.</param>
+        public void RevealFogOfWar(Vector2 location, List<Vector2> offsets)
         {
             foreach (Vector2 offset in offsets)
             {

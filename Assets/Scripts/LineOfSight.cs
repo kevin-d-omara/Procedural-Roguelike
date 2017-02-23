@@ -25,6 +25,18 @@ namespace ProceduralRoguelike
         public LineOfSight(int radius)
         {
             Radius = radius;
+            offsets = new List<Vector2>
+            {
+                new Vector2(-1,-1),
+                new Vector2( 0,-1),
+                new Vector2( 1,-1),
+                new Vector2(-1, 0),
+                new Vector2( 0, 0),
+                new Vector2( 1, 0),
+                new Vector2(-1, 1),
+                new Vector2( 0, 1),
+                new Vector2( 1, 1)
+            };
         }
 
         private void RecalculateOffsets()
