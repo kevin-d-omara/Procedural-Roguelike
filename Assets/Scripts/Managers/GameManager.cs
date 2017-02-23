@@ -18,6 +18,8 @@ namespace ProceduralRoguelike
         [SerializeField] private GameObject overWorldPrefab;
         [SerializeField] private Vector2 startSize = new Vector2(5, 5);
         private OverWorld overWorld;
+        private GameObject player;
+        [SerializeField] private GameObject mainCamera;
 
         private void Awake()
         {
@@ -39,12 +41,16 @@ namespace ProceduralRoguelike
         /// </summary>
         private void InitializeGame()
         {
+            // Create OverWorld.
             GameObject instance = Instantiate(overWorldPrefab, new Vector3(0, 0, 0),
                 Quaternion.identity);
             overWorld = instance.GetComponent<OverWorld>();
             overWorld.SetupOverWorld(startSize, new Vector2(0, 0));
 
-            Instantiate(playerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            // Create Player and wire it up to the Camera.
+            player = Instantiate(playerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            mainCamera = GameObject.FindGameObjectsWithTag("MainCamera")[0];
+            mainCamera.GetComponent<CameraFollow>().target = player.transform;
         }
     }
 }

@@ -9,9 +9,11 @@ namespace ProceduralRoguelike
         public bool IsMoving { get; private set; }
 
         // Time (seconds) it takes the object to move.
+        [Range(0f, 1f)]
         [SerializeField] private float moveTime = 0.1f;
                          private float inverseMoveTime;
         // Time (seconds) to wait before the next movement is allowed.
+        [Range(0f, 1f)]
         [SerializeField] private float waitTime = 0.1f;
 
         // Layer on which collision will be checked.
