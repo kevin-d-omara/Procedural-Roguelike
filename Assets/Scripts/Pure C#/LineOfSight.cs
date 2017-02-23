@@ -20,28 +20,17 @@ namespace ProceduralRoguelike
                 RecalculateOffsets();
             }
         }
-        public List<Vector2> offsets { get; private set; }
+        public List<Vector2> Offsets { get; private set; }
 
         public LineOfSight(int radius)
         {
             Radius = radius;
-            offsets = new List<Vector2>
-            {
-                new Vector2(-1,-1),
-                new Vector2( 0,-1),
-                new Vector2( 1,-1),
-                new Vector2(-1, 0),
-                new Vector2( 0, 0),
-                new Vector2( 1, 0),
-                new Vector2(-1, 1),
-                new Vector2( 0, 1),
-                new Vector2( 1, 1)
-            };
         }
 
         private void RecalculateOffsets()
         {
-
+            Offsets = new List<Vector2>();
+            //foreach (Vector2 offset in GridAlgorithms.CircleFill(Radius))
         }
 	}
 }

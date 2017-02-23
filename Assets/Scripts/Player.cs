@@ -48,7 +48,7 @@ namespace ProceduralRoguelike
                 var movedTo = new Vector2(transform.position.x + xDir, transform.position.y + yDir);
                 if (OnSuccessfulMove != null)
                 {
-                    OnSuccessfulMove(movedTo, lineOfSight.offsets);
+                    OnSuccessfulMove(movedTo, lineOfSight.Offsets);
                 }
                 return true;
             }
