@@ -6,9 +6,17 @@ namespace ProceduralRoguelike
 {
 	public class Player : MovingObject
 	{
-        #if UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
+#if UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
             private Vector2 touchOrigin = -Vector2.one;
-        #endif
+#endif
+        [Range(0,10)]
+        [SerializeField] private int sightDistance = 3;
+        private LineOfSight lineOfSight;
+
+        private void Awake()
+        {
+            lineOfSight = new LineOfSight(sightDistance);
+        }
 
         private void Update()
         {
@@ -35,7 +43,8 @@ namespace ProceduralRoguelike
             if (base.Move(xDir, yDir, out hit))
             {
                 // Broadcast target position for Fog of War purposes.
-
+                // myLoS.offsets
+                var movedTo = new Vector2(transform.position.x + xDir, transform.position.y + yDir);
                 return true;
             }
             else

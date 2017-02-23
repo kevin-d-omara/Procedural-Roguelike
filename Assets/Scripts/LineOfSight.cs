@@ -6,7 +6,30 @@ namespace ProceduralRoguelike
 {
 	public class LineOfSight
 	{
-        public int Radius { get; set; }
+        private int _radius;
+        public int Radius
+        {
+            get { return _radius; }
+            set
+            {
+                if (value < 0)
+                {
+                    throw new System.ArgumentException("Radius cannot be negative.");
+                }
+                _radius = value;
+                RecalculateOffsets();
+            }
+        }
         public List<Vector2> offsets { get; private set; }
+
+        public LineOfSight(int radius)
+        {
+            Radius = radius;
+        }
+
+        private void RecalculateOffsets()
+        {
+
+        }
 	}
 }

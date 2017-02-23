@@ -55,4 +55,4 @@ MonoBehaviour:
     type: 2}
   overWorldPrefab: {fileID: 1027493567648644, guid: a873e98dd8266b0498d55b9bd37845cb,
     type: 2}
-  startSize: {x: 10, y: 10}
+  startSize: {x: 5, y: 5}

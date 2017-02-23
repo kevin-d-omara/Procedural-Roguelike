@@ -167,4 +167,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5c62f470c0d19e4cae8f313ca83bca0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  floorTiles: {fileID: 1365008205365432, guid: 8a8b861849313f44eacfb87b0bcee8fd, type: 2}
+  floorTilePrefab: {fileID: 1365008205365432, guid: 8a8b861849313f44eacfb87b0bcee8fd,
+    type: 2}
