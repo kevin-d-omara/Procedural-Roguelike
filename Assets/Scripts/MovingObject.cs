@@ -60,8 +60,6 @@ namespace ProceduralRoguelike
         /// <param name="end">Position to move to.</param>
         protected IEnumerator SmoothMovement(Vector3 end)
         {
-            var totalMoveTime = 0f;
-
             var sqrRemainingDistance = (transform.position - end).sqrMagnitude;
 
             while (sqrRemainingDistance > float.Epsilon)
@@ -70,7 +68,6 @@ namespace ProceduralRoguelike
                     inverseMoveTime * Time.deltaTime);
                 rb2D.MovePosition(newPostion);
                 sqrRemainingDistance = (transform.position - end).sqrMagnitude;
-                totalMoveTime += Time.deltaTime;
                 yield return null;
             }
 

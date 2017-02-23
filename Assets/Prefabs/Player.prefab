@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 50498129852240590}
   - component: {fileID: 61341370431693018}
   - component: {fileID: 114793777147826344}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -110,7 +110,7 @@ MonoBehaviour:
   waitTime: 0.1
   blockingLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
 --- !u!212 &212089408998817490
 SpriteRenderer:
   m_ObjectHideFlags: 1
