@@ -29,8 +29,7 @@ namespace ProceduralRoguelike
 
         private void RecalculateOffsets()
         {
-            Offsets = new List<Vector2>();
-            //foreach (Vector2 offset in GridAlgorithms.CircleFill(Radius))
+            Offsets = GridAlgorithms.CircleFill(Radius);
         }
 	}
 }
