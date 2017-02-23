@@ -12,23 +12,53 @@ namespace ProceduralRoguelike
 
         private void Update()
         {
-            Move();
+            HandleMovement();
         }
 
-        private void Move()
+        private void HandleMovement()
         {
             if (IsMoving) { return; }
 
-            var horizontal = 0;
-            var vertical = 0;
+            int xDir, yDir;
+            GetInputAsInt(out xDir, out yDir);
+            // Limit movement to one axis per move.
+            if (xDir != 0) { yDir = 0; }
+
+            if (xDir != 0 || yDir != 0)
+            {
+                AttemptMove(xDir, yDir);
+            }
+        }
+
+        protected override bool Move(int xDir, int yDir, out RaycastHit2D hit)
+        {
+            if (base.Move(xDir, yDir, out hit))
+            {
+                // Broadcast target position for Fog of War purposes.
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Checks input device (keyboard, touchscreen, etc.) for horizontal and vertical input.
+        /// Snaps the values to -1, 0, or 1;
+        /// </summary>
+        /// <param name="horizontal">Variable to store horizontal input value in.</param>
+        /// <param name="vertical">Variable to store vertical input value in.</param>
+        private void GetInputAsInt(out int horizontal, out int vertical)
+        {
+            horizontal = 0;
+            vertical   = 0;
 
             #if UNITY_STANDALONE || UNITY_WEBPLAYER
 
                 horizontal = (int)(Input.GetAxisRaw("Horizontal"));
                 vertical   = (int)(Input.GetAxisRaw("Vertical"));
-
-                // Limit movement to one axis per move.
-                if (horizontal != 0) { vertical = 0; }
 
             #elif UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
 			
@@ -45,25 +75,13 @@ namespace ProceduralRoguelike
                         // Prevent this touch event from being re-used.
 					    touchOrigin.x = -1;
 					
-                        // Limit movement to one axis per move by favoring the dominant axis.
-                        // Also, snap movement value to int values 1 or 0;
-                        if (Mathf.Abs(dx) > Mathf.Abs(dy))
-                        {
-                            horizontal = dx > 0 ? 1 : -1;
-                        }
-                        else
-                        {
-                            vertical = dy > 0 ? 1 : -1;
-                        }
+                        // Snap movement to int value -1, 0, or 1;
+                        horizontal = dx > 0 ? 1 : -1;
+                        vertical   = dy > 0 ? 1 : -1;
 				    }
 			    }
 			
             #endif
-
-            if (horizontal != 0 || vertical != 0)
-            {
-                AttemptMove(horizontal, vertical);
-            }
         }
 
         /// <summary>

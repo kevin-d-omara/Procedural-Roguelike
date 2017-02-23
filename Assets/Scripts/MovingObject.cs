@@ -34,7 +34,7 @@ namespace ProceduralRoguelike
         /// <param name="yDir">How far in the y-direction to move.</param>
         /// <param name="hit">Object blocking movement or null if none.</param>
         /// <returns>True if movemet was successful. False otherwise.</returns>
-        protected bool Move(int xDir, int yDir, out RaycastHit2D hit)
+        protected virtual bool Move(int xDir, int yDir, out RaycastHit2D hit)
         {
             Vector2 start = transform.position;
             var end = start + new Vector2(xDir, yDir);
@@ -46,7 +46,6 @@ namespace ProceduralRoguelike
 
             if (hit.transform == null)
             {
-                // Successfully start moving.
                 StartCoroutine(SmoothMovement(end));
                 return true;
             }
@@ -80,9 +79,10 @@ namespace ProceduralRoguelike
         /// </summary>
         /// <param name="xDir">How far in the x-direction to move.</param>
         /// <param name="yDir">How far in the y-direction to move.</param>
-        protected virtual void AttemptMove(int xDir, int yDir)
+        /// <returns>True if move started successfully, false otherwise.</returns>
+        protected virtual bool AttemptMove(int xDir, int yDir)
         {
-            if (IsMoving) { return; }
+            if (IsMoving) { return false; }
 
             RaycastHit2D hit;
             bool canMove = Move(xDir, yDir, out hit);
@@ -90,10 +90,11 @@ namespace ProceduralRoguelike
             if (canMove)
             {
                 IsMoving = true;
-                return;
+                return true;
             }
 
             OnCantMove(hit.transform.gameObject);
+            return false;
         }
 
         /// <summary>
