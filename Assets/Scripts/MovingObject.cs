@@ -7,6 +7,7 @@ namespace ProceduralRoguelike
     public abstract class MovingObject : MonoBehaviour
     {
         public float moveTime = 0.1f;           //Time it will take object to move, in seconds.
+        public bool isMoving = false;
         public LayerMask blockingLayer;         //Layer on which collision will be checked.
 
         private BoxCollider2D boxCollider;      //The BoxCollider2D component attached to this object.
@@ -63,6 +64,8 @@ namespace ProceduralRoguelike
                 sqrRemainingDistance = (transform.position - end).sqrMagnitude;
                 yield return null;
             }
+
+            isMoving = false;
         }
 
         /// <summary>
@@ -72,11 +75,16 @@ namespace ProceduralRoguelike
         /// <param name="yDir">How far in the y-direction to move.</param>
         protected virtual void AttemptMove(int xDir, int yDir)
         {
+            if (isMoving) { return; }
+
             RaycastHit2D hit;
             bool canMove = Move(xDir, yDir, out hit);
 
-            // if (hit.transform == null) { return; }
-            if (canMove) { return; }
+            if (canMove)
+            {
+                isMoving = true;
+                return;
+            }
 
             OnCantMove(hit.transform.gameObject);
         }

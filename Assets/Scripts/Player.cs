@@ -6,6 +6,10 @@ namespace ProceduralRoguelike
 {
 	public class Player : MovingObject
 	{
+        #if UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
+            private Vector2 touchOrigin = -Vector2.one;
+        #endif
+
         private void Update()
         {
             Move();
@@ -29,7 +33,7 @@ namespace ProceduralRoguelike
 			    if (Input.touchCount > 0)
 			    {
 				    var touch = Input.touches[0];
-                    var touchOrigin = touch.position;
+                    touchOrigin = touch.position;
 				    if (touch.phase == TouchPhase.Ended && touchOrigin.x >= 0)
 				    {
 					    var touchEnd = touch.position;
@@ -40,6 +44,7 @@ namespace ProceduralRoguelike
 					    touchOrigin.x = -1;
 					
                         // Limit movement to one axis per move by favoring the dominant axis.
+                        // Also, snap movement value to int values 1 or 0;
                         if (Mathf.Abs(dx) > Mathf.Abs(dy))
                         {
                             horizontal = dx > 0 ? 1 : -1;
