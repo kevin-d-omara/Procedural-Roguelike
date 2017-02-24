@@ -2,12 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace ProceduralRoguelike
 {
 	public class OverWorld : MonoBehaviour
 	{
         // % of tiles that are Wall or Bramble instead of Floor.
+        [Range(0f, 1f)]
         [SerializeField] private float obstacleDensity;
 
         /// <summary>
@@ -117,7 +119,10 @@ namespace ProceduralRoguelike
                 else
                 {
                     AddFloorTile(position);
-                    AddObstacleTile(position, "Bramble");
+                    if (Random.Range(0f, 1f) < obstacleDensity)
+                    {
+                        AddObstacleTile(position, "Bramble");
+                    }
                 }
             }
         }
