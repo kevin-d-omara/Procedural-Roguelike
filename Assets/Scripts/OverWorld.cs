@@ -10,7 +10,9 @@ namespace ProceduralRoguelike
 	{
         // % of tiles that are Wall or Bramble instead of Floor.
         [Range(0f, 1f)]
-        [SerializeField] private float obstacleDensity;
+        [SerializeField] private float obstacleDensity = 0.15f;
+        [SerializeField] private int brambleWeight = 10;
+        [SerializeField] private int rockWeight = 2;
 
         /// <summary>
         /// Container class for related info about tiles.
@@ -121,9 +123,26 @@ namespace ProceduralRoguelike
                     AddFloorTile(position);
                     if (Random.Range(0f, 1f) < obstacleDensity)
                     {
-                        AddObstacleTile(position, "Bramble");
+                        AddObstacleTile(position, GetRandomObstacle());
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Picks a random obstacle based on the weights for each.
+        /// </summary>
+        private string GetRandomObstacle()
+        {
+            var totalWeight = brambleWeight + rockWeight;
+            var randInt = Random.Range(0, totalWeight);
+            if (randInt < brambleWeight)
+            {
+                return "Bramble";
+            }
+            else
+            {
+                return "Rock";
             }
         }
 	}
