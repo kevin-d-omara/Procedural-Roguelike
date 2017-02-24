@@ -103,6 +103,7 @@ namespace ProceduralRoguelike
                     {
                         nextNode = new Node(newPosition, false, newCost);
                         frontier.Enqueue(nextNode, newCost);
+                        visited.Add(newPosition, nextNode);
                     }
                 }
 
@@ -132,10 +133,12 @@ namespace ProceduralRoguelike
                     {
                         nextNode = new Node(newPosition, usedDiagonalDiscount, newCost);
                         frontier.Enqueue(nextNode, newCost);
+                        visited.Add(newPosition, nextNode);
                     }
                 }
             }
 
+            offsets.Remove(Vector2.zero);
             return offsets;
         }
 

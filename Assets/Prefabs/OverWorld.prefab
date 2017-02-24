@@ -196,7 +196,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5c62f470c0d19e4cae8f313ca83bca0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  obstacleDensity: 0
+  obstacleDensity: 0.15
   tileInfo:
     keys:
     - Floor
