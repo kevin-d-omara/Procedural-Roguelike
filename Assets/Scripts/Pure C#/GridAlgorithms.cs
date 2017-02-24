@@ -33,8 +33,8 @@ namespace ProceduralRoguelike
         private class Node
         {
             public Vector2 Position { get; private set; }
-            public bool usedDiagonalDiscount { get; private set; }
-            public int Cost { get; private set; }
+            public bool usedDiagonalDiscount;
+            public int cost;
 
             /// <param name="position">The position relative to origin of this node.</param>
             /// <param name="usedDiagonalDiscount">Was this node reached by a 1-cost diagonal move?
@@ -44,7 +44,7 @@ namespace ProceduralRoguelike
             {
                 this.Position = position;
                 this.usedDiagonalDiscount = usedDiagonalDiscount;
-                this.Cost = cost;
+                this.cost = cost;
             }
 
             /// <summary>
@@ -74,15 +74,16 @@ namespace ProceduralRoguelike
             var offsets = new List<Vector2>();
 
             var visited = new Dictionary<Vector2, Node>();
-            var frontier = new SimplePriorityQueue<Node, int>();
-            frontier.Enqueue(new Node(Vector2.zero, false, 0), 0);
+            var frontier = new Queue<Node>();
+            frontier.Enqueue(new Node(Vector2.zero, false, 0));
 
+            // Expands from the center using a breadth-first flood fill algorithm.
             while (frontier.Count > 0)
             {
                 var currentNode = frontier.Dequeue();
                 offsets.Add(currentNode.Position);
 
-                var newCost = currentNode.Cost + 1;
+                var newCost = currentNode.cost + 1;
                 // Stop expanding from this node if it has surpassed the radius.
                 if (newCost > radius) { continue; }
 
@@ -91,18 +92,11 @@ namespace ProceduralRoguelike
                 {
                     Node nextNode;
                     if (visited.TryGetValue(newPosition, out nextNode))
-                    {
-                        if (newCost < nextNode.Cost)
-                        {
-                            frontier.Remove(nextNode);
-                            nextNode = new Node(newPosition, false, newCost);
-                            frontier.Enqueue(nextNode, newCost);
-                        }
-                    }
+                    {}
                     else
                     {
                         nextNode = new Node(newPosition, false, newCost);
-                        frontier.Enqueue(nextNode, newCost);
+                        frontier.Enqueue(nextNode);
                         visited.Add(newPosition, nextNode);
                     }
                 }
@@ -121,18 +115,11 @@ namespace ProceduralRoguelike
                 {
                     Node nextNode;
                     if (visited.TryGetValue(newPosition, out nextNode))
-                    {
-                        if (newCost < nextNode.Cost)
-                        {
-                            frontier.Remove(nextNode);
-                            nextNode = new Node(newPosition, usedDiagonalDiscount, newCost);
-                            frontier.Enqueue(nextNode, newCost);
-                        }
-                    }
+                    {}
                     else
                     {
                         nextNode = new Node(newPosition, usedDiagonalDiscount, newCost);
-                        frontier.Enqueue(nextNode, newCost);
+                        frontier.Enqueue(nextNode);
                         visited.Add(newPosition, nextNode);
                     }
                 }
