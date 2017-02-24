@@ -5,7 +5,7 @@ using Random = UnityEngine.Random;
 
 namespace ProceduralRoguelike
 {
-    [CreateAssetMenu(fileName = "Data", menuName = "Data/TileSet", order = 4)]
+    [CreateAssetMenu(fileName = "Data", menuName = "Data/TileSet", order = 1)]
     public class TileSet : ScriptableObject
     {
         [SerializeField] private Sprite[] sprites;

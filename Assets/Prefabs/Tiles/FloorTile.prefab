@@ -21,9 +21,9 @@ GameObject:
   - component: {fileID: 4303876167069094}
   - component: {fileID: 212065376043988296}
   - component: {fileID: 114368807152815588}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: FloorTile
-  m_TagString: Untagged
+  m_TagString: Floor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

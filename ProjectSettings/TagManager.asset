@@ -9,6 +9,10 @@ TagManager:
   - Food
   - Item
   - Chest
+  - Bramble
+  - Rock
+  - Gem
+  - Floor
   layers:
   - Default
   - TransparentFX

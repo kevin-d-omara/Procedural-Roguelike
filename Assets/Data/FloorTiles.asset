@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Name: FloorTiles
   m_EditorClassIdentifier: 
   sprites:
-  - {fileID: 21300064, guid: fbe1e7b94bb1a4a099d5bcb15a00141c, type: 3}
-  - {fileID: 21300066, guid: fbe1e7b94bb1a4a099d5bcb15a00141c, type: 3}
-  - {fileID: 21300068, guid: fbe1e7b94bb1a4a099d5bcb15a00141c, type: 3}
-  - {fileID: 21300070, guid: fbe1e7b94bb1a4a099d5bcb15a00141c, type: 3}
-  - {fileID: 21300072, guid: fbe1e7b94bb1a4a099d5bcb15a00141c, type: 3}
-  - {fileID: 21300074, guid: fbe1e7b94bb1a4a099d5bcb15a00141c, type: 3}
-  - {fileID: 21300076, guid: fbe1e7b94bb1a4a099d5bcb15a00141c, type: 3}
-  - {fileID: 21300078, guid: fbe1e7b94bb1a4a099d5bcb15a00141c, type: 3}
+  - {fileID: 21300000, guid: 1660aa91be8a2814685924fa41539b3a, type: 3}
+  - {fileID: 21300002, guid: 1660aa91be8a2814685924fa41539b3a, type: 3}
+  - {fileID: 21300004, guid: 1660aa91be8a2814685924fa41539b3a, type: 3}
+  - {fileID: 21300006, guid: 1660aa91be8a2814685924fa41539b3a, type: 3}
+  - {fileID: 21300008, guid: 1660aa91be8a2814685924fa41539b3a, type: 3}
+  - {fileID: 21300010, guid: 1660aa91be8a2814685924fa41539b3a, type: 3}
+  - {fileID: 21300012, guid: 1660aa91be8a2814685924fa41539b3a, type: 3}
+  - {fileID: 21300014, guid: 1660aa91be8a2814685924fa41539b3a, type: 3}
