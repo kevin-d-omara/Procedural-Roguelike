@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 
 namespace ProceduralRoguelike
 {
-    [CreateAssetMenu(fileName = "Data", menuName = "Data/TwoSidedTileSet", order = 2)]
+    [CreateAssetMenu(fileName = "Data", menuName = "Data/TileSet (2 sided)", order = 2)]
     public class TwoSidedTileSet : ScriptableObject
     {
         [Serializable]
@@ -14,6 +14,9 @@ namespace ProceduralRoguelike
         {
             [SerializeField] private Sprite front;
             [SerializeField] private Sprite back;
+
+            public Sprite GetFront() { return front; }
+            public Sprite GetBack()  { return back; }
         }
 
         [SerializeField] private TwoSidedSprite[] sprites;

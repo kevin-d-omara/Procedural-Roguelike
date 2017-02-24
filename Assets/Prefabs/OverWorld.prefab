@@ -51,7 +51,22 @@ GameObject:
   m_Component:
   - component: {fileID: 4165720469270222}
   m_Layer: 0
-  m_Name: Obstacles
+  m_Name: Bramble
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!1 &1302776676907218
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4877147543274034}
+  m_Layer: 0
+  m_Name: Rock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -153,8 +168,22 @@ Transform:
   - {fileID: 4165720469270222}
   - {fileID: 4615143579057308}
   - {fileID: 4142410755192122}
+  - {fileID: 4877147543274034}
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4877147543274034
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1302776676907218}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4839198889855238}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &114619721971159324
 MonoBehaviour:
@@ -167,5 +196,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5c62f470c0d19e4cae8f313ca83bca0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  floorTilePrefab: {fileID: 1365008205365432, guid: 8a8b861849313f44eacfb87b0bcee8fd,
-    type: 2}
+  obstacleDensity: 0
+  tileInfo:
+    keys:
+    - Floor
+    - Bramble
+    - Rock
+    values:
+    - _prefab: {fileID: 1824461938962674, guid: 814a547538354aa4c9d6b78321f733a8,
+        type: 2}
+      _holder: {fileID: 4410368920190088}
+    - _prefab: {fileID: 1303947485840834, guid: 256a90fede0869d4dbdec4f36edf1522,
+        type: 2}
+      _holder: {fileID: 4165720469270222}
+    - _prefab: {fileID: 1499576223543280, guid: 7626df20ce8a99e46aae8bb309306070,
+        type: 2}
+      _holder: {fileID: 4877147543274034}
