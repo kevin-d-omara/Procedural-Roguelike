@@ -31,7 +31,7 @@ namespace ProceduralRoguelike
                 dict.Add(keys[i], values[i]);
             }
 
-            //this = null;
+            // TODO: make null to save space (this = null;)
 
             return dict;
         }

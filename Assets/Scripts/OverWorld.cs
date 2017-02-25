@@ -8,11 +8,12 @@ namespace ProceduralRoguelike
 {
 	public class OverWorld : MonoBehaviour
 	{
-        // % of tiles that are Wall or Bramble instead of Floor.
+        // Obstacle parameters (weights and types).
         [Range(0f, 1f)]
         [SerializeField] private float obstacleDensity = 0.15f;
         [SerializeField] private int brambleWeight = 10;
         [SerializeField] private int rockWeight = 2;
+        private WeightedRandomSet<string> randomObstacles = new WeightedRandomSet<string>();
 
         /// <summary>
         /// Container class for related info about tiles.
@@ -41,6 +42,9 @@ namespace ProceduralRoguelike
         private void Awake()
         {
             tiles = tileInfo.DeSerialize();
+
+            randomObstacles.Add("Bramble", brambleWeight);
+            randomObstacles.Add("Rock", rockWeight);
         }
 
         private void OnEnable()
@@ -123,26 +127,9 @@ namespace ProceduralRoguelike
                     AddFloorTile(position);
                     if (Random.Range(0f, 1f) < obstacleDensity)
                     {
-                        AddObstacleTile(position, GetRandomObstacle());
+                        AddObstacleTile(position, randomObstacles.RandomItem());
                     }
                 }
-            }
-        }
-
-        /// <summary>
-        /// Picks a random obstacle based on the weights for each.
-        /// </summary>
-        private string GetRandomObstacle()
-        {
-            var totalWeight = brambleWeight + rockWeight;
-            var randInt = Random.Range(0, totalWeight);
-            if (randInt < brambleWeight)
-            {
-                return "Bramble";
-            }
-            else
-            {
-                return "Rock";
             }
         }
 	}

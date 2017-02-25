@@ -197,6 +197,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   obstacleDensity: 0.15
+  brambleWeight: 8
+  rockWeight: 2
   tileInfo:
     keys:
     - Floor
