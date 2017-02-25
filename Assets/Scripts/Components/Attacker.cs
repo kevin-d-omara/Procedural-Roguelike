@@ -62,11 +62,11 @@ namespace ProceduralRoguelike
 
             if (hit.transform != null)
             {
-                // Check if target is Destroyable.
-                var destroyable = hit.transform.GetComponent<Destroyable>();
-                if (destroyable != null)
+                // Check if target has Health.
+                var health = hit.transform.GetComponent<Health>();
+                if (health != null)
                 {
-                    destroyable.TakeDamage(damage, IsHardAttack);
+                    health.TakeDamage(damage, IsHardAttack);
                 }
             }
         }

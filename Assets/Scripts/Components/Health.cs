@@ -4,22 +4,23 @@ using UnityEngine;
 
 namespace ProceduralRoguelike
 {
-	public class Destroyable : MonoBehaviour
-	{
+    public class Health : MonoBehaviour
+    {
         public delegate void Killed();
         public static event Killed OnKilled;
 
         /// <summary>
         /// Number of hit points this GameObject has.
         /// </summary>
-        [Range(1,5)]
-        [SerializeField] private int _health;
-        public int Health
+        [Range(1, 5)]
+        [SerializeField]
+        private int _hitPoints;
+        public int HitPoints
         {
-            get { return _health; }
+            get { return _hitPoints; }
             set
             {
-                _health = value;
+                _hitPoints = value;
                 if (OnKilled != null) { OnKilled(); }
             }
         }
@@ -43,11 +44,11 @@ namespace ProceduralRoguelike
         {
             if (IsHardTarget)
             {
-                Health -= isHardAttack ? damage : 0;
+                HitPoints -= isHardAttack ? damage : 0;
             }
             else
             {
-                Health -= damage;
+                HitPoints -= damage;
             }
         }
     }
