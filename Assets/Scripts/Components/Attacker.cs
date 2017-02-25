@@ -30,6 +30,16 @@ namespace ProceduralRoguelike
         public float range;
 
         /// <summary>
+        /// True if this attack can damage hard targets (i.e. Rocks).
+        /// </summary>
+        [SerializeField] private bool _isHardAttack;
+        public bool IsHardAttack
+        {
+            get { return _isHardAttack; }
+            set { _isHardAttack = value; }
+        }
+
+        /// <summary>
         /// The BoxCollider2D of the attached GameObject.
         /// </summary>
         private BoxCollider2D boxCollider;
@@ -38,46 +48,27 @@ namespace ProceduralRoguelike
         /// Deals damage to the first target struck if it is damageable.
         /// </summary>
         /// <param name="direction">Direction to make the attack.</param>
-        /// <param name="hit">Object dealt damage or null if none.</param>
-        /// <returns>True if something was dealt damage.</returns>
-        public bool Attack(Vector2 direction, out RaycastHit2D hit)
+        public void DoAttack(Vector2 direction)
         {
+            if (IsAttacking) { return; }
+            IsAttacking = true;
+
+            // TODO - delay attack w/ 'delay' for "wind-up" portion of attack.
+
             // Raycast to check if target exits.
             boxCollider.enabled = false;
-            hit = Physics2D.Raycast(transform.position, direction, range);
+            var hit = Physics2D.Raycast(transform.position, direction, range);
             boxCollider.enabled = true;
 
             if (hit.transform != null)
             {
-
-                // check for IDamageable
-                    // deal damage
-                    // return true
-                // return false
+                // Check if target is Destroyable.
+                var destroyable = hit.transform.GetComponent<Destroyable>();
+                if (destroyable != null)
+                {
+                    destroyable.TakeDamage(damage, IsHardAttack);
+                }
             }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Attempts to make an attack in the specified direction.
-        /// </summary>
-        /// <param name="direction">Direction to make the attack.</param>
-        /// <returns>True if the attack was started successfully, false otherwise.</returns>
-        public bool AttemptAttack(Vector2 direction)
-        {
-            if (IsAttacking) { return false; }
-
-            RaycastHit2D hit;
-            bool canAttack = Attack(direction, out hit);
-
-            if (canAttack)
-            {
-                IsAttacking = true;
-                return true;
-            }
-
-            return true;
         }
 
         private void Awake()
