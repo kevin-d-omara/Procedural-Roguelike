@@ -4,9 +4,27 @@ using UnityEngine;
 
 namespace ProceduralRoguelike
 {
+    [RequireComponent(typeof(SpriteRenderer))]
     public abstract class MovingObject : MonoBehaviour
     {
         public bool IsMoving { get; private set; }
+        private Vector2 _lastMove = Vector2.zero;
+        public Vector2 LastMove
+        {
+            get { return _lastMove; }
+            private set
+            {
+                _lastMove = value;
+                if (_lastMove == new Vector2(-1,0))
+                {
+                    GetComponent<SpriteRenderer>().flipX = true;
+                }
+                else if (_lastMove == new Vector2(1,0))
+                {
+                    GetComponent<SpriteRenderer>().flipX = false;
+                }
+            }
+        }
 
         // Time (seconds) it takes the object to move.
         [Range(0f, 1f)]
@@ -49,6 +67,7 @@ namespace ProceduralRoguelike
             if (hit.transform == null)
             {
                 StartCoroutine(SmoothMovement(end));
+                LastMove = new Vector2(xDir, yDir);
                 return true;
             }
 
