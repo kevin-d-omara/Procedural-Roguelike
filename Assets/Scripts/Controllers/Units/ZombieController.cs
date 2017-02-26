@@ -4,16 +4,23 @@ using UnityEngine;
 
 namespace ProceduralRoguelike
 {
-	public class ZombieController : MonoBehaviour
+    [RequireComponent(typeof(SpriteRenderer))]
+    [RequireComponent(typeof(Animator))]
+    [RequireComponent(typeof(Moveable))]
+    [RequireComponent(typeof(Attack))]
+    [RequireComponent(typeof(Health))]
+    public class ZombieController : MonoBehaviour
 	{
         // Componenets.
+        private Animator animator;
         private Moveable moveableComponent;
         private Attack attackComponent;
         private Health healthComponent;
 
         private void Awake()
         {
-            // Find references to all components.
+            // Get references to all components.
+            animator = GetComponent<Animator>();
             moveableComponent = GetComponent<Moveable>();
             attackComponent = GetComponent<Attack>();
             healthComponent = GetComponent<Health>();

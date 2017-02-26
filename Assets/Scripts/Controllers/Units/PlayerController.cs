@@ -6,6 +6,7 @@ namespace ProceduralRoguelike
 {
     [RequireComponent(typeof(SpriteRenderer))]
     [RequireComponent(typeof(Animator))]
+    [RequireComponent(typeof(Moveable))]
     [RequireComponent(typeof(Attack))]
     [RequireComponent(typeof(Health))]
     public class PlayerController : MonoBehaviour
@@ -37,12 +38,16 @@ namespace ProceduralRoguelike
         {
             moveableComponent.OnCanMove += OnCanMove;
             moveableComponent.OnCantMove += OnCantMove;
+            healthComponent.OnLostHitPoints += OnTakeDamage;
+            healthComponent.OnKilled += OnKilled;
         }
 
         private void OnDisable()
         {
             moveableComponent.OnCanMove -= OnCanMove;
             moveableComponent.OnCantMove -= OnCantMove;
+            healthComponent.OnLostHitPoints -= OnTakeDamage;
+            healthComponent.OnKilled += OnKilled;
         }
 
         private void Update()
@@ -80,9 +85,6 @@ namespace ProceduralRoguelike
             }
         }
 
-        /// <summary>
-        /// Initiates auto-attck if correct butting is down.
-        /// </summary>
         private void HandleChop()
         {
             if (autoAttack)
@@ -94,13 +96,22 @@ namespace ProceduralRoguelike
             }
         }
 
-        /// <summary>
-        /// Action the Player takes when successfully moving into a new square.
-        /// </summary>
-        /// <param name="destination"></param>
         private void OnCanMove(Vector2 destination)
         {
             lightSourceComponent.IlluminateDarkness(destination);
+        }
+
+        private void OnTakeDamage(int damage)
+        {
+            if (damage > 0)
+            {
+                animator.SetTrigger("playerHit");
+            }
+        }
+
+        private void OnKilled()
+        {
+            Debug.Log("Player killed!");
         }
 
         /// <summary>
