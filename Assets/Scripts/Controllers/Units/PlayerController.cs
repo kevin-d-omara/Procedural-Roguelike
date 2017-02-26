@@ -24,7 +24,7 @@ namespace ProceduralRoguelike
         protected override void Awake()
         {
             base.Awake();
-
+             
             // Get references to all components.
             lightSourceComponent = GetComponent<LightSource>();
         }
@@ -49,8 +49,8 @@ namespace ProceduralRoguelike
         protected override void GetInputs()
         {
             // Movement input.
-            horizontal = (int)Input.GetAxisRaw("Horizontal");
-            vertical = (int)Input.GetAxisRaw("Vertical");
+            horizontalInput = (int)Input.GetAxisRaw("Horizontal");
+            verticalInput = (int)Input.GetAxisRaw("Vertical");
 
             // Attack input.
             basicAttack = (int)Input.GetAxisRaw("Chop Attack") == 1;

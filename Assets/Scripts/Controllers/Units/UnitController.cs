@@ -15,8 +15,8 @@ namespace ProceduralRoguelike
     public abstract class UnitController : MonoBehaviour
 	{
         // Input values.
-        protected int horizontal;
-        protected int vertical;
+        protected int horizontalInput;
+        protected int verticalInput;
         protected bool basicAttack;
 
         // Componenets.
@@ -74,11 +74,11 @@ namespace ProceduralRoguelike
         protected virtual void HandleMovement()
         {
             // Limit movement to one axis per move.
-            if (horizontal != 0) { vertical = 0; }
+            if (horizontalInput != 0) { verticalInput = 0; }
 
-            if (!moveableComponent.IsMoving && (horizontal != 0 || vertical != 0))
+            if (!moveableComponent.IsMoving && (horizontalInput != 0 || verticalInput != 0))
             {
-                moveableComponent.AttemptMove(new Vector2(horizontal, vertical));
+                moveableComponent.AttemptMove(new Vector2(horizontalInput, verticalInput));
             }
         }
 
