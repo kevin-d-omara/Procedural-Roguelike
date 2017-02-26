@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace ProceduralRoguelike
 {
+    /// <summary>
+    /// Component describing the Health of the attached GameObject.
+    /// </summary>
     public class Health : MonoBehaviour
     {
         public delegate void Killed();
@@ -21,7 +24,11 @@ namespace ProceduralRoguelike
             set
             {
                 _hitPoints = value;
-                if (OnKilled != null) { OnKilled(); }
+
+                if (_hitPoints <= 0)
+                {
+                    if (OnKilled != null) { OnKilled(); }
+                }
             }
         }
 

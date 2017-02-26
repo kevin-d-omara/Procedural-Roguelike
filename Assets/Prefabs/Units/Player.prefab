@@ -24,6 +24,8 @@ GameObject:
   - component: {fileID: 50498129852240590}
   - component: {fileID: 61341370431693018}
   - component: {fileID: 114793777147826344}
+  - component: {fileID: 114254779800163356}
+  - component: {fileID: 114785097587388730}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -95,6 +97,35 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
+--- !u!114 &114254779800163356
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1698650935861978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55627fbdf31f712469a1ab4459cfdb41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _hitPoints: 5
+  _isHardTarget: 0
+--- !u!114 &114785097587388730
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1698650935861978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57a16654c8ed5ce499fd890a71a87b1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cooldown: 0.5
+  attackDelay: 0
+  damage: 1
+  range: 1
+  _isHardAttack: 0
 --- !u!114 &114793777147826344
 MonoBehaviour:
   m_ObjectHideFlags: 1

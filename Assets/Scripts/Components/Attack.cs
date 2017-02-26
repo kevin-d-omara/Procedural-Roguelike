@@ -4,21 +4,36 @@ using UnityEngine;
 
 namespace ProceduralRoguelike
 {
-	public class Attacker : MonoBehaviour
-	{
-        public bool IsAttacking { get; private set; }
+    /// <summary>
+    /// Component describing a single Attack option for the attached GameObject.
+    /// </summary>
+    public class Attack : MonoBehaviour
+    {
+        /// <summary>
+        /// Denotes the start of the backswing portion of this attack.
+        /// </summary>
+        public delegate void StartBackswing();
+        public static event StartBackswing OnStartBackswing;
+
+        /// <summary>
+        /// Denotes the forward swing portion of this attack.
+        /// </summary>
+        public delegate void StartSwing();
+        public static event StartSwing OnStartSwing;
+
+        public bool IsOnCooldown { get; private set; }
 
         /// <summary>
         /// Time that must be waited between making attacks.
         /// </summary>
         [Range(0f, 2f)]
-        public float speed;
+        public float cooldown;
 
         /// <summary>
-        /// Time after starting an attack before the damage is dealt (i.e. the wind-up).
+        /// Time after starting an attack before the damage is dealt (i.e. the backswing).
         /// </summary>
         [Range(0f, 0.5f)]
-        public float delay;
+        public float attackDelay;
 
         [Range(1, 5)]
         public int damage;
@@ -48,12 +63,23 @@ namespace ProceduralRoguelike
         /// Deals damage to the first target struck if it is damageable.
         /// </summary>
         /// <param name="direction">Direction to make the attack.</param>
-        public void DoAttack(Vector2 direction)
+        /// <returns>True if attack was started,false otherwise.</returns>
+        public bool DoAttack(Vector2 direction)
         {
-            if (IsAttacking) { return; }
-            IsAttacking = true;
+            if (IsOnCooldown) { return false; }
+            IsOnCooldown = true;
+            StartCoroutine(RefreshCooldown());
 
-            // TODO - delay attack w/ 'delay' for "wind-up" portion of attack.
+            // TODO - delay attack w/ 'delay' for "backswing" portion of attack.
+            if (OnStartBackswing != null)
+            {
+                OnStartBackswing();
+            }
+
+            if (OnStartSwing != null)
+            {
+                OnStartSwing();
+            }
 
             // Raycast to check if target exits.
             boxCollider.enabled = false;
@@ -69,11 +95,19 @@ namespace ProceduralRoguelike
                     health.TakeDamage(damage, IsHardAttack);
                 }
             }
+
+            return true;
+        }
+
+        private IEnumerator RefreshCooldown()
+        {
+            yield return new WaitForSeconds(cooldown + attackDelay);
+            IsOnCooldown = false;
         }
 
         private void Awake()
         {
-            IsAttacking = false;
+            IsOnCooldown = false;
         }
 
         private void Start()
