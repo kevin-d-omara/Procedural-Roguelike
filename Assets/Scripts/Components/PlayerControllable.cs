@@ -32,11 +32,13 @@ namespace ProceduralRoguelike
         private void OnEnable()
         {
             Moveable.OnCanMove += OnCanMove;
+            Moveable.OnCantMove += OnCantMove;
         }
 
         private void OnDisable()
         {
             Moveable.OnCanMove -= OnCanMove;
+            Moveable.OnCantMove -= OnCantMove;
         }
 
         private void Update()
@@ -45,11 +47,23 @@ namespace ProceduralRoguelike
             HandleMovement();
         }
 
-        private void OnCanMove(Vector2 destination)
+        /// <summary>
+        /// Sets the value of all relevant input channels.
+        /// </summary>
+        private void GetInputs()
         {
-            lightSourceComponent.IlluminateDarkness(destination);
+            // Movement input.
+            horizontal = (int)Input.GetAxisRaw("Horizontal");
+            vertical = (int)Input.GetAxisRaw("Vertical");
+
+            // Attack input.
+            autoAttack = (int)Input.GetAxisRaw("Auto-Attack") == 1;
+            specialAttack = (int)Input.GetAxisRaw("Special Attack") == 1;
         }
 
+        /// <summary>
+        /// Passes input along to the Moveable componenet and other interested componenets.
+        /// </summary>
         private void HandleMovement()
         {
             // Limit movement to one axis per move.
@@ -62,17 +76,29 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
-        /// Sets the value of all relevant input channels.
+        /// Action the Player takes when successfully moving into a new square.
         /// </summary>
-        private void GetInputs()
+        /// <param name="destination"></param>
+        private void OnCanMove(Vector2 destination)
         {
-            // Movement input.
-            horizontal = (int)Input.GetAxisRaw("Horizontal");
-            vertical   = (int)Input.GetAxisRaw("Vertical");
+            lightSourceComponent.IlluminateDarkness(destination);
+        }
 
-            // Attack input.
-            autoAttack    = (int)Input.GetAxisRaw("Auto-Attack")    == 1;
-            specialAttack = (int)Input.GetAxisRaw("Special Attack") == 1;
+        /// <summary>
+        /// Action the Player takes when movement is blocked. For example, opening a chest, entering
+        /// a dungeon, etc.
+        /// </summary>
+        private void OnCantMove(GameObject blockingObject)
+        {
+            switch (blockingObject.tag)
+            {
+                case "Exit":
+                    break;
+                case "Chest":
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

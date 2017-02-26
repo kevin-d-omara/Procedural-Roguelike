@@ -23,7 +23,8 @@ GameObject:
   - component: {fileID: 95998408218439300}
   - component: {fileID: 50590864380279414}
   - component: {fileID: 61392522154585726}
-  - component: {fileID: 114595049968276694}
+  - component: {fileID: 114229555155048022}
+  - component: {fileID: 114393856005471236}
   - component: {fileID: 114893581755088350}
   - component: {fileID: 114144196399552416}
   m_Layer: 8
@@ -113,7 +114,7 @@ MonoBehaviour:
   damage: 2
   range: 1
   _isHardAttack: 0
---- !u!114 &114595049968276694
+--- !u!114 &114229555155048022
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -121,16 +122,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 1924489036897988}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 414b3ada0ae81bc4cb2438ce35ee72c5, type: 3}
+  m_Script: {fileID: 11500000, guid: b0c6e391a6114c044b3741b8c8b559fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveTime: 0.1
-  waitTime: 0.1
+--- !u!114 &114393856005471236
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1924489036897988}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7671478f36b44c7458102c6bd0639d1e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 2
+  cooldown: 0.2
+  distance: 1
   blockingLayer:
     serializedVersion: 2
-    m_Bits: 0
-  attackSpeed: 0.5
-  attackDamage: 1
+    m_Bits: 256
 --- !u!114 &114893581755088350
 MonoBehaviour:
   m_ObjectHideFlags: 1
