@@ -134,7 +134,7 @@ namespace ProceduralRoguelike
         /// <param name="xDir">How far in the x-direction to move.</param>
         /// <param name="yDir">How far in the y-direction to move.</param>
         /// <returns>True if move started successfully, false otherwise.</returns>
-        protected virtual bool AttemptMove(int xDir, int yDir)
+        public virtual bool AttemptMove(int xDir, int yDir)
         {
             if (IsMoving) { return false; }
 

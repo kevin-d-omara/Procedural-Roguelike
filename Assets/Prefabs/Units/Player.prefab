@@ -23,7 +23,10 @@ GameObject:
   - component: {fileID: 95521296918232318}
   - component: {fileID: 50498129852240590}
   - component: {fileID: 61341370431693018}
+  - component: {fileID: 114985866394397660}
   - component: {fileID: 114793777147826344}
+  - component: {fileID: 114616715752342686}
+  - component: {fileID: 114209837566784540}
   - component: {fileID: 114254779800163356}
   - component: {fileID: 114785097587388730}
   m_Layer: 8
@@ -97,6 +100,18 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
+--- !u!114 &114209837566784540
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1698650935861978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fa57592080e2364c9fade2294612889, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _radius: 2
 --- !u!114 &114254779800163356
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -110,6 +125,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _hitPoints: 5
   _isHardTarget: 0
+--- !u!114 &114616715752342686
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1698650935861978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7671478f36b44c7458102c6bd0639d1e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 10
+  cooldown: 0.1
+  distance: 1
+  blockingLayer:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!114 &114785097587388730
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -143,6 +175,17 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   sightDistance: 2
+--- !u!114 &114985866394397660
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1698650935861978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a525bf07d127f2849ae0d4f7bc78f859, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!212 &212089408998817490
 SpriteRenderer:
   m_ObjectHideFlags: 1

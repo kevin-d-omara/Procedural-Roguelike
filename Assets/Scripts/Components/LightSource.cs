@@ -6,6 +6,9 @@ namespace ProceduralRoguelike
 {
 	public class LightSource : MonoBehaviour
 	{
+        public delegate void Illuminate(List<Vector2> offsets);
+        public static event Illuminate OnIlluminate;
+
         [SerializeField] private int _radius;
         public int Radius
         {
@@ -25,6 +28,14 @@ namespace ProceduralRoguelike
         private void RecalculateOffsets()
         {
             Offsets = GridAlgorithms.CircleFill(Radius);
+        }
+
+        public void IlluminateDarkness()
+        {
+            if (OnIlluminate != null)
+            {
+                OnIlluminate(Offsets);
+            }
         }
     }
 }

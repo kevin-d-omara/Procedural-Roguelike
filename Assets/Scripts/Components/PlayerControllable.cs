@@ -15,23 +15,35 @@ namespace ProceduralRoguelike
         private bool specialAttack;
 
         // Componenets.
+        private Moveable moveableComponent;
         private Attack attackComponent;
         private Health healthComponent;
+        private LightSource lightSourceComponent;
 
         private void Awake()
         {
             // Find references to all components.
+            moveableComponent = GetComponent<Moveable>();
             attackComponent = GetComponent<Attack>();
             healthComponent = GetComponent<Health>();
+            lightSourceComponent = GetComponent<LightSource>();
         }
 
         private void Update()
         {
             GetInputs();
+            HandleMovement();
 
-            if (autoAttack)
+        }
+
+        private void HandleMovement()
+        {
+            // Limit movement to one axis per move.
+            if (horizontal != 0) { vertical = 0; }
+
+            if (horizontal != 0 || vertical != 0)
             {
-                attackComponent.DoAttack(new Vector2(1,0));
+                moveableComponent.AttemptMove(horizontal, vertical);
             }
         }
 

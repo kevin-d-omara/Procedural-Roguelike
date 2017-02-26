@@ -9,9 +9,6 @@ namespace ProceduralRoguelike
         public delegate void SuccessfulMove (Vector2 location, List<Vector2> offsets);
         public static event SuccessfulMove OnSuccessfulMove;
 
-        #if UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
-            private Vector2 touchOrigin = -Vector2.one;
-        #endif
         [Range(0,10)]
         [SerializeField] private int sightDistance = 3;
         private LineOfSight lineOfSight;
@@ -19,26 +16,6 @@ namespace ProceduralRoguelike
         private void Awake()
         {
             lineOfSight = new LineOfSight(sightDistance);
-        }
-
-        private void Update()
-        {
-            HandleMovement();
-        }
-
-        private void HandleMovement()
-        {
-            if (IsMoving) { return; }
-
-            int xDir, yDir;
-            GetInputAsInt(out xDir, out yDir);
-            // Limit movement to one axis per move.
-            if (xDir != 0) { yDir = 0; }
-
-            if (xDir != 0 || yDir != 0)
-            {
-                AttemptMove(xDir, yDir);
-            }
         }
 
         protected override bool Move(int xDir, int yDir, out RaycastHit2D hit)
@@ -56,46 +33,6 @@ namespace ProceduralRoguelike
             {
                 return false;
             }
-        }
-
-        /// <summary>
-        /// Checks input device (keyboard, touchscreen, etc.) for horizontal and vertical input.
-        /// Snaps the values to -1, 0, or 1;
-        /// </summary>
-        /// <param name="horizontal">Variable to store horizontal input value in.</param>
-        /// <param name="vertical">Variable to store vertical input value in.</param>
-        private void GetInputAsInt(out int horizontal, out int vertical)
-        {
-            horizontal = 0;
-            vertical   = 0;
-
-            #if UNITY_STANDALONE || UNITY_WEBPLAYER
-
-                horizontal = (int)(Input.GetAxisRaw("Horizontal"));
-                vertical   = (int)(Input.GetAxisRaw("Vertical"));
-
-            #elif UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
-			
-			    if (Input.touchCount > 0)
-			    {
-				    var touch = Input.touches[0];
-                    touchOrigin = touch.position;
-				    if (touch.phase == TouchPhase.Ended && touchOrigin.x >= 0)
-				    {
-					    var touchEnd = touch.position;
-					    var dx = touchEnd.x - touchOrigin.x;
-					    var dy = touchEnd.y - touchOrigin.y;
-
-                        // Prevent this touch event from being re-used.
-					    touchOrigin.x = -1;
-					
-                        // Snap movement to int value -1, 0, or 1;
-                        horizontal = dx > 0 ? 1 : -1;
-                        vertical   = dy > 0 ? 1 : -1;
-				    }
-			    }
-			
-            #endif
         }
 
         /// <summary>
