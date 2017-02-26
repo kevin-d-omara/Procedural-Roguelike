@@ -77,10 +77,10 @@ namespace ProceduralRoguelike
         /// <param name="yDir">How far in the y-direction to move.</param>
         /// <param name="hit">Object blocking movement or null if none.</param>
         /// <returns>True if movemet was successful. False otherwise.</returns>
-        protected virtual bool Move(int xDir, int yDir, out RaycastHit2D hit)
+        protected virtual bool Move(Vector2 direction, out RaycastHit2D hit)
         {
             Vector2 start = transform.position;
-            var end = start + new Vector2(xDir, yDir);
+            var end = start + direction * distance;
 
             if (boxCollider != null) { boxCollider.enabled = false; }
             hit = Physics2D.Linecast(start, end, blockingLayer);
@@ -89,7 +89,7 @@ namespace ProceduralRoguelike
             if (hit.transform == null)
             {
                 StartCoroutine(SmoothMovement(end));
-                Facing = new Vector2(xDir, yDir);
+                Facing = direction;
                 if (OnCanMove != null)
                 {
                     OnCanMove(end);
@@ -131,19 +131,19 @@ namespace ProceduralRoguelike
         /// <param name="xDir">How far in the x-direction to move.</param>
         /// <param name="yDir">How far in the y-direction to move.</param>
         /// <returns>True if move started successfully, false otherwise.</returns>
-        public virtual bool AttemptMove(int xDir, int yDir)
+        public virtual bool AttemptMove(Vector2 direction)
         {
             if (IsMoving) { return false; }
 
             RaycastHit2D hit;
-            if (Move(xDir, yDir, out hit))
+            if (Move(direction, out hit))
             {
                 IsMoving = true;
                 return true;
             }
             else
             {
-                Facing = new Vector2(xDir, yDir);
+                Facing = direction;
                 if (OnCantMove != null) { OnCantMove(hit.transform.gameObject); }
                 return false;
             }

@@ -76,7 +76,7 @@ namespace ProceduralRoguelike
 
             if (!moveableComponent.IsMoving && (horizontal != 0 || vertical != 0))
             {
-                moveableComponent.AttemptMove(horizontal, vertical);
+                moveableComponent.AttemptMove(new Vector2(horizontal, vertical));
             }
         }
 
