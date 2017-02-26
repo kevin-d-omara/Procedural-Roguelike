@@ -10,7 +10,7 @@ namespace ProceduralRoguelike
     public class Health : MonoBehaviour
     {
         public delegate void Killed();
-        public static event Killed OnKilled;
+        public event Killed OnKilled;
 
         /// <summary>
         /// Number of hit points this GameObject has.

@@ -8,16 +8,16 @@ namespace ProceduralRoguelike
     public class Moveable : MonoBehaviour
     {
         public delegate void FlippedDirectionX(bool flipX);
-        public static event FlippedDirectionX OnFlippedDirectionX;
+        public event FlippedDirectionX OnFlippedDirectionX;
 
         public delegate void CantMove(GameObject blockingObject);
-        public static event CantMove OnCantMove;
+        public event CantMove OnCantMove;
 
         public delegate void CanMove(Vector2 destination);
-        public static event CanMove OnCanMove;
+        public event CanMove OnCanMove;
 
         public delegate void EndedSuccessfulMove(Vector2 destination);
-        public static event EndedSuccessfulMove OnEndedSuccessfulMove;
+        public event EndedSuccessfulMove OnEndedSuccessfulMove;
 
         public bool IsMoving { get; private set; }
         private Vector2 _lastMove = Vector2.zero;

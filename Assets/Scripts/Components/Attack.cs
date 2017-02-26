@@ -13,13 +13,13 @@ namespace ProceduralRoguelike
         /// Denotes the start of the backswing portion of this attack.
         /// </summary>
         public delegate void StartBackswing();
-        public static event StartBackswing OnStartBackswing;
+        public event StartBackswing OnStartBackswing;
 
         /// <summary>
         /// Denotes the forward swing portion of this attack.
         /// </summary>
         public delegate void StartSwing();
-        public static event StartSwing OnStartSwing;
+        public event StartSwing OnStartSwing;
 
         public bool IsOnCooldown { get; private set; }
 
