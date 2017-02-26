@@ -8,8 +8,8 @@ namespace ProceduralRoguelike
     [RequireComponent(typeof(Animator))]
     [RequireComponent(typeof(Attack))]
     [RequireComponent(typeof(Health))]
-	public class PlayerControllable : MonoBehaviour
-	{
+    public class PlayerController : MonoBehaviour
+    {
         // Input values.
         private int horizontal;
         private int vertical;

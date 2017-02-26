@@ -59,6 +59,11 @@ namespace ProceduralRoguelike
         /// </summary>
         private BoxCollider2D boxCollider;
 
+        private void Awake()
+        {
+            IsOnCooldown = false;
+        }
+
         /// <summary>
         /// Deals damage to the first target struck if it is damageable.
         /// </summary>
@@ -69,12 +74,27 @@ namespace ProceduralRoguelike
             if (IsOnCooldown) { return false; }
             IsOnCooldown = true;
             StartCoroutine(RefreshCooldown());
+            StartCoroutine(StartAttackSequence(direction));
+            return true;
+        }
 
-            // TODO - delay attack w/ 'delay' for "backswing" portion of attack.
+        private IEnumerator RefreshCooldown()
+        {
+            yield return new WaitForSeconds(cooldown + attackDelay);
+            IsOnCooldown = false;
+        }
+
+        /// <summary>
+        /// First waits for the backswing to finish, then deals damage to the first target struck by
+        /// a raycast.
+        /// </summary>
+        private IEnumerator StartAttackSequence(Vector2 direction)
+        {
             if (OnStartBackswing != null)
             {
                 OnStartBackswing();
             }
+            yield return new WaitForSeconds(attackDelay);
 
             if (OnStartSwing != null)
             {
@@ -95,19 +115,6 @@ namespace ProceduralRoguelike
                     health.TakeDamage(damage, IsHardAttack);
                 }
             }
-
-            return true;
-        }
-
-        private IEnumerator RefreshCooldown()
-        {
-            yield return new WaitForSeconds(cooldown + attackDelay);
-            IsOnCooldown = false;
-        }
-
-        private void Awake()
-        {
-            IsOnCooldown = false;
         }
 
         private void Start()
