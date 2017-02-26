@@ -29,11 +29,25 @@ namespace ProceduralRoguelike
             lightSourceComponent = GetComponent<LightSource>();
         }
 
+        private void OnEnable()
+        {
+            Moveable.OnCanMove += OnCanMove;
+        }
+
+        private void OnDisable()
+        {
+            Moveable.OnCanMove -= OnCanMove;
+        }
+
         private void Update()
         {
             GetInputs();
             HandleMovement();
+        }
 
+        private void OnCanMove(Vector2 destination)
+        {
+            lightSourceComponent.IlluminateDarkness(destination);
         }
 
         private void HandleMovement()

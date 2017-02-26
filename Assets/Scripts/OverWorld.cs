@@ -49,12 +49,12 @@ namespace ProceduralRoguelike
 
         private void OnEnable()
         {
-            Player.OnSuccessfulMove += RevealFogOfWar;
+            LightSource.OnIlluminate += RevealFogOfWar;
         }
 
         private void OnDisable()
         {
-            Player.OnSuccessfulMove -= RevealFogOfWar;
+            LightSource.OnIlluminate -= RevealFogOfWar;
         }
 
         /// <summary>
