@@ -20,18 +20,18 @@ namespace ProceduralRoguelike
         public event EndedSuccessfulMove OnEndedSuccessfulMove;
 
         public bool IsMoving { get; private set; }
-        private Vector2 _lastMove = Vector2.zero;
-        public Vector2 LastMove
+        private Vector2 _facing = Vector2.zero;
+        public Vector2 Facing
         {
-            get { return _lastMove; }
+            get { return _facing; }
             private set
             {
-                _lastMove = value;
-                if (_lastMove == new Vector2(-1, 0))
+                _facing = value;
+                if (_facing == new Vector2(-1, 0))
                 {
                     if (OnFlippedDirectionX != null) { OnFlippedDirectionX(true); }
                 }
-                else if (_lastMove == new Vector2(1, 0))
+                else if (_facing == new Vector2(1, 0))
                 {
                     if (OnFlippedDirectionX != null) { OnFlippedDirectionX(false); }
                 }
@@ -92,7 +92,7 @@ namespace ProceduralRoguelike
             if (hit.transform == null)
             {
                 StartCoroutine(SmoothMovement(end));
-                LastMove = new Vector2(xDir, yDir);
+                Facing = new Vector2(xDir, yDir);
                 if (OnCanMove != null)
                 {
                     OnCanMove(end);
@@ -146,6 +146,7 @@ namespace ProceduralRoguelike
             }
             else
             {
+                Facing = new Vector2(xDir, yDir);
                 if (OnCantMove != null) { OnCantMove(hit.transform.gameObject); }
                 return false;
             }

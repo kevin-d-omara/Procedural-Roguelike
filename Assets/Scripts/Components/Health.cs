@@ -9,6 +9,12 @@ namespace ProceduralRoguelike
     /// </summary>
     public class Health : MonoBehaviour
     {
+        public delegate void LostHitPoints(int damage);
+        public event LostHitPoints OnLostHitPoints;
+
+        public delegate void GainedHitPoints(int hitpoints);
+        public event GainedHitPoints OnGainedHitPoints;
+
         public delegate void Killed();
         public event Killed OnKilled;
 
@@ -23,11 +29,23 @@ namespace ProceduralRoguelike
             get { return _hitPoints; }
             set
             {
-                _hitPoints = value;
+                var deltaHP = _hitPoints - value;
 
-                if (_hitPoints <= 0)
+                if (deltaHP > 0)
                 {
-                    if (OnKilled != null) { OnKilled(); }
+                    // Lost hit points.
+                    _hitPoints = value;
+                    if (_hitPoints <= 0)
+                    {
+                        if (OnKilled != null) { OnKilled(); }
+                    }
+                    if (OnLostHitPoints != null) { OnLostHitPoints(deltaHP); }
+                }
+                else if (deltaHP < 0)
+                {
+                    // Gained hit points
+                    _hitPoints = value;
+                    if (OnGainedHitPoints != null) { OnGainedHitPoints(deltaHP); }
                 }
             }
         }

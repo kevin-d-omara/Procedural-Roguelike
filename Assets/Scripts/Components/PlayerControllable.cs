@@ -22,7 +22,7 @@ namespace ProceduralRoguelike
 
         private void Awake()
         {
-            // Find references to all components.
+            // Get references to all components.
             moveableComponent = GetComponent<Moveable>();
             attackComponent = GetComponent<Attack>();
             healthComponent = GetComponent<Health>();
@@ -45,10 +45,11 @@ namespace ProceduralRoguelike
         {
             GetInputs();
             HandleMovement();
+            HandleAutoAttack();
         }
 
         /// <summary>
-        /// Sets the value of all relevant input channels.
+        /// Records the values of each relevant input channel.
         /// </summary>
         private void GetInputs()
         {
@@ -69,9 +70,20 @@ namespace ProceduralRoguelike
             // Limit movement to one axis per move.
             if (horizontal != 0) { vertical = 0; }
 
-            if (horizontal != 0 || vertical != 0)
+            if (!moveableComponent.IsMoving && (horizontal != 0 || vertical != 0))
             {
                 moveableComponent.AttemptMove(horizontal, vertical);
+            }
+        }
+
+        /// <summary>
+        /// Initiates auto-attck if correct butting is down.
+        /// </summary>
+        private void HandleAutoAttack()
+        {
+            if (autoAttack)
+            {
+                attackComponent.DoAttack(moveableComponent.Facing);
             }
         }
 

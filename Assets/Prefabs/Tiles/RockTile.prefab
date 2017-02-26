@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 212670437915358170}
   - component: {fileID: 114667428375694990}
   - component: {fileID: 61896310539007362}
+  - component: {fileID: 114455513989156976}
   m_Layer: 8
   m_Name: RockTile
   m_TagString: Rock
@@ -56,6 +57,19 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
+--- !u!114 &114455513989156976
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1499576223543280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55627fbdf31f712469a1ab4459cfdb41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _hitPoints: 4
+  _isHardTarget: 1
 --- !u!114 &114667428375694990
 MonoBehaviour:
   m_ObjectHideFlags: 1
