@@ -19,10 +19,14 @@ namespace ProceduralRoguelike
         public event Killed OnKilled;
 
         /// <summary>
-        /// Number of hit points this GameObject has.
+        /// Total number of hit points this GameObject can have.
         /// </summary>
         [Range(1, 5)]
-        [SerializeField]
+        public int MaxHitPoints;
+
+        /// <summary>
+        /// Number of remaining hit points. Range (-inf, MaxHitPoints]
+        /// </summary>
         private int _hitPoints;
         public int HitPoints
         {
@@ -44,7 +48,7 @@ namespace ProceduralRoguelike
                 else if (deltaHP < 0)
                 {
                     // Gained hit points
-                    _hitPoints = value;
+                    _hitPoints = value < MaxHitPoints ? value : MaxHitPoints;
                     if (OnGainedHitPoints != null) { OnGainedHitPoints(deltaHP); }
                 }
             }
@@ -58,6 +62,11 @@ namespace ProceduralRoguelike
         {
             get { return _isHardTarget; }
             set { _isHardTarget = value; }
+        }
+
+        private void Awake()
+        {
+            HitPoints = MaxHitPoints;
         }
 
         /// <summary>

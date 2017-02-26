@@ -12,13 +12,24 @@ namespace ProceduralRoguelike
 	{
         [SerializeField] private TwoSidedTileSet twoSidedTileSet;
         private TwoSidedTileSet.TwoSidedSprite twoSidedSprite;
+        private SpriteRenderer spriteRenderer;
 
         private void Start()
         {
             // Get a random two-sided tile from the set.
-            SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+            spriteRenderer = GetComponent<SpriteRenderer>();
             twoSidedSprite = twoSidedTileSet.RandomTwoSidedSprite;
+            SetSpriteToFront();
+        }
+
+        public void SetSpriteToFront()
+        {
             spriteRenderer.sprite = twoSidedSprite.GetFront();
+        }
+
+        public void SetSpriteToBack()
+        {
+            spriteRenderer.sprite = twoSidedSprite.GetBack();
         }
     }
 }
