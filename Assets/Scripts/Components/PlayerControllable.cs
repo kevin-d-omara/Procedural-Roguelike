@@ -31,14 +31,14 @@ namespace ProceduralRoguelike
 
         private void OnEnable()
         {
-            Moveable.OnCanMove += OnCanMove;
-            Moveable.OnCantMove += OnCantMove;
+            moveableComponent.OnCanMove += OnCanMove;
+            moveableComponent.OnCantMove += OnCantMove;
         }
 
         private void OnDisable()
         {
-            Moveable.OnCanMove -= OnCanMove;
-            Moveable.OnCantMove -= OnCantMove;
+            moveableComponent.OnCanMove -= OnCanMove;
+            moveableComponent.OnCantMove -= OnCantMove;
         }
 
         private void Update()

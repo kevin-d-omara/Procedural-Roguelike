@@ -18,10 +18,5 @@ namespace ProceduralRoguelike
             attackComponent = GetComponent<Attack>();
             healthComponent = GetComponent<Health>();
         }
-
-        private void Update()
-        {
-            moveableComponent.AttemptMove(1, 0);
-        }
     }
 }
