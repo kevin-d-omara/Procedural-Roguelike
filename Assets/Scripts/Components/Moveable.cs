@@ -82,9 +82,6 @@ namespace ProceduralRoguelike
             Vector2 start = transform.position;
             var end = start + new Vector2(xDir, yDir);
 
-            // Linecast to check if movement is blocked.
-            boxCollider.enabled = false;
-
             if (boxCollider != null) { boxCollider.enabled = false; }
             hit = Physics2D.Linecast(start, end, blockingLayer);
             if (boxCollider != null) { boxCollider.enabled = true; }

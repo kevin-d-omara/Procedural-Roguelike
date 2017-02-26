@@ -4,6 +4,8 @@ using UnityEngine;
 
 namespace ProceduralRoguelike
 {
+    [RequireComponent(typeof(SpriteRenderer))]
+    [RequireComponent(typeof(Animator))]
     [RequireComponent(typeof(Attack))]
     [RequireComponent(typeof(Health))]
 	public class PlayerControllable : MonoBehaviour
@@ -15,6 +17,7 @@ namespace ProceduralRoguelike
         private bool specialAttack;
 
         // Componenets.
+        private Animator animator;
         private Moveable moveableComponent;
         private Attack attackComponent;
         private Health healthComponent;
@@ -23,6 +26,7 @@ namespace ProceduralRoguelike
         private void Awake()
         {
             // Get references to all components.
+            animator = GetComponent<Animator>();
             moveableComponent = GetComponent<Moveable>();
             attackComponent = GetComponent<Attack>();
             healthComponent = GetComponent<Health>();
@@ -45,7 +49,7 @@ namespace ProceduralRoguelike
         {
             GetInputs();
             HandleMovement();
-            HandleAutoAttack();
+            HandleChop();
         }
 
         /// <summary>
@@ -58,8 +62,8 @@ namespace ProceduralRoguelike
             vertical = (int)Input.GetAxisRaw("Vertical");
 
             // Attack input.
-            autoAttack = (int)Input.GetAxisRaw("Auto-Attack") == 1;
-            specialAttack = (int)Input.GetAxisRaw("Special Attack") == 1;
+            autoAttack = (int)Input.GetAxisRaw("Chop Attack") == 1;
+            specialAttack = (int)Input.GetAxisRaw("Throw Dynamite") == 1;
         }
 
         /// <summary>
@@ -79,11 +83,14 @@ namespace ProceduralRoguelike
         /// <summary>
         /// Initiates auto-attck if correct butting is down.
         /// </summary>
-        private void HandleAutoAttack()
+        private void HandleChop()
         {
             if (autoAttack)
             {
-                attackComponent.DoAttack(moveableComponent.Facing);
+                if (attackComponent.DoAttack(moveableComponent.Facing))
+                {
+                    animator.SetTrigger("playerChop");
+                }
             }
         }
 
