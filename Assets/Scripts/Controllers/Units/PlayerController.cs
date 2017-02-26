@@ -9,91 +9,52 @@ namespace ProceduralRoguelike
     [RequireComponent(typeof(Moveable))]
     [RequireComponent(typeof(Attack))]
     [RequireComponent(typeof(Health))]
-    public class PlayerController : MonoBehaviour
+    public class PlayerController : UnitController
     {
         // Input values.
-        private int horizontal;
-        private int vertical;
-        private bool autoAttack;
         private bool specialAttack;
 
         // Componenets.
-        private Animator animator;
-        private Moveable moveableComponent;
-        private Attack attackComponent;
-        private Health healthComponent;
         private LightSource lightSourceComponent;
 
-        private void Awake()
+        // Animations
+        protected override string AnimationBasicAttack { get { return "playerChop"; } }
+        protected override string AnimationHit         { get { return "playerHit"; } }
+
+        protected override void Awake()
         {
+            base.Awake();
+
             // Get references to all components.
-            animator = GetComponent<Animator>();
-            moveableComponent = GetComponent<Moveable>();
-            attackComponent = GetComponent<Attack>();
-            healthComponent = GetComponent<Health>();
             lightSourceComponent = GetComponent<LightSource>();
         }
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             moveableComponent.OnCanMove += OnCanMove;
             moveableComponent.OnCantMove += OnCantMove;
-            healthComponent.OnLostHitPoints += OnTakeDamage;
-            healthComponent.OnKilled += OnKilled;
         }
 
-        private void OnDisable()
+        protected override void OnDisable()
         {
+            base.OnDisable();
             moveableComponent.OnCanMove -= OnCanMove;
             moveableComponent.OnCantMove -= OnCantMove;
-            healthComponent.OnLostHitPoints -= OnTakeDamage;
-            healthComponent.OnKilled += OnKilled;
-        }
-
-        private void Update()
-        {
-            GetInputs();
-            HandleMovement();
-            HandleChop();
         }
 
         /// <summary>
         /// Records the values of each relevant input channel.
         /// </summary>
-        private void GetInputs()
+        protected override void GetInputs()
         {
             // Movement input.
             horizontal = (int)Input.GetAxisRaw("Horizontal");
             vertical = (int)Input.GetAxisRaw("Vertical");
 
             // Attack input.
-            autoAttack = (int)Input.GetAxisRaw("Chop Attack") == 1;
+            basicAttack = (int)Input.GetAxisRaw("Chop Attack") == 1;
             specialAttack = (int)Input.GetAxisRaw("Throw Dynamite") == 1;
-        }
-
-        /// <summary>
-        /// Passes input along to the Moveable componenet and other interested componenets.
-        /// </summary>
-        private void HandleMovement()
-        {
-            // Limit movement to one axis per move.
-            if (horizontal != 0) { vertical = 0; }
-
-            if (!moveableComponent.IsMoving && (horizontal != 0 || vertical != 0))
-            {
-                moveableComponent.AttemptMove(new Vector2(horizontal, vertical));
-            }
-        }
-
-        private void HandleChop()
-        {
-            if (autoAttack)
-            {
-                if (attackComponent.DoAttack(moveableComponent.Facing))
-                {
-                    animator.SetTrigger("playerChop");
-                }
-            }
         }
 
         private void OnCanMove(Vector2 destination)
@@ -101,15 +62,7 @@ namespace ProceduralRoguelike
             lightSourceComponent.IlluminateDarkness(destination);
         }
 
-        private void OnTakeDamage(int damage)
-        {
-            if (damage > 0)
-            {
-                animator.SetTrigger("playerHit");
-            }
-        }
-
-        private void OnKilled()
+        protected override void OnKilled()
         {
             Debug.Log("Player killed!");
         }

@@ -20,7 +20,7 @@ namespace ProceduralRoguelike
         public event EndedSuccessfulMove OnEndedSuccessfulMove;
 
         public bool IsMoving { get; private set; }
-        private Vector2 _facing = Vector2.zero;
+        private Vector2 _facing = Vector2.right;
         public Vector2 Facing
         {
             get { return _facing; }

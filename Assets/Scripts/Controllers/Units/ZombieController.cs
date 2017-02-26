@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,21 +10,13 @@ namespace ProceduralRoguelike
     [RequireComponent(typeof(Moveable))]
     [RequireComponent(typeof(Attack))]
     [RequireComponent(typeof(Health))]
-    public class ZombieController : MonoBehaviour
-	{
-        // Componenets.
-        private Animator animator;
-        private Moveable moveableComponent;
-        private Attack attackComponent;
-        private Health healthComponent;
+    public class ZombieController : UnitController
+    {
+        protected override string AnimationBasicAttack { get { return "zombieAttack"; } }
 
-        private void Awake()
+        protected override void GetInputs()
         {
-            // Get references to all components.
-            animator = GetComponent<Animator>();
-            moveableComponent = GetComponent<Moveable>();
-            attackComponent = GetComponent<Attack>();
-            healthComponent = GetComponent<Health>();
+            basicAttack = true;
         }
     }
 }

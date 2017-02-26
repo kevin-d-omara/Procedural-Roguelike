@@ -126,6 +126,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 731e44edfd933574994dfe3453736dea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onBasicAttackAnimation: playerChop
+  onHitAnimation: playerHit
 --- !u!114 &114291537587271594
 MonoBehaviour:
   m_ObjectHideFlags: 1
