@@ -109,10 +109,10 @@ namespace ProceduralRoguelike
             if (hit.transform != null)
             {
                 // Check if target has Health.
-                var health = hit.transform.GetComponent<Health>();
-                if (health != null)
+                var healthComponent = hit.transform.GetComponent<Health>();
+                if (healthComponent != null)
                 {
-                    health.TakeDamage(damage, IsHardAttack);
+                    healthComponent.TakeDamage(damage, IsHardAttack);
                 }
             }
         }
