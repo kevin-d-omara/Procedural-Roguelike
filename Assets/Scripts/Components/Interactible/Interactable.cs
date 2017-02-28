@@ -5,7 +5,7 @@ using UnityEngine;
 namespace ProceduralRoguelike
 {
     [RequireComponent(typeof(BoxCollider2D))]
-	public class Interactible : MonoBehaviour
+    public class Interactable : MonoBehaviour
 	{
         public virtual bool HasBeenUsed { get; private set; }
 
@@ -17,7 +17,7 @@ namespace ProceduralRoguelike
         /// <summary>
         /// Action to take when this object blocks another's movement.
         /// </summary>
-        public virtual void OnCantMove(GameObject blockedObject) { }
+        public virtual void OnBlockObject(GameObject blockedObject) { }
 
         /// <summary>
         /// Action to take when this object is triggered.

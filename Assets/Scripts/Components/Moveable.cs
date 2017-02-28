@@ -146,11 +146,11 @@ namespace ProceduralRoguelike
                 Facing = direction;
 
                 // Raise collision event.
-                var interactibleComponent = hit.transform.GetComponent<Interactible>();
-                if (interactibleComponent != null)
+                var interactableComponent = hit.transform.GetComponent<Interactable>();
+                if (interactableComponent != null)
                 {
                     // Notify blocking object of collision.
-                    interactibleComponent.OnCantMove(gameObject);
+                    interactableComponent.OnBlockObject(gameObject);
                 }
                 // Notify this object of collision.
                 if (OnCantMove != null) { OnCantMove(hit.transform.gameObject); }
