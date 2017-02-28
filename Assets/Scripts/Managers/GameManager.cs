@@ -17,7 +17,7 @@ namespace ProceduralRoguelike
         [SerializeField] private GameObject playerPrefab;
         [SerializeField] private GameObject overWorldPrefab;
         [SerializeField] private Vector2 startSize = new Vector2(5, 5);
-        private OverWorld overWorld;
+        private OverWorldManager overWorld;
         private GameObject player;
         [SerializeField] private GameObject mainCamera;
 
@@ -44,8 +44,8 @@ namespace ProceduralRoguelike
             // Create OverWorld.
             GameObject instance = Instantiate(overWorldPrefab, new Vector3(0, 0, 0),
                 Quaternion.identity);
-            overWorld = instance.GetComponent<OverWorld>();
-            overWorld.SetupOverWorld(startSize, new Vector2(0, 0));
+            overWorld = instance.GetComponent<OverWorldManager>();
+            overWorld.SetupBoard(startSize, new Vector2(0, 0));
 
             // Create Player and wire it up to the Camera.
             player = Instantiate(playerPrefab, new Vector3(0, 0, 0), Quaternion.identity);

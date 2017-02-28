@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4775611813626676}
   - component: {fileID: 212677550990509822}
   - component: {fileID: 61131847929329252}
+  - component: {fileID: 114766206292080650}
   m_Layer: 8
   m_Name: DungeonEntrance
   m_TagString: DungeonEntrance
@@ -55,6 +56,17 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
+--- !u!114 &114766206292080650
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1618356632132286}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6dded8e42212f8a42afc6eb8ce3376b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!212 &212677550990509822
 SpriteRenderer:
   m_ObjectHideFlags: 1

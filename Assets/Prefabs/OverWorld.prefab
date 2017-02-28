@@ -19,7 +19,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4839198889855238}
-  - component: {fileID: 114619721971159324}
+  - component: {fileID: 114515230470326822}
   m_Layer: 0
   m_Name: OverWorld
   m_TagString: Untagged
@@ -185,7 +185,7 @@ Transform:
   m_Father: {fileID: 4839198889855238}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114619721971159324
+--- !u!114 &114515230470326822
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -193,12 +193,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1027493567648644}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5c62f470c0d19e4cae8f313ca83bca0, type: 3}
+  m_Script: {fileID: 11500000, guid: d967553969046d44e9d6fa90072c90f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  obstacleDensity: 0.15
-  brambleWeight: 8
-  rockWeight: 2
   tileInfo:
     keys:
     - Floor
@@ -214,3 +211,6 @@ MonoBehaviour:
     - _prefab: {fileID: 1499576223543280, guid: 7626df20ce8a99e46aae8bb309306070,
         type: 2}
       _holder: {fileID: 4877147543274034}
+  obstacleDensity: 0.15
+  brambleWeight: 8
+  rockWeight: 2
