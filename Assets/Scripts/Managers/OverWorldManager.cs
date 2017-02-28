@@ -10,8 +10,9 @@ namespace ProceduralRoguelike
     {
         // Obstacle parameters (weights and types).
         [Range(0f, 1f)]
-        [SerializeField]
-        private float obstacleDensity = 0.15f;
+        [SerializeField] private float obstacleDensity = 0.15f;
+        [Range(0f,1f)]
+        [SerializeField] private float dungeonEntranceDensity = 0.01f;
         [SerializeField] private int brambleWeight = 10;
         [SerializeField] private int rockWeight = 2;
         private WeightedRandomSet<string> randomObstacles = new WeightedRandomSet<string>();
@@ -55,7 +56,11 @@ namespace ProceduralRoguelike
                 else
                 {
                     AddFloorTile(position);
-                    if (Random.Range(0f, 1f) < obstacleDensity)
+                    if (Random.Range(0f, 1f) < dungeonEntranceDensity)
+                    {
+                        AddObstacleTile(position, "DungeonEntrance");
+                    }
+                    else if (Random.Range(0f, 1f) < obstacleDensity)
                     {
                         AddObstacleTile(position, randomObstacles.RandomItem());
                     }
