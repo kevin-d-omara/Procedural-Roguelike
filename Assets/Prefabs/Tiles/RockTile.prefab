@@ -20,9 +20,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4098427545540860}
   - component: {fileID: 212670437915358170}
-  - component: {fileID: 114667428375694990}
   - component: {fileID: 61896310539007362}
   - component: {fileID: 114455513989156976}
+  - component: {fileID: 114667428375694990}
   m_Layer: 8
   m_Name: RockTile
   m_TagString: Rock
@@ -68,7 +68,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55627fbdf31f712469a1ab4459cfdb41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _hitPoints: 4
+  MaxHitPoints: 0
   _isHardTarget: 1
 --- !u!114 &114667428375694990
 MonoBehaviour:

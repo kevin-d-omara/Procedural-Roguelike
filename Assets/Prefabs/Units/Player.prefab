@@ -25,9 +25,9 @@ GameObject:
   - component: {fileID: 61921187839254864}
   - component: {fileID: 114246598280408048}
   - component: {fileID: 114548093470887346}
-  - component: {fileID: 114291537587271594}
   - component: {fileID: 114485446359621824}
   - component: {fileID: 114109688813074246}
+  - component: {fileID: 114291537587271594}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -126,8 +126,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 731e44edfd933574994dfe3453736dea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onBasicAttackAnimation: playerChop
-  onHitAnimation: playerHit
 --- !u!114 &114291537587271594
 MonoBehaviour:
   m_ObjectHideFlags: 1
