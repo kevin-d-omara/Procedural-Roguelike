@@ -24,7 +24,7 @@ namespace ProceduralRoguelike
         public Vector2 Facing
         {
             get { return _facing; }
-            private set
+            set
             {
                 _facing = value;
                 if (_facing == new Vector2(-1, 0))

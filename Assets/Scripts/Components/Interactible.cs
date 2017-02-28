@@ -7,6 +7,13 @@ namespace ProceduralRoguelike
     [RequireComponent(typeof(BoxCollider2D))]
 	public class Interactible : MonoBehaviour
 	{
+        public virtual bool HasBeenUsed { get; private set; }
+
+        protected void Awake()
+        {
+            HasBeenUsed = false;
+        }
+
         /// <summary>
         /// Action to take when this object blocks another's movement.
         /// </summary>

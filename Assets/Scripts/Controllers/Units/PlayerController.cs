@@ -57,6 +57,17 @@ namespace ProceduralRoguelike
             specialAttack = (int)Input.GetAxisRaw("Throw Dynamite") == 1;
         }
 
+        protected override void HandleMovement()
+        {
+            base.HandleMovement();
+
+            // Allow Player to quickly change facing to make attacking easier.
+            if (horizontalInput != 0 || verticalInput != 0)
+            {
+                moveableComponent.Facing = new Vector2(horizontalInput, verticalInput);
+            }
+        }
+
         private void OnCanMove(Vector2 destination)
         {
             lightSourceComponent.IlluminateDarkness(destination);
