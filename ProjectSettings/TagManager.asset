@@ -13,6 +13,7 @@ TagManager:
   - Gem
   - Floor
   - DungeonEntrance
+  - DungeonExit
   layers:
   - Default
   - TransparentFX

@@ -82,16 +82,19 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
-        /// Creates a new floor tile at the position specified and handles bookkeeping.
+        /// Creates a new floor tile at the position specified (if not already present).
         /// </summary>
         protected virtual void AddFloorTile(Vector2 position)
         {
             var positionV3 = new Vector3(position.x, position.y, 0);
 
-            GameObject instance = Instantiate(tiles["Floor"].Prefab, positionV3, Quaternion.identity)
-                as GameObject;
-            instance.transform.SetParent(tiles["Floor"].Holder);
-            tiles["Floor"].Tiles.Add(positionV3, instance);
+            if (!tiles["Floor"].Tiles.ContainsKey(positionV3))
+            {
+                var instance = Instantiate(tiles["Floor"].Prefab, positionV3, Quaternion.identity)
+                    as GameObject;
+                instance.transform.SetParent(tiles["Floor"].Holder);
+                tiles["Floor"].Tiles.Add(positionV3, instance);
+            }
         }
 
         /// <summary>

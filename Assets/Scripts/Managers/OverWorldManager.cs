@@ -26,14 +26,13 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
-        /// Creates a new obstacle tile (Bramble or Rock) at the position specified and handles
-        /// bookeeping.
+        /// Creates a new obstacle at the position specified.
         /// </summary>
         private void AddObstacleTile(Vector2 position, string type)
         {
             var positionV3 = new Vector3(position.x, position.y, 0);
 
-            GameObject instance = Instantiate(tiles[type].Prefab, positionV3, Quaternion.identity)
+            var instance = Instantiate(tiles[type].Prefab, positionV3, Quaternion.identity)
                 as GameObject;
             instance.transform.SetParent(tiles[type].Holder);
             tiles[type].Tiles.Add(positionV3, instance);

@@ -55,5 +55,7 @@ MonoBehaviour:
     type: 2}
   overWorldPrefab: {fileID: 1027493567648644, guid: a873e98dd8266b0498d55b9bd37845cb,
     type: 2}
+  dungeonPrefab: {fileID: 1819100073960492, guid: ab048007128ecac4fa970eab7492e392,
+    type: 2}
   startSize: {x: 5, y: 5}
   mainCamera: {fileID: 0}
