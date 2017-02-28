@@ -7,9 +7,9 @@ namespace ProceduralRoguelike
     [RequireComponent(typeof(BoxCollider2D))]
     public class Interactable : MonoBehaviour
 	{
-        public virtual bool HasBeenUsed { get; private set; }
+        public virtual bool HasBeenUsed { get; protected set; }
 
-        protected void Awake()
+        protected virtual void Awake()
         {
             HasBeenUsed = false;
         }

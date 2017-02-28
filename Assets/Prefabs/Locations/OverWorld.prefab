@@ -245,6 +245,6 @@ MonoBehaviour:
         type: 2}
       _holder: {fileID: 4005378598873668}
   obstacleDensity: 0.15
-  dungeonEntranceDensity: 0.2
+  dungeonEntranceDensity: 0.03
   brambleWeight: 8
   rockWeight: 2
