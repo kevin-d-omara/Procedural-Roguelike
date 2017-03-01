@@ -4,6 +4,9 @@ using UnityEngine;
 // From the Unity Standard Assets - 2D
 namespace ProceduralRoguelike
 {
+    /// <summary>
+    /// Allows the camera to smoothly follow a GameObject.
+    /// </summary>
     public class CameraFollow : MonoBehaviour
     {
         public Transform target;
@@ -17,7 +20,6 @@ namespace ProceduralRoguelike
         private Vector3 m_CurrentVelocity;
         private Vector3 m_LookAheadPos;
 
-        // Use this for initialization
         private void Start()
         {
             m_LastTargetPosition = target.position;
@@ -25,8 +27,6 @@ namespace ProceduralRoguelike
             transform.parent = null;
         }
 
-
-        // Update is called once per frame
         private void Update()
         {
             // only update lookahead pos if accelerating or changed direction
