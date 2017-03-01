@@ -116,6 +116,7 @@ namespace ProceduralRoguelike
                 sqrRemainingDistance = (transform.position - end).sqrMagnitude;
                 yield return null;
             }
+            // TODO: snap to integer position
 
             yield return new WaitForSeconds(cooldown);
             IsMoving = false;
