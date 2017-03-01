@@ -61,12 +61,24 @@ namespace ProceduralRoguelike
             GetInputs();
             HandleMovement();
             HandleBasicAttack();
+            ResetInputs();
         }
 
         /// <summary>
         /// Records the values of each relevant input channel.
         /// </summary>
         protected abstract void GetInputs();
+
+        /// <summary>
+        /// Sets all input values to 0. Prevents glitches where a unit continually moves after a
+        /// single input.
+        /// </summary>
+        protected virtual void ResetInputs()
+        {
+            horizontalInput = 0;
+            verticalInput = 0;
+            basicAttack = false;
+        }
 
         /// <summary>
         /// Passes input along to the Moveable componenet and other interested componenets.

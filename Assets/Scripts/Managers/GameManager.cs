@@ -40,14 +40,14 @@ namespace ProceduralRoguelike
 
         private void OnEnable()
         {
-            DungeonEntrance.OnEnterDungeon += OnEnterDungeon;
-            DungeonExit.OnExitDungeon += OnExitDungeon;
+            PassageController.OnEnterDungeon += OnEnterDungeon;
+            PassageController.OnExitDungeon += OnExitDungeon;
         }
 
         private void OnDisable()
         {
-            DungeonEntrance.OnEnterDungeon -= OnEnterDungeon;
-            DungeonExit.OnExitDungeon -= OnExitDungeon;
+            PassageController.OnEnterDungeon -= OnEnterDungeon;
+            PassageController.OnExitDungeon -= OnExitDungeon;
         }
 
         /// <summary>

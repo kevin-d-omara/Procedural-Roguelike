@@ -21,8 +21,8 @@ GameObject:
   - component: {fileID: 4363240329766314}
   - component: {fileID: 212841191722468146}
   - component: {fileID: 61893897776711066}
-  - component: {fileID: 114721877983711094}
-  m_Layer: 8
+  - component: {fileID: 114794959855565344}
+  m_Layer: 0
   m_Name: DungeonExit
   m_TagString: DungeonExit
   m_Icon: {fileID: 0}
@@ -51,12 +51,12 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
---- !u!114 &114721877983711094
+--- !u!114 &114794959855565344
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -64,9 +64,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1818606537868130}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f85945ecdd1476747bc2206146737780, type: 3}
+  m_Script: {fileID: 11500000, guid: bdfebb4bf473e6d4b968c68f5de00007, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  type: 1
 --- !u!212 &212841191722468146
 SpriteRenderer:
   m_ObjectHideFlags: 1

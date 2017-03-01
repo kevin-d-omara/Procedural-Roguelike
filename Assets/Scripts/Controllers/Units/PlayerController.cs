@@ -21,12 +21,18 @@ namespace ProceduralRoguelike
         protected override string AnimationBasicAttack { get { return "playerChop"; } }
         protected override string AnimationHit         { get { return "playerHit"; } }
 
+        // State
+        private bool IsPaused { get; set; }
+
         protected override void Awake()
         {
             base.Awake();
              
             // Get references to all components.
             lightSourceComponent = GetComponent<LightSource>();
+
+            // Set state.
+            IsPaused = false;
         }
 
         protected override void OnEnable()
@@ -34,6 +40,8 @@ namespace ProceduralRoguelike
             base.OnEnable();
             moveableComponent.OnCanMove += OnCanMove;
             moveableComponent.OnCantMove += OnCantMove;
+            PassageController.OnEnterDungeon += OnEnterPassage;
+            PassageController.OnExitDungeon+= OnEnterPassage;
         }
 
         protected override void OnDisable()
@@ -41,6 +49,8 @@ namespace ProceduralRoguelike
             base.OnDisable();
             moveableComponent.OnCanMove -= OnCanMove;
             moveableComponent.OnCantMove -= OnCantMove;
+            PassageController.OnEnterDungeon -= OnEnterPassage;
+            PassageController.OnExitDungeon -= OnEnterPassage;
         }
 
         /// <summary>
@@ -48,6 +58,8 @@ namespace ProceduralRoguelike
         /// </summary>
         protected override void GetInputs()
         {
+            if (IsPaused) { return; }
+
             // Movement input.
             horizontalInput = (int)Input.GetAxisRaw("Horizontal");
             verticalInput = (int)Input.GetAxisRaw("Vertical");
@@ -55,6 +67,12 @@ namespace ProceduralRoguelike
             // Attack input.
             basicAttack = (int)Input.GetAxisRaw("Chop Attack") == 1;
             specialAttack = (int)Input.GetAxisRaw("Throw Dynamite") == 1;
+        }
+
+        protected override void ResetInputs()
+        {
+            base.ResetInputs();
+            specialAttack = false;
         }
 
         protected override void HandleMovement()
@@ -93,6 +111,14 @@ namespace ProceduralRoguelike
                 default:
                     break;
             }
+        }
+
+        /// <summary>
+        /// Disable Player actions.
+        /// </summary>
+        private void OnEnterPassage(Vector2 _)
+        {
+            IsPaused = true;
         }
     }
 }
