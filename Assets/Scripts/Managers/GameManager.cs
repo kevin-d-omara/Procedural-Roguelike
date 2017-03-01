@@ -113,8 +113,8 @@ namespace ProceduralRoguelike
                 // Reactivate Overworld.
                 overWorld.gameObject.SetActive(true);
 
-                // (?) clear out landing-zone.
-                overWorld.SetupBoard(startSize, passagePosition);
+                // Clear entrance tile on OverWorld (i.e. make sure no Rocks blocking the path up).
+                overWorld.SetupBoard(Vector2.one, passagePosition);
             }
 
             mainCameraController.FadeIn();
