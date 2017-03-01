@@ -134,7 +134,7 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
-        /// Disable/enable Unit actions (i.e. pause Unit during transition).
+        /// Disable/enable Unit actions. Stops combat from occuring during transitions.
         /// </summary>
         private void OnPassageTransition(bool startOfTransition)
         {

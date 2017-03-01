@@ -15,15 +15,16 @@ namespace ProceduralRoguelike
         public delegate void ExitDungeon(Vector2 position);
         public static event ExitDungeon OnExitDungeon;
 
-        enum Type { Entrance, Exit }
+        private enum Type { Entrance, Exit }
         [SerializeField] private Type type;
 
         protected override void OnTriggerEnter2D(Collider2D collision)
         {
+            if (HasBeenUsed) { return; }
+
             if (collision.attachedRigidbody.tag == "Player")
             {
-                // "Seal the passge" so this Dungeon cannot be visited again.
-                Destroy(gameObject);
+                HasBeenUsed = true;
                 if (type == Type.Entrance)
                 {
                     if (OnEnterDungeon != null) { OnEnterDungeon(transform.position); }

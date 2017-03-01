@@ -87,37 +87,36 @@ namespace ProceduralRoguelike
         /// </summary>
         private IEnumerator DungeonTransition(Vector2 passagePosition, bool entering)
         {
-            // Broadcast start of sequence.
             if (OnPassageTransition != null) { OnPassageTransition(true); }
             mainCameraController.FadeOut();
-
             yield return new WaitForSeconds(mainCameraController.FadeTime);
+
+            // Transition between worlds.
+            if (entering)
             {
-                if (entering)
-                {
-                    // Destroy Dungeon entrance (in OverWorld).
+                // Destroy Dungeon entrance (in OverWorld).
+                // TODO: ^ or transition to "collapsed" graphic
 
+                // Deactivate OverWorld.
+                overWorld.gameObject.SetActive(false);
 
-                    // Deactivate OverWorld.
-                    overWorld.gameObject.SetActive(false);
-
-                    // Create new dungeon.
-                    currentDungeon = (Instantiate(dungeonPrefab, passagePosition,
-                        Quaternion.identity) as GameObject).GetComponent<DungeonManager>();
-                    currentDungeon.SetupBoard(startSize, passagePosition);
-                }
-                else
-                {
-                    // Destroy Dungeon.
-                    Destroy(currentDungeon.gameObject);
-
-                    // Reactivate Overworld.
-                    overWorld.gameObject.SetActive(true);
-
-                    // (?) clear out landing-zone.
-                    overWorld.SetupBoard(startSize, passagePosition);
-                }
+                // Create new dungeon.
+                currentDungeon = (Instantiate(dungeonPrefab, passagePosition,
+                    Quaternion.identity) as GameObject).GetComponent<DungeonManager>();
+                currentDungeon.SetupBoard(startSize, passagePosition);
             }
+            else
+            {
+                // Destroy Dungeon.
+                Destroy(currentDungeon.gameObject);
+
+                // Reactivate Overworld.
+                overWorld.gameObject.SetActive(true);
+
+                // (?) clear out landing-zone.
+                overWorld.SetupBoard(startSize, passagePosition);
+            }
+
             mainCameraController.FadeIn();
             yield return new WaitForSeconds(mainCameraController.FadeTime);
             if (OnPassageTransition != null) { OnPassageTransition(false); }
