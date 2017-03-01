@@ -9,9 +9,9 @@ namespace ProceduralRoguelike
         public delegate void EnterDungeon(Vector2 position);
         public static event EnterDungeon OnEnterDungeon;
 
-        public override void OnBlockObject(GameObject blockedObject)
+        protected override void OnTriggerEnter2D(Collider2D collision)
         {
-            if (blockedObject.tag == "Player")
+            if (collision.attachedRigidbody.tag == "Player")
             {
                 // "Seal the entrance" so this Dungeon cannot be visited again.
                 Destroy(gameObject);

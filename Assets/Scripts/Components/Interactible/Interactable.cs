@@ -5,7 +5,7 @@ using UnityEngine;
 namespace ProceduralRoguelike
 {
     [RequireComponent(typeof(BoxCollider2D))]
-    public class Interactable : MonoBehaviour
+    public abstract class Interactable : MonoBehaviour
 	{
         public virtual bool HasBeenUsed { get; protected set; }
 
@@ -22,6 +22,6 @@ namespace ProceduralRoguelike
         /// <summary>
         /// Action to take when this object is triggered.
         /// </summary>
-        protected void OnTriggerEnter2D(Collider2D collision) { }
+        protected virtual void OnTriggerEnter2D(Collider2D collision) { }
     }
 }
