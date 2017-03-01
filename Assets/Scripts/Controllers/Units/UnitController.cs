@@ -31,6 +31,9 @@ namespace ProceduralRoguelike
         protected virtual string AnimationBasicAttack { get { return null; } }
         protected virtual string AnimationHit { get { return null; } }
 
+        // State
+        protected virtual bool IsPaused { get; set; }
+
         protected virtual void Awake()
         {
             // Get references to all components.
@@ -39,6 +42,9 @@ namespace ProceduralRoguelike
             moveableComponent = GetComponent<Moveable>();
             attackComponent = GetComponent<Attack>();
             healthComponent = GetComponent<Health>();
+
+            // Set state.
+            IsPaused = false;
         }
 
         protected virtual void OnEnable()
@@ -46,6 +52,7 @@ namespace ProceduralRoguelike
             moveableComponent.OnFlippedDirectionX += OnFlippedDirection;
             healthComponent.OnLostHitPoints += OnTakeDamage;
             healthComponent.OnKilled += OnKilled;
+            GameManager.OnPassageTransition += OnPassageTransition;
         }
 
         protected virtual void OnDisable()
@@ -53,11 +60,14 @@ namespace ProceduralRoguelike
             moveableComponent.OnFlippedDirectionX -= OnFlippedDirection;
             healthComponent.OnLostHitPoints -= OnTakeDamage;
             healthComponent.OnKilled += OnKilled;
+            GameManager.OnPassageTransition -= OnPassageTransition;
         }
 
 
         protected virtual void Update()
         {
+            if (IsPaused) { return; }
+
             GetInputs();
             HandleMovement();
             HandleBasicAttack();
@@ -121,6 +131,14 @@ namespace ProceduralRoguelike
         protected virtual void OnKilled()
         {
             Destroy(gameObject);
+        }
+
+        /// <summary>
+        /// Disable/enable Unit actions (i.e. pause Unit during transition).
+        /// </summary>
+        private void OnPassageTransition(bool startOfTransition)
+        {
+            IsPaused = startOfTransition;
         }
     }
 }

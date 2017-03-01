@@ -103,9 +103,9 @@ GameObject:
   - component: {fileID: 1347147819}
   - component: {fileID: 1347147818}
   - component: {fileID: 1347147817}
+  - component: {fileID: 1347147825}
   - component: {fileID: 1347147822}
   - component: {fileID: 1347147823}
-  - component: {fileID: 1347147824}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -210,7 +210,7 @@ MonoBehaviour:
   lookAheadFactor: 1
   lookAheadReturnSpeed: 0.5
   lookAheadMoveThreshold: 0.1
---- !u!114 &1347147824
+--- !u!114 &1347147825
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -218,7 +218,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1347147816}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 749a35ed716497742a9328412dea30d3, type: 3}
+  m_Script: {fileID: 11500000, guid: 9252dc87ac91189448a1ce562bd4d081, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fadeTime: 2
+  _fadeTime: 1.5
