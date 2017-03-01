@@ -74,14 +74,18 @@ namespace ProceduralRoguelike
 
         private void OnEnterDungeon(Vector2 dungeonEntrancePosition)
         {
-            StartCoroutine(EnterDungeonSequence(dungeonEntrancePosition));
+            StartCoroutine(DungeonTransition(dungeonEntrancePosition, true));
+        }
+
+        private void OnExitDungeon(Vector2 dungeonExitPosition)
+        {
+            StartCoroutine(DungeonTransition(dungeonExitPosition, false));
         }
 
         /// <summary>
-        /// Fade camera out to black. Destroy Dungeon entrance. De-activate OverWorld. Create new
-        /// Dungeon. Fade back in.
+        /// Fade camera out to black. Transition to new world (OverWorld <=> Dungeon). Fade back in.
         /// </summary>
-        private IEnumerator EnterDungeonSequence(Vector2 dungeonEntrancePosition)
+        private IEnumerator DungeonTransition(Vector2 passagePosition, bool entering)
         {
             // Broadcast start of sequence.
             if (OnPassageTransition != null) { OnPassageTransition(true); }
@@ -89,32 +93,34 @@ namespace ProceduralRoguelike
 
             yield return new WaitForSeconds(mainCameraController.FadeTime);
             {
+                if (entering)
+                {
+                    // Destroy Dungeon entrance (in OverWorld).
 
-                // Destroy Dungeon entrance (in OverWorld).
 
+                    // Deactivate OverWorld.
+                    overWorld.gameObject.SetActive(false);
 
-                // Deactivate OverWorld.
-                overWorld.gameObject.SetActive(false);
+                    // Create new dungeon.
+                    currentDungeon = (Instantiate(dungeonPrefab, passagePosition,
+                        Quaternion.identity) as GameObject).GetComponent<DungeonManager>();
+                    currentDungeon.SetupBoard(startSize, passagePosition);
+                }
+                else
+                {
+                    // Destroy Dungeon.
+                    Destroy(currentDungeon.gameObject);
 
-                // Create new dungeon.
-                currentDungeon = (Instantiate(dungeonPrefab, dungeonEntrancePosition,
-                    Quaternion.identity) as GameObject).GetComponent<DungeonManager>();
-                currentDungeon.SetupBoard(startSize, dungeonEntrancePosition);
+                    // Reactivate Overworld.
+                    overWorld.gameObject.SetActive(true);
+
+                    // (?) clear out landing-zone.
+                    overWorld.SetupBoard(startSize, passagePosition);
+                }
             }
             mainCameraController.FadeIn();
             yield return new WaitForSeconds(mainCameraController.FadeTime);
             if (OnPassageTransition != null) { OnPassageTransition(false); }
-        }
-
-        /// <summary>
-        /// Destroy the dungeon and re-activate the OverWorld. Create a new "starting location" at
-        /// the exit position.
-        /// </summary>
-        private void OnExitDungeon(Vector2 dungeonExitPosition)
-        {
-            Destroy(currentDungeon.gameObject);
-            overWorld.gameObject.SetActive(true);
-            overWorld.SetupBoard(startSize, dungeonExitPosition);
         }
     }
 }
