@@ -13,8 +13,8 @@ namespace ProceduralRoguelike
         [SerializeField] protected WeightedSet enemySet;
 
         // Randomizers.
-        protected WeightedRandomSet<GameObject> obstacles2 = new WeightedRandomSet<GameObject>();
-        protected WeightedRandomSet<GameObject> enemies2 = new WeightedRandomSet<GameObject>();
+        protected WeightedRandomSet<GameObject> obstacles = new WeightedRandomSet<GameObject>();
+        protected WeightedRandomSet<GameObject> enemies = new WeightedRandomSet<GameObject>();
 
         // Parents to place instantiated tiles under for organization.
         protected Dictionary<string, Transform> holders = new Dictionary<string, Transform>();
@@ -28,11 +28,11 @@ namespace ProceduralRoguelike
             // Transform each WeightedSet into a WeightedRandomSet
             foreach (WeightedPairGO pair in obstacleSet.list)
             {
-                obstacles2.Add(pair.item, pair.weight);
+                obstacles.Add(pair.item, pair.weight);
             }
             foreach (WeightedPairGO pair in enemySet.list)
             {
-                enemies2.Add(pair.item, pair.weight);
+                enemies.Add(pair.item, pair.weight);
             }
 
             // Wire up holder GameObjects for organizational parenting.

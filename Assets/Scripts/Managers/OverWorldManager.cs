@@ -10,7 +10,7 @@ namespace ProceduralRoguelike
     {
         [SerializeField] private GameObject entrancePrefab;
 
-        // Obstacle parameters (weights and types).
+        // Randomizer parameters.
         [Range(0f, 1.01f)]
         [SerializeField] private float obstacleDensity = 0.15f;
         [Range(0f,1f)]
@@ -45,7 +45,7 @@ namespace ProceduralRoguelike
                     }
                     else if (Random.Range(0f, 1f) < obstacleDensity)
                     {
-                        AddTile(obstacles2.RandomItem(), position, holders["Obstacles"]);
+                        AddTile(obstacles.RandomItem(), position, holders["Obstacles"]);
                     }
                 }
             }
