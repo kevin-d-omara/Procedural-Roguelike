@@ -12,6 +12,10 @@ namespace ProceduralRoguelike
     /// </summary>
     public abstract class BoardManager : MonoBehaviour
     {
+        [SerializeField] protected FloorInfo floor;
+        [SerializeField] protected ObstacleInfo obstacles;
+        [SerializeField] protected EnemyInfo enemies;
+
         /// <summary>
         /// Container class for related info about tiles.
         /// </summary>

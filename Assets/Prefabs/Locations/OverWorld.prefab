@@ -225,6 +225,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d967553969046d44e9d6fa90072c90f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  floor: {fileID: 11400000, guid: 9cfe12011afb8644eb802a222f4534f9, type: 2}
+  obstacles: {fileID: 11400000, guid: 9c1e0247333db7d4f91904a44cbe146b, type: 2}
+  enemies: {fileID: 11400000, guid: 6cb6491931ab7cd41b4b3615ec993da9, type: 2}
   tileInfo:
     keys:
     - Floor
