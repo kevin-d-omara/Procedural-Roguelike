@@ -196,11 +196,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3098d7aac02b23d4094a9c3a599187a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  floor: {fileID: 11400000, guid: 9cfe12011afb8644eb802a222f4534f9, type: 2}
-  obstacles: {fileID: 11400000, guid: 9c1e0247333db7d4f91904a44cbe146b, type: 2}
-  enemies: {fileID: 11400000, guid: 6cb6491931ab7cd41b4b3615ec993da9, type: 2}
-  floorHolder: {fileID: 4458458424570816}
-  obstacleHolder: {fileID: 4434055628193386}
-  enemyHolder: {fileID: 4424550376559122}
+  obstacleSet: {fileID: 11400000, guid: 638ce02f992478c4fb59c445dc953d54, type: 2}
+  enemySet: {fileID: 11400000, guid: 28f5b3c50a067504e92aaa882853a578, type: 2}
+  floorPrefab: {fileID: 1824461938962674, guid: 814a547538354aa4c9d6b78321f733a8,
+    type: 2}
   exitPrefab: {fileID: 1818606537868130, guid: 25300bc7c597de24686d90ea710bc300, type: 2}
-  exitHolder: {fileID: 4947968765181368}

@@ -6,26 +6,34 @@ using Random = UnityEngine.Random;
 
 namespace ProceduralRoguelike
 {
-    /// <summary>
-    /// Any class extending BoardManager must have the following:
-    ///     
-    /// </summary>
     public abstract class BoardManager : MonoBehaviour
     {
         // ScriptableObject data.
-        [SerializeField] protected FloorInfo floor;
-        [SerializeField] protected ObstacleInfo obstacles;
-        [SerializeField] protected EnemyInfo enemies;
+        [SerializeField] protected WeightedSet obstacleSet;
+        [SerializeField] protected WeightedSet enemySet;
+
+        // Randomizers.
+        protected WeightedRandomSet<GameObject> obstacles2 = new WeightedRandomSet<GameObject>();
+        protected WeightedRandomSet<GameObject> enemies2 = new WeightedRandomSet<GameObject>();
 
         // Parents to place instantiated tiles under for organization.
         protected Dictionary<string, Transform> holders = new Dictionary<string, Transform>();
 
+        // Floor
+        [SerializeField] protected GameObject floorPrefab;
+        protected Dictionary<Vector3, GameObject> floorTiles = new Dictionary<Vector3, GameObject>();
+
         protected virtual void Awake()
         {
-            // Create new instance of each ScriptableObject
-            floor = Instantiate(floor) as FloorInfo;
-            obstacles = Instantiate(obstacles) as ObstacleInfo;
-            enemies = Instantiate(enemies) as EnemyInfo;
+            // Transform each WeightedSet into a WeightedRandomSet
+            foreach (WeightedPairGO pair in obstacleSet.list)
+            {
+                obstacles2.Add(pair.item, pair.weight);
+            }
+            foreach (WeightedPairGO pair in enemySet.list)
+            {
+                enemies2.Add(pair.item, pair.weight);
+            }
 
             // Wire up holder GameObjects for organizational parenting.
             holders.Add("Floor", transform.Find("Floor"));
@@ -74,7 +82,7 @@ namespace ProceduralRoguelike
                 for (int x = startX; x <= endX; ++x)
                 {
                     var newPosition = new Vector2(x, y);
-                    if (!floor.existing.ContainsKey(newPosition))
+                    if (!floorTiles.ContainsKey(newPosition))
                     {
                         AddFloorTile(newPosition);
                     }
@@ -96,9 +104,9 @@ namespace ProceduralRoguelike
         /// </summary>
         protected virtual void AddFloorTile(Vector2 position)
         {
-            var instance = Instantiate(floor.prefab, position, Quaternion.identity) as GameObject;
+            var instance = Instantiate(floorPrefab, position, Quaternion.identity) as GameObject;
             instance.transform.SetParent(holders["Floor"]);
-            floor.existing.Add(position, instance);
+            floorTiles.Add(position, instance);
         }
 
         /// <summary>

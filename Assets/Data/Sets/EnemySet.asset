@@ -8,9 +8,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3af10cb6aebe1d841b0d30d507d7d8d9, type: 3}
-  m_Name: EnemyInfo
+  m_Script: {fileID: 11500000, guid: 013bfb700ade3324a8fe814a49e9b9ff, type: 3}
+  m_Name: EnemySet
   m_EditorClassIdentifier: 
-  enemies:
+  list:
   - item: {fileID: 1184339373815018, guid: 112809da97c7b434cae8053744a29688, type: 2}
     weight: 10

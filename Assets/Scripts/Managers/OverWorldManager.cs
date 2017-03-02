@@ -25,18 +25,6 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
-        /// Creates a new obstacle at the position specified.
-        /// </summary>
-        private void AddObstacleTile(Vector2 position, GameObject prefab)
-        {
-            var positionV3 = new Vector3(position.x, position.y, 0);
-
-            var instance = Instantiate(prefab, positionV3, Quaternion.identity)
-                as GameObject;
-            instance.transform.SetParent(holders["Obstacles"]);
-        }
-
-        /// <summary>
         /// Checks the tiles surrounding 'location' and creates tiles which are not yet illuminated.
         /// </summary>
         /// <param name="location">Location in the world to center the offsets.</param>
@@ -48,7 +36,7 @@ namespace ProceduralRoguelike
                 var position = location + offset;
 
                 GameObject tile;
-                if (!floor.existing.TryGetValue(position, out tile))
+                if (!floorTiles.TryGetValue(position, out tile))
                 {
                     AddFloorTile(position);
                     if (Random.Range(0f, 1f) < dungeonEntranceDensity)
@@ -57,7 +45,7 @@ namespace ProceduralRoguelike
                     }
                     else if (Random.Range(0f, 1f) < obstacleDensity)
                     {
-                        AddTile(obstacles.Randomizer.RandomItem(), position, holders["Obstacles"]);
+                        AddTile(obstacles2.RandomItem(), position, holders["Obstacles"]);
                     }
                 }
             }
