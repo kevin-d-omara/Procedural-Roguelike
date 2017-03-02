@@ -53,11 +53,11 @@ namespace ProceduralRoguelike
                     AddFloorTile(position);
                     if (Random.Range(0f, 1f) < dungeonEntranceDensity)
                     {
-                        //AddObstacleTile(position, "DungeonEntrance");
+                        AddTile(entrancePrefab, position, holders["DungeonEntrance"]);
                     }
                     else if (Random.Range(0f, 1f) < obstacleDensity)
                     {
-                        AddObstacleTile(position, obstacles.Randomizer.RandomItem());
+                        AddTile(obstacles.Randomizer.RandomItem(), position, holders["Obstacles"]);
                     }
                 }
             }

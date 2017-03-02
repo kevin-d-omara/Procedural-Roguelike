@@ -83,16 +83,22 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
+        /// Creates a new tile at the position specified.
+        /// </summary>
+        protected void AddTile(GameObject prefab, Vector2 position, Transform holder)
+        {
+            var instance = Instantiate(prefab, position, Quaternion.identity)  as GameObject;
+            instance.transform.SetParent(holder);
+        }
+
+        /// <summary>
         /// Creates a new floor tile at the position specified.
         /// </summary>
         protected virtual void AddFloorTile(Vector2 position)
         {
-            var positionV3 = new Vector3(position.x, position.y, 0);
-
-            var instance = Instantiate(floor.prefab, positionV3, Quaternion.identity)
-                as GameObject;
+            var instance = Instantiate(floor.prefab, position, Quaternion.identity) as GameObject;
             instance.transform.SetParent(holders["Floor"]);
-            floor.existing.Add(positionV3, instance);
+            floor.existing.Add(position, instance);
         }
 
         /// <summary>
