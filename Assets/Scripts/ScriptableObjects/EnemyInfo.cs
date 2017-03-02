@@ -13,8 +13,6 @@ namespace ProceduralRoguelike
     public class EnemyInfo : ScriptableObject
     {
         [NonSerialized] public Transform holder;
-        [NonSerialized] public List<GameObject> existing = new List<GameObject>();
-
         public WeightedRandomSet<GameObject> Randomizer
         {
             get

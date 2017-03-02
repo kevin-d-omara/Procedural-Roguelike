@@ -13,9 +13,6 @@ namespace ProceduralRoguelike
 	public class ObstacleInfo : ScriptableObject
 	{
         [NonSerialized] public Transform holder;
-        [NonSerialized] public Dictionary<Vector3, GameObject> existing
-            = new Dictionary<Vector3, GameObject>();
-
         public WeightedRandomSet<GameObject> Randomizer
         {
             get

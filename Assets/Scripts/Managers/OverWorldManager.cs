@@ -27,7 +27,6 @@ namespace ProceduralRoguelike
             var instance = Instantiate(prefab, positionV3, Quaternion.identity)
                 as GameObject;
             instance.transform.SetParent(obstacles.holder);
-            obstacles.existing.Add(positionV3, instance);
         }
 
         /// <summary>
