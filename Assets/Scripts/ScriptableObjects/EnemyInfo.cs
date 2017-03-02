@@ -12,19 +12,25 @@ namespace ProceduralRoguelike
     [CreateAssetMenu(fileName = "Data", menuName = "Data/Info (Enemies)", order = 5)]
     public class EnemyInfo : ScriptableObject
     {
-        [NonSerialized] public GameObject holder;
-        [NonSerialized] public List<GameObject> existing;
-        [NonSerialized] public WeightedRandomSet<GameObject> randomizer;
+        [NonSerialized] public Transform holder;
+        [NonSerialized] public List<GameObject> existing = new List<GameObject>();
 
-        [SerializeField] private List<WeightedPairGO> enemies = new List<WeightedPairGO>();
-
-        public EnemyInfo()
+        public WeightedRandomSet<GameObject> Randomizer
         {
-            randomizer = new WeightedRandomSet<GameObject>();
-            foreach (WeightedPairGO pair in enemies)
+            get
             {
-                randomizer.Add(pair.item, pair.weight);
+                if (_randomizer.Count == 0)
+                {
+                    foreach (WeightedPairGO pair in enemies)
+                    {
+                        _randomizer.Add(pair.item, pair.weight);
+                    }
+                }
+                return _randomizer;
             }
         }
+        private WeightedRandomSet<GameObject> _randomizer = new WeightedRandomSet<GameObject>();
+
+        [SerializeField] private List<WeightedPairGO> enemies = new List<WeightedPairGO>();
     }
 }

@@ -5,6 +5,11 @@ namespace ProceduralRoguelike
 {
     public class WeightedRandomSet<TKey>
     {
+        public int Count
+        {
+            get { return items.Count; }
+        }
+
         /// <summary>
         /// Total weight of all items included in the set.
         /// </summary>
@@ -70,7 +75,7 @@ namespace ProceduralRoguelike
         /// Updates the weight of the item specified.
         /// </summary>
         /// <param name="item">Item to update the weight of.</param>
-        /// /// <param name="weight">Value to set the item's weight to.</param>
+        /// <param name="weight">Value to set the item's weight to.</param>
         public void SetWeight(TKey item, int weight)
         {
             if (items.ContainsKey(item))

@@ -11,8 +11,9 @@ namespace ProceduralRoguelike
     [CreateAssetMenu(fileName = "Data", menuName = "Data/Info (Floor)", order = 3)]
     public class FloorInfo : ScriptableObject
     {
-        [NonSerialized] public GameObject holder;
-        [NonSerialized] public Dictionary<Vector3, GameObject> existing;
+        [NonSerialized] public Transform holder;
+        [NonSerialized] public Dictionary<Vector3, GameObject> existing
+            = new Dictionary<Vector3, GameObject>();
         public GameObject prefab;
     }
 }

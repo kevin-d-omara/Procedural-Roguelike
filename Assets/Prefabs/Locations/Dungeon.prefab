@@ -20,7 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4434055628193386}
   m_Layer: 0
-  m_Name: Bramble
+  m_Name: Obstacles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -51,21 +51,6 @@ GameObject:
   - component: {fileID: 4458458424570816}
   m_Layer: 0
   m_Name: Floor
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!1 &1578243358609584
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 4468387427915530}
-  m_Layer: 0
-  m_Name: Rock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -156,19 +141,6 @@ Transform:
   m_Father: {fileID: 4680440826922334}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &4468387427915530
-Transform:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1578243358609584}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 4680440826922334}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4680440826922334
 Transform:
   m_ObjectHideFlags: 1
@@ -183,7 +155,6 @@ Transform:
   - {fileID: 4434055628193386}
   - {fileID: 4981980514898940}
   - {fileID: 4424550376559122}
-  - {fileID: 4468387427915530}
   - {fileID: 4947968765181368}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -199,7 +170,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4680440826922334}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4981980514898940
 Transform:
@@ -225,22 +196,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3098d7aac02b23d4094a9c3a599187a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tileInfo:
-    keys:
-    - Floor
-    - Bramble
-    - Rock
-    - DungeonExit
-    values:
-    - _prefab: {fileID: 1824461938962674, guid: 814a547538354aa4c9d6b78321f733a8,
-        type: 2}
-      _holder: {fileID: 4458458424570816}
-    - _prefab: {fileID: 1303947485840834, guid: 256a90fede0869d4dbdec4f36edf1522,
-        type: 2}
-      _holder: {fileID: 4434055628193386}
-    - _prefab: {fileID: 1499576223543280, guid: 7626df20ce8a99e46aae8bb309306070,
-        type: 2}
-      _holder: {fileID: 4468387427915530}
-    - _prefab: {fileID: 1818606537868130, guid: 25300bc7c597de24686d90ea710bc300,
-        type: 2}
-      _holder: {fileID: 4947968765181368}
+  floor: {fileID: 11400000, guid: 9cfe12011afb8644eb802a222f4534f9, type: 2}
+  obstacles: {fileID: 11400000, guid: 9c1e0247333db7d4f91904a44cbe146b, type: 2}
+  enemies: {fileID: 11400000, guid: 6cb6491931ab7cd41b4b3615ec993da9, type: 2}
+  floorHolder: {fileID: 4458458424570816}
+  obstacleHolder: {fileID: 4434055628193386}
+  enemyHolder: {fileID: 4424550376559122}

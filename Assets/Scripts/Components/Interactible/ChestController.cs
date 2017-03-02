@@ -12,7 +12,7 @@ namespace ProceduralRoguelike
         {
             get { return base.HasBeenUsed; }
 
-            protected set
+            set
             {
                 base.HasBeenUsed = value;
                 if (HasBeenUsed)

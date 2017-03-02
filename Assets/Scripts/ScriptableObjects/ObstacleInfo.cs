@@ -12,19 +12,26 @@ namespace ProceduralRoguelike
     [CreateAssetMenu(fileName = "Data", menuName = "Data/Info (Obstacles)", order = 4)]
 	public class ObstacleInfo : ScriptableObject
 	{
-        [NonSerialized] public GameObject holder;
-        [NonSerialized] public Dictionary<Vector3, GameObject> existing;
-        [NonSerialized] public WeightedRandomSet<GameObject> randomizer;
+        [NonSerialized] public Transform holder;
+        [NonSerialized] public Dictionary<Vector3, GameObject> existing
+            = new Dictionary<Vector3, GameObject>();
 
-        [SerializeField] private List<WeightedPairGO> obstacles = new List<WeightedPairGO>();
-
-        public ObstacleInfo()
+        public WeightedRandomSet<GameObject> Randomizer
         {
-            randomizer = new WeightedRandomSet<GameObject>();
-            foreach (WeightedPairGO pair in obstacles)
+            get
             {
-                randomizer.Add(pair.item, pair.weight);
+                if (_randomizer.Count == 0)
+                {
+                    foreach (WeightedPairGO pair in obstacles)
+                    {
+                        _randomizer.Add(pair.item, pair.weight);
+                    }
+                }
+                return _randomizer;
             }
         }
+        private WeightedRandomSet<GameObject> _randomizer = new WeightedRandomSet<GameObject>();
+
+        [SerializeField] private List<WeightedPairGO> obstacles = new List<WeightedPairGO>();
     }
 }

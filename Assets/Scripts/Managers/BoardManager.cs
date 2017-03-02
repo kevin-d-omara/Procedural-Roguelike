@@ -16,38 +16,16 @@ namespace ProceduralRoguelike
         [SerializeField] protected ObstacleInfo obstacles;
         [SerializeField] protected EnemyInfo enemies;
 
-        /// <summary>
-        /// Container class for related info about tiles.
-        /// </summary>
-        [Serializable]
-        public class TileInfo
-        {
-            public GameObject Prefab { get { return _prefab; } }
-            public Transform Holder { get { return _holder; } }
-            public Dictionary<Vector3, GameObject> Tiles { get; private set; }
-
-            [SerializeField] private GameObject _prefab;
-            [SerializeField] private Transform _holder;
-
-            public TileInfo()
-            {
-                Tiles = new Dictionary<Vector3, GameObject>();
-            }
-        }
-        [Serializable]
-        public class SerializableDictionaryOf_string_TileInfo
-            : SerializableDictionary<string, TileInfo> { }
-
-        /// <summary>
-        /// tiles must have at least 1 entry:
-        /// "Floor" - someFloorprefab, someFloorHolder
-        /// </summary>
-        protected Dictionary<string, TileInfo> tiles = new Dictionary<string, TileInfo>();
-        [SerializeField] protected SerializableDictionaryOf_string_TileInfo tileInfo;
+        [SerializeField] private Transform floorHolder;
+        [SerializeField] private Transform obstacleHolder;
+        [SerializeField] private Transform enemyHolder;
 
         protected virtual void Awake()
         {
-            tiles = tileInfo.DeSerialize();
+            // Wire up holder GameObjects for organizational parenting.
+            floor.holder = floorHolder;
+            obstacles.holder = obstacleHolder;
+            enemies.holder = enemyHolder;
         }
 
         protected virtual void OnEnable()
@@ -92,12 +70,12 @@ namespace ProceduralRoguelike
         {
             var positionV3 = new Vector3(position.x, position.y, 0);
 
-            if (!tiles["Floor"].Tiles.ContainsKey(positionV3))
+            if (!floor.existing.ContainsKey(positionV3))
             {
-                var instance = Instantiate(tiles["Floor"].Prefab, positionV3, Quaternion.identity)
+                var instance = Instantiate(floor.prefab, positionV3, Quaternion.identity)
                     as GameObject;
-                instance.transform.SetParent(tiles["Floor"].Holder);
-                tiles["Floor"].Tiles.Add(positionV3, instance);
+                instance.transform.SetParent(floor.holder);
+                floor.existing.Add(positionV3, instance);
             }
         }
 
