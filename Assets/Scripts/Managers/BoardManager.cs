@@ -22,6 +22,11 @@ namespace ProceduralRoguelike
 
         protected virtual void Awake()
         {
+            // Create new instance of each ScriptableObject
+            floor = Instantiate(floor) as FloorInfo;
+            obstacles = Instantiate(obstacles) as ObstacleInfo;
+            enemies = Instantiate(enemies) as EnemyInfo;
+
             // Wire up holder GameObjects for organizational parenting.
             floor.holder = floorHolder;
             obstacles.holder = obstacleHolder;
