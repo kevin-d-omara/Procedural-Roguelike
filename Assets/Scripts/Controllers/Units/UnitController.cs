@@ -136,9 +136,16 @@ namespace ProceduralRoguelike
         /// <summary>
         /// Disable/enable Unit actions. Stops combat from occuring during transitions.
         /// </summary>
-        private void OnPassageTransition(bool startOfTransition)
+        private void OnPassageTransition(GameManager.Timing timing, Vector2 _)
         {
-            IsPaused = startOfTransition;
+            if (timing == GameManager.Timing.Start)
+            {
+                IsPaused = true;
+            }
+            else if (timing == GameManager.Timing.End)
+            {
+                IsPaused = false;
+            }
         }
     }
 }

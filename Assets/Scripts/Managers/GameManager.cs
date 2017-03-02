@@ -6,7 +6,8 @@ namespace ProceduralRoguelike
 {
     public class GameManager : MonoBehaviour
     {
-        public delegate void PassageTransition(bool startOfTransition);
+        public enum Timing { Start, Middle, End }
+        public delegate void PassageTransition(Timing timing, Vector2 position);
         public static event PassageTransition OnPassageTransition;
 
         // Singleton instance.
@@ -87,7 +88,7 @@ namespace ProceduralRoguelike
         /// </summary>
         private IEnumerator DungeonTransition(Vector2 passagePosition, bool entering)
         {
-            if (OnPassageTransition != null) { OnPassageTransition(true); }
+            if (OnPassageTransition != null) { OnPassageTransition(Timing.Start, passagePosition); }
             mainCameraController.FadeOut();
             yield return new WaitForSeconds(mainCameraController.FadeTime);
 
@@ -118,8 +119,9 @@ namespace ProceduralRoguelike
             }
 
             mainCameraController.FadeIn();
+            if (OnPassageTransition != null) { OnPassageTransition(Timing.Middle, passagePosition); }
             yield return new WaitForSeconds(mainCameraController.FadeTime);
-            if (OnPassageTransition != null) { OnPassageTransition(false); }
+            if (OnPassageTransition != null) { OnPassageTransition(Timing.End, passagePosition); }
         }
     }
 }

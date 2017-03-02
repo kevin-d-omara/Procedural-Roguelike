@@ -30,6 +30,16 @@ namespace ProceduralRoguelike
             Radius = _radius;
         }
 
+        private void OnEnable()
+        {
+            GameManager.OnPassageTransition += OnPassageTransition;
+        }
+
+        private void OnDisable()
+        {
+            GameManager.OnPassageTransition -= OnPassageTransition;
+        }
+
         private void RecalculateOffsets()
         {
             Offsets = GridAlgorithms.CircleFill(Radius);
@@ -40,6 +50,14 @@ namespace ProceduralRoguelike
             if (OnIlluminate != null)
             {
                 OnIlluminate(location, Offsets);
+            }
+        }
+
+        private void OnPassageTransition(GameManager.Timing timing, Vector2 passagePosiiton)
+        {
+            if (timing == GameManager.Timing.Middle)
+            {
+                IlluminateDarkness(passagePosiiton);
             }
         }
     }
