@@ -8,8 +8,11 @@ namespace ProceduralRoguelike
 {
     public class OverWorldManager : BoardManager
     {
+        [SerializeField] private GameObject entrancePrefab;
+        [SerializeField] private Transform entranceHolder;
+
         // Obstacle parameters (weights and types).
-        [Range(0f, 1f)]
+        [Range(0f, 1.01f)]
         [SerializeField] private float obstacleDensity = 0.15f;
         [Range(0f,1f)]
         [SerializeField] private float dungeonEntranceDensity = 0.01f;

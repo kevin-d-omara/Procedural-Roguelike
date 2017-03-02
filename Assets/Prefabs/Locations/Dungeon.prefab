@@ -202,3 +202,5 @@ MonoBehaviour:
   floorHolder: {fileID: 4458458424570816}
   obstacleHolder: {fileID: 4434055628193386}
   enemyHolder: {fileID: 4424550376559122}
+  exitPrefab: {fileID: 1818606537868130, guid: 25300bc7c597de24686d90ea710bc300, type: 2}
+  exitHolder: {fileID: 4947968765181368}

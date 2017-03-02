@@ -12,10 +12,12 @@ namespace ProceduralRoguelike
     /// </summary>
     public abstract class BoardManager : MonoBehaviour
     {
+        // ScriptableObject data.
         [SerializeField] protected FloorInfo floor;
         [SerializeField] protected ObstacleInfo obstacles;
         [SerializeField] protected EnemyInfo enemies;
 
+        // Parents to place instantiated tiles under for organization.
         [SerializeField] private Transform floorHolder;
         [SerializeField] private Transform obstacleHolder;
         [SerializeField] private Transform enemyHolder;
@@ -45,14 +47,24 @@ namespace ProceduralRoguelike
 
 
         /// <summary>
-        /// Creates the starting location of the board. This is an "m x n" rectangle of floor
+        /// Creates an entrance location of to board. This is an "m x n" rectangle of floor
         /// tiles centered at the specified position.
         /// </summary>
         /// <param name="size">Width and Height of the starting location.</param>
         /// <param name="position">Position to center starting location at.</param>
-        public virtual void SetupBoard(Vector2 size, Vector2 position)
+        public virtual void SetupEntrance(Vector2 size, Vector2 position)
         {
-            // Center tiles on position.
+            // Clear blocking tiles at center position.
+            var blockingObjects = Utility.FindObjectsAt(position);
+            foreach (GameObject blockingObject in blockingObjects)
+            {
+                if (blockingObject.tag != "Player")
+                {
+                    Destroy(blockingObject);
+                }
+            }
+
+            // Center tile placement on position.
             var startY = 1 - ((int)size.y + 1) / 2 + (int)position.y;
             var startX = 1 - ((int)size.x + 1) / 2 + (int)position.x;
             var endY = (int)size.y - ((int)size.y + 1) / 2 + (int)position.y;
@@ -63,25 +75,26 @@ namespace ProceduralRoguelike
             {
                 for (int x = startX; x <= endX; ++x)
                 {
-                    AddFloorTile(new Vector2(x, y));
+                    var newPosition = new Vector2(x, y);
+                    if (!floor.existing.ContainsKey(newPosition))
+                    {
+                        AddFloorTile(newPosition);
+                    }
                 }
             }
         }
 
         /// <summary>
-        /// Creates a new floor tile at the position specified (if not already present).
+        /// Creates a new floor tile at the position specified.
         /// </summary>
         protected virtual void AddFloorTile(Vector2 position)
         {
             var positionV3 = new Vector3(position.x, position.y, 0);
 
-            if (!floor.existing.ContainsKey(positionV3))
-            {
-                var instance = Instantiate(floor.prefab, positionV3, Quaternion.identity)
-                    as GameObject;
-                instance.transform.SetParent(floor.holder);
-                floor.existing.Add(positionV3, instance);
-            }
+            var instance = Instantiate(floor.prefab, positionV3, Quaternion.identity)
+                as GameObject;
+            instance.transform.SetParent(floor.holder);
+            floor.existing.Add(positionV3, instance);
         }
 
         /// <summary>

@@ -64,7 +64,7 @@ namespace ProceduralRoguelike
             GameObject instance = Instantiate(overWorldPrefab, new Vector3(0, 0, 0),
                 Quaternion.identity);
             overWorld = instance.GetComponent<OverWorldManager>();
-            overWorld.SetupBoard(startSize, new Vector2(0, 0));
+            overWorld.SetupEntrance(startSize, new Vector2(0, 0));
 
             // Create Player and wire it up to the Camera.
             player = Instantiate(playerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
@@ -104,7 +104,7 @@ namespace ProceduralRoguelike
                 // Create new dungeon.
                 currentDungeon = (Instantiate(dungeonPrefab, passagePosition,
                     Quaternion.identity) as GameObject).GetComponent<DungeonManager>();
-                currentDungeon.SetupBoard(startSize, passagePosition);
+                currentDungeon.SetupEntrance(startSize, passagePosition);
             }
             else
             {
@@ -115,7 +115,7 @@ namespace ProceduralRoguelike
                 overWorld.gameObject.SetActive(true);
 
                 // Clear entrance tile on OverWorld (i.e. make sure no Rocks blocking the path up).
-                overWorld.SetupBoard(Vector2.one, passagePosition);
+                overWorld.SetupEntrance(Vector2.one, passagePosition);
             }
 
             mainCameraController.FadeIn();

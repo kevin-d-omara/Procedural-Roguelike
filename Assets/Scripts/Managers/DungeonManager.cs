@@ -7,17 +7,18 @@ namespace ProceduralRoguelike
 {
     public class DungeonManager : BoardManager
     {
-        public override void SetupBoard(Vector2 size, Vector2 position)
-        {
-            base.SetupBoard(size, position);
+        [SerializeField] private GameObject exitPrefab;
+        [SerializeField] private Transform exitHolder;
 
-            /* Temporary exit spawning to test transition between Dungeon => OverWorld
-            var positionV3 = new Vector3(position.x + 5, position.y + 5, 0);
-            GameObject instance = Instantiate(tiles["DungeonExit"].Prefab, positionV3, Quaternion.identity)
+        public override void SetupEntrance(Vector2 size, Vector2 position)
+        {
+            base.SetupEntrance(size, position);
+
+            // Temporary exit spawning to test transition between Dungeon => OverWorld
+            var positionV3 = new Vector3(position.x + 2, position.y + 2, 0);
+            GameObject instance = Instantiate(exitPrefab, positionV3, Quaternion.identity)
                 as GameObject;
-            instance.transform.SetParent(tiles["DungeonExit"].Holder);
-            tiles["DungeonExit"].Tiles.Add(positionV3, instance);
-            */
+            instance.transform.SetParent(exitHolder);
         }
 
         public override void RevealFogOfWar(Vector2 location, List<Vector2> offsets)
