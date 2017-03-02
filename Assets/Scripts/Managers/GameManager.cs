@@ -29,7 +29,6 @@ namespace ProceduralRoguelike
             {
                 _difficulty = value;
                 if (OnIncreaseDifficulty != null) { OnIncreaseDifficulty(Difficulty); }
-                Debug.Log(Difficulty);
             }
         }
 

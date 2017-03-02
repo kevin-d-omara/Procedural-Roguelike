@@ -24,6 +24,18 @@ namespace ProceduralRoguelike
             holders.Add("DungeonEntrance", transform.Find("DungeonEntrance"));
         }
 
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            GameManager.OnIncreaseDifficulty += OnIncreaseDifficulty;
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            GameManager.OnIncreaseDifficulty -= OnIncreaseDifficulty;
+        }
+
         /// <summary>
         /// Checks the tiles surrounding 'location' and creates tiles which are not yet illuminated.
         /// </summary>
@@ -49,6 +61,12 @@ namespace ProceduralRoguelike
                     }
                 }
             }
+        }
+
+        private void OnIncreaseDifficulty(int difficulty)
+        {
+            // Increase obstacle density by multiplier (cumulative).
+            obstacleDensity *= 1.2f;
         }
     }
 }
