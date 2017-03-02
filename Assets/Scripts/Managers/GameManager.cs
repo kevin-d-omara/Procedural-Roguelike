@@ -13,6 +13,8 @@ namespace ProceduralRoguelike
         public delegate void IncreaseDifficulty(int difficulty);
         public static event IncreaseDifficulty OnIncreaseDifficulty;
 
+        public GameObject Player { get; private set; }
+
         // Singleton instance.
         private static GameManager _instance = null;
         public static GameManager Instance
@@ -38,7 +40,6 @@ namespace ProceduralRoguelike
         [SerializeField] private Vector2 startSize = new Vector2(5, 5);
         private OverWorldManager overWorld;
         private DungeonManager currentDungeon;
-        private GameObject player;
         private GameObject mainCamera;
         private CameraController mainCameraController;
 
@@ -83,9 +84,9 @@ namespace ProceduralRoguelike
             overWorld.SetupEntrance(startSize, new Vector2(0, 0));
 
             // Create Player and wire it up to the Camera.
-            player = Instantiate(playerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            Player = Instantiate(playerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             mainCamera = GameObject.FindGameObjectsWithTag("MainCamera")[0];
-            mainCamera.GetComponent<CameraFollow>().target = player.transform;
+            mainCamera.GetComponent<CameraFollow>().target = Player.transform;
             mainCameraController = mainCamera.GetComponent<CameraController>();
         }
 
