@@ -10,12 +10,27 @@ namespace ProceduralRoguelike
         public delegate void PassageTransition(Timing timing, Vector2 position);
         public static event PassageTransition OnPassageTransition;
 
+        public delegate void IncreaseDifficulty(int difficulty);
+        public static event IncreaseDifficulty OnIncreaseDifficulty;
+
         // Singleton instance.
         private static GameManager _instance = null;
         public static GameManager Instance
         {
             get { return _instance; }
             private set { _instance = value; }
+        }
+
+        private int _difficulty = 0;
+        public int Difficulty
+        {
+            get { return _difficulty; }
+            private set
+            {
+                _difficulty = value;
+                if (OnIncreaseDifficulty != null) { OnIncreaseDifficulty(Difficulty); }
+                Debug.Log(Difficulty);
+            }
         }
 
         [SerializeField] private GameObject playerPrefab;
@@ -60,6 +75,8 @@ namespace ProceduralRoguelike
         /// </summary>
         private void InitializeGame()
         {
+            Difficulty = 0;
+
             // Create OverWorld.
             GameObject instance = Instantiate(overWorldPrefab, new Vector3(0, 0, 0),
                 Quaternion.identity);
@@ -113,6 +130,9 @@ namespace ProceduralRoguelike
 
                 // Reactivate Overworld.
                 overWorld.gameObject.SetActive(true);
+
+                // Increase difficulty.
+                ++Difficulty;
 
                 // Clear entrance tile on OverWorld (i.e. make sure no Rocks blocking the path up).
                 overWorld.SetupEntrance(Vector2.one, passagePosition);
