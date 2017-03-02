@@ -24,6 +24,7 @@ GameObject:
   - component: {fileID: 50576933367725154}
   - component: {fileID: 61788530485993208}
   - component: {fileID: 114666721463089972}
+  - component: {fileID: 114714859595214444}
   - component: {fileID: 114685383022143314}
   - component: {fileID: 114453325705142554}
   - component: {fileID: 114183675135667670}
@@ -155,6 +156,21 @@ MonoBehaviour:
   blockingLayer:
     serializedVersion: 2
     m_Bits: 256
+--- !u!114 &114714859595214444
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1184339373815018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2106938a43c67843a2acbd649322399, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cooldown: 0.1
+  maxDistance: 5
+  threatDistance: 2
+  target: {fileID: 1416659830590262, guid: 11a9655053daff04c87f701f5b02e756, type: 2}
 --- !u!212 &212937747364184936
 SpriteRenderer:
   m_ObjectHideFlags: 1

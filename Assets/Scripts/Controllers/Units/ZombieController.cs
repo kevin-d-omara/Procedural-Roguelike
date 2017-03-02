@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace ProceduralRoguelike
 {
@@ -38,11 +39,32 @@ namespace ProceduralRoguelike
 
         protected override void GetInputs() { }
 
+        /// <summary>
+        /// Called each time the Intelligence component "thinks".
+        /// </summary>
         protected void OnMakeDecision()
         {
-            if (aiComponent.target.transform.position == Vector3.zero)
+            var distanceToTarget = Vector3.Distance(aiComponent.target.transform.position, transform.position);
+
+            Debug.Log(distanceToTarget);
+
+            if (distanceToTarget < aiComponent.threatDistance)
             {
+                // Pursue player.
                 basicAttack = true;
+            }
+            else if (distanceToTarget < aiComponent.maxDistance)
+            {
+                // Wander aimlessly.
+                var direction = Random.Range(0.0f, 1.0f) < 0.5f ? -1 : +1;
+                if (Random.Range(0.0f, 1.0f) <= 0.5f)
+                {
+                    horizontalInput = direction;
+                }
+                else
+                {
+                    verticalInput = direction;
+                }
             }
         }
     }
