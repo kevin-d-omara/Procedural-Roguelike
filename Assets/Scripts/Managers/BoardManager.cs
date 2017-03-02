@@ -18,9 +18,7 @@ namespace ProceduralRoguelike
         [SerializeField] protected EnemyInfo enemies;
 
         // Parents to place instantiated tiles under for organization.
-        [SerializeField] private Transform floorHolder;
-        [SerializeField] private Transform obstacleHolder;
-        [SerializeField] private Transform enemyHolder;
+        protected Dictionary<string, Transform> holders = new Dictionary<string, Transform>();
 
         protected virtual void Awake()
         {
@@ -30,9 +28,9 @@ namespace ProceduralRoguelike
             enemies = Instantiate(enemies) as EnemyInfo;
 
             // Wire up holder GameObjects for organizational parenting.
-            floor.holder = floorHolder;
-            obstacles.holder = obstacleHolder;
-            enemies.holder = enemyHolder;
+            holders.Add("Floor", transform.Find("Floor"));
+            holders.Add("Obstacles", transform.Find("Obstacles"));
+            holders.Add("Enemies", transform.Find("Enemies"));
         }
 
         protected virtual void OnEnable()
@@ -93,7 +91,7 @@ namespace ProceduralRoguelike
 
             var instance = Instantiate(floor.prefab, positionV3, Quaternion.identity)
                 as GameObject;
-            instance.transform.SetParent(floor.holder);
+            instance.transform.SetParent(holders["Floor"]);
             floor.existing.Add(positionV3, instance);
         }
 

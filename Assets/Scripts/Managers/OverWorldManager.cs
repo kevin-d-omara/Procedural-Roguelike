@@ -9,13 +9,20 @@ namespace ProceduralRoguelike
     public class OverWorldManager : BoardManager
     {
         [SerializeField] private GameObject entrancePrefab;
-        [SerializeField] private Transform entranceHolder;
 
         // Obstacle parameters (weights and types).
         [Range(0f, 1.01f)]
         [SerializeField] private float obstacleDensity = 0.15f;
         [Range(0f,1f)]
         [SerializeField] private float dungeonEntranceDensity = 0.01f;
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            // Wire up holder GameObjects for organizational parenting.
+            holders.Add("DungeonEntrance", transform.Find("DungeonEntrance"));
+        }
 
         /// <summary>
         /// Creates a new obstacle at the position specified.
@@ -26,7 +33,7 @@ namespace ProceduralRoguelike
 
             var instance = Instantiate(prefab, positionV3, Quaternion.identity)
                 as GameObject;
-            instance.transform.SetParent(obstacles.holder);
+            instance.transform.SetParent(holders["Obstacles"]);
         }
 
         /// <summary>
