@@ -45,15 +45,13 @@ namespace ProceduralRoguelike
         protected void OnMakeDecision()
         {
             var distanceToTarget = Vector3.Distance(aiComponent.target.transform.position, transform.position);
-
             Debug.Log(distanceToTarget);
-
-            if (distanceToTarget < aiComponent.threatDistance)
+            if (distanceToTarget <= aiComponent.threatDistance)
             {
                 // Pursue player.
                 basicAttack = true;
             }
-            else if (distanceToTarget < aiComponent.maxDistance)
+            else if (distanceToTarget <= aiComponent.wanderDistance)
             {
                 // Wander aimlessly.
                 var direction = Random.Range(0.0f, 1.0f) < 0.5f ? -1 : +1;
