@@ -1,43 +1,44 @@
 clc;clear;clf;close all;
 
-% Starting parameters
-startAngle = deg2rad(360*rand);   % rad
-
-% Path parameters
-depth = 50;        % meters
-bendAngle = deg2rad(25);    % rad/meter; tangent to path
-inflectionRate = .5;       % percent/meter
-stepSize = .1;              % meters
-
 figure('units','normalized','outerposition',[0 0 1 1])
 nPlotsX = 4;
 nPlotsY = 2;
-for plotIdx=1:nPlotsX * nPlotsY
-    % Compute essential path.
-    path = zeros(2, round(depth * 1/stepSize));
-    path(1,1) = 0; path(2,1) = 0;
-    inflectionChance = inflectionRate * stepSize;
-    dTheta = bendAngle * stepSize;
-    theta = startAngle;
-    for i=2:round(depth * 1/stepSize)
-        if (rand < inflectionChance)
-            dTheta = -dTheta;
-        end
+plotIdx = 0;
+for plotY=1:nPlotsY
+    for plotX=1:nPlotsX
+        % Starting parameters
+        startFacing = deg2rad(RandomBetween(0,360));	% rad
 
-        theta = theta + dTheta;
-        path(1,i) = stepSize * cos(theta) + path(1,i-1);
-        path(2,i) = stepSize * sin(theta) + path(2,i-1);
+        % Path parameters
+        depth = 50*plotY;           % meters
+        bearing = deg2rad(15);    % rad/meter; tangent to path
+        inflectionRate = .4;        % percent/meter
+        stepSize = .1;              % meters
+        
+        [essentialPath, essentialInflectionPts] = CreatePath([0; 0], startFacing, depth, bearing, inflectionRate, stepSize);
+
+        % Branch parameters
+        numBranches = 2.5;          % branches/path;
+        deflection = deg2rad(RandomBetween(30,150));    % rad
+        
+        % Plot resulting path.
+        plotIdx = plotIdx + 1;
+        subplot(nPlotsY, nPlotsX, plotIdx);
+        
+        % essential path
+        plot(essentialPath(1,:), essentialPath(2,:), 'b', 'LineWidth', 2);
+        hold on
+        % origin
+        plot(essentialPath(1,1), essentialPath(2,1), 'or');
+        % inflection points
+        plot(essentialInflectionPts(1,:), essentialInflectionPts(2,:), 'og', 'MarkerFaceColor', 'g', 'MarkerSize', 3);
+        
+        
+        title({'Essential Path', strcat('depth = ', num2str(depth), 'm'),...
+            strcat('bend = ', num2str(rad2deg(bearing)), '°'),...
+            strcat('inflection = ', num2str(inflectionRate*100), '%/m')});
+        bounds = 30;
+        axis('equal');
+        axis([-bounds, bounds, -bounds, bounds]);
     end
-
-    % Plot essential path.
-    subplot(nPlotsY, nPlotsX, plotIdx);
-    plot(path(1,:), path(2,:), 'b');
-    hold on
-    plot(path(1,1), path(2,1), 'or');
-    title({'Essential Path', strcat('depth = ', num2str(depth), 'm'),...
-        strcat('bend = ', num2str(rad2deg(bendAngle)), '°'),...
-        strcat('inflection = ', num2str(inflectionRate*100), '%/m')});
-    bounds = 35;
-    axis('equal');
-    axis([-bounds, bounds, -bounds, bounds]);
 end
