@@ -16,8 +16,7 @@ namespace ProceduralRoguelike
 
         private void Awake()
         {
-            // Get references to all components
-
+            // Get references to all components.
             healthComponent = GetComponent<Health>();
             twoSidedTileComponent = GetComponent<TwoSidedTile>();
         }

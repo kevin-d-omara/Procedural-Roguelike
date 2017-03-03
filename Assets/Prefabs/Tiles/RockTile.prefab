@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4098427545540860}
   - component: {fileID: 212670437915358170}
   - component: {fileID: 61896310539007362}
+  - component: {fileID: 114572362336914182}
   - component: {fileID: 114455513989156976}
   - component: {fileID: 114667428375694990}
   m_Layer: 8
@@ -68,8 +69,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55627fbdf31f712469a1ab4459cfdb41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHitPoints: 0
-  _isHardTarget: 1
+  _maxHitPoints: 4
+  isHardTarget: 1
+--- !u!114 &114572362336914182
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1499576223543280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cabebb5d9f30824b89377fbeebf3711, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114667428375694990
 MonoBehaviour:
   m_ObjectHideFlags: 1

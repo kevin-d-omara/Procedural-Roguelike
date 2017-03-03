@@ -42,19 +42,19 @@ namespace ProceduralRoguelike
         /// Speed (units/sec) of movement (i.e. 10 units/sec = 0.1 sec to move 1 units).
         /// </summary>
         [Range(0.01f, 5f)]
-        [SerializeField] private float speed = 10;
+        public float speed = 2;
 
         /// <summary>
         /// Time that must be waited between movements.
         /// </summary>
         [Range(0f, 2f)]
-        [SerializeField] private float cooldown = 0.1f;
+        public float cooldown = 0.1f;
 
         /// <summary>
         /// Distance moved during each movement.
         /// </summary>
         [Range(1, 3)]
-        [SerializeField] private int distance = 1;
+        public int distance = 1;
 
         /// <summary>
         /// Layer on which collision will be checked.

@@ -22,7 +22,18 @@ namespace ProceduralRoguelike
         /// Total number of hit points this GameObject can have.
         /// </summary>
         [Range(1, 5)]
-        public int MaxHitPoints;
+        [SerializeField] private int _maxHitPoints;
+        public int MaxHitPoints
+        {
+            get { return _maxHitPoints; }
+            set
+            {
+                // Increase both MaxHitPoints and HitPoints.
+                var deltaHP = _maxHitPoints - HitPoints;
+                _maxHitPoints = value;
+                HitPoints += deltaHP;
+            }
+        }
 
         /// <summary>
         /// Number of remaining hit points. Range (-inf, MaxHitPoints]
@@ -57,12 +68,7 @@ namespace ProceduralRoguelike
         /// <summary>
         /// True if GameObject is immune to regular attacks (i.e. only damageable by Dynamite).
         /// </summary>
-        [SerializeField] private bool _isHardTarget;
-        public bool IsHardTarget
-        {
-            get { return _isHardTarget; }
-            set { _isHardTarget = value; }
-        }
+        public bool isHardTarget;
 
         private void Awake()
         {
@@ -76,7 +82,7 @@ namespace ProceduralRoguelike
         /// <param name="isHardAttack">True if this attack can damage hard targets.</param>
         public void TakeDamage(int damage, bool isHardAttack)
         {
-            if (IsHardTarget)
+            if (isHardTarget)
             {
                 HitPoints -= isHardAttack ? damage : 0;
             }
