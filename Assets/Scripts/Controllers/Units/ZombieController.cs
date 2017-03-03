@@ -42,27 +42,30 @@ namespace ProceduralRoguelike
         /// <summary>
         /// Called each time the Intelligence component "thinks".
         /// </summary>
-        protected void OnMakeDecision()
+        protected void OnMakeDecision(Intelligence.Mode mode, float distanceToTarget)
         {
-            var distanceToTarget = Vector3.Distance(aiComponent.target.transform.position, transform.position);
-            Debug.Log(distanceToTarget);
-            if (distanceToTarget <= aiComponent.threatDistance)
+            switch (mode)
             {
                 // Pursue player.
-                basicAttack = true;
-            }
-            else if (distanceToTarget <= aiComponent.wanderDistance)
-            {
+                case Intelligence.Mode.Threat:
+                    basicAttack = true;
+                    break;
+
                 // Wander aimlessly.
-                var direction = Random.Range(0.0f, 1.0f) < 0.5f ? -1 : +1;
-                if (Random.Range(0.0f, 1.0f) <= 0.5f)
-                {
-                    horizontalInput = direction;
-                }
-                else
-                {
-                    verticalInput = direction;
-                }
+                case Intelligence.Mode.Wander:
+                    var direction = Random.Range(0.0f, 1.0f) < 0.5f ? -1 : +1;
+                    if (Random.Range(0.0f, 1.0f) <= 0.5f)
+                    {
+                        horizontalInput = direction;
+                    }
+                    else
+                    {
+                        verticalInput = direction;
+                    }
+                    break;
+
+                default:
+                    break;
             }
         }
     }

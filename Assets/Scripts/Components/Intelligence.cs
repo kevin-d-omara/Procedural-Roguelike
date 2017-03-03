@@ -1,12 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace ProceduralRoguelike
 {
 	public class Intelligence : MonoBehaviour
 	{
-        public delegate void MakeDecision();
+        public enum Mode { Wander, Threat, None }
+
+        public delegate void MakeDecision(Mode mode, float distanceToTarget);
         public event MakeDecision OnMakeDecision;
 
         public bool IsOnCooldown { get; private set; }
@@ -39,7 +42,7 @@ namespace ProceduralRoguelike
         /// <summary>
         /// GameObject to pursue and fight;
         /// </summary>
-        [HideInInspector] public GameObject target;
+        [HideInInspector] public Transform target;
 
         protected virtual void Awake()
         {
@@ -48,37 +51,23 @@ namespace ProceduralRoguelike
 
         protected virtual void Start()
         {
-            target = GameManager.Instance.Player;
+            target = GameManager.Instance.Player.transform;
             StartCoroutine(ThinkThreadThreat());
             StartCoroutine(ThinkThreadWander());
         }
 
-        /// <summary>
-        /// Begin a repeating loop which broadcasts "OnMakeDecision" each 'cooldown' seconds.
-        /// </summary>
-        public IEnumerator Think()
-        {
-            while (true)
-            {
-                if (OnMakeDecision != null) { OnMakeDecision(); }
-                IsOnCooldown = true;
-
-                var distanceToTarget = Vector3.Distance(target.transform.position, gameObject.transform.position);
-                var cooldown = distanceToTarget < threatDistance ? threatCooldown : wanderCooldown;
-
-                yield return new WaitForSeconds(cooldown);
-
-                IsOnCooldown = false;
-            }
-        }
-
         public IEnumerator ThinkThreadWander()
         {
+            yield return new WaitForSeconds(Random.Range(0f, 1f));
+
             while (true)
             {
-                if (!IsOnCooldown)
+                var distanceToTarget = Vector3.Distance(target.position, transform.position);
+
+                if (!IsOnCooldown && distanceToTarget <= wanderDistance
+                                  && distanceToTarget > threatDistance)
                 {
-                    if (OnMakeDecision != null) { OnMakeDecision(); }
+                    if (OnMakeDecision != null) { OnMakeDecision(Mode.Wander, distanceToTarget); }
                     IsOnCooldown = true;
                 }
                 yield return new WaitForSeconds(wanderCooldown);
@@ -88,13 +77,15 @@ namespace ProceduralRoguelike
 
         public IEnumerator ThinkThreadThreat()
         {
+            yield return new WaitForSeconds(Random.Range(0f, 1f));
+
             while (true)
             {
-                var distanceToTarget = Vector3.Distance(target.transform.position, gameObject.transform.position);
+                var distanceToTarget = Vector3.Distance(target.position, transform.position);
 
                 if (!IsOnCooldown && distanceToTarget <= threatDistance)
                 {
-                    if (OnMakeDecision != null) { OnMakeDecision(); }
+                    if (OnMakeDecision != null) { OnMakeDecision(Mode.Threat, distanceToTarget); }
                     IsOnCooldown = true;
                 }
                 yield return new WaitForSeconds(threatCooldown);

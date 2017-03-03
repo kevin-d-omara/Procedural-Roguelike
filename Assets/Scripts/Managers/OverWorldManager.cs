@@ -13,8 +13,10 @@ namespace ProceduralRoguelike
         // Randomizer parameters.
         [Range(0f, 1.01f)]
         [SerializeField] private float obstacleDensity = 0.15f;
+        [Range(0f, 1.01f)]
+        [SerializeField] private float enemyDensity = 0.02f;
         [Range(0f,1f)]
-        [SerializeField] private float dungeonEntranceDensity = 0.01f;
+        [SerializeField] private float dungeonEntranceDensity = 0.005f;
 
         protected override void Awake()
         {
@@ -54,6 +56,10 @@ namespace ProceduralRoguelike
                     if (Random.Range(0f, 1f) < dungeonEntranceDensity)
                     {
                         AddTile(entrancePrefab, position, holders["DungeonEntrance"]);
+                    }
+                    else if (Random.Range(0f, 1f) < enemyDensity)
+                    {
+                        AddTile(enemies.RandomItem(), position, holders["Enemies"]);
                     }
                     else if (Random.Range(0f, 1f) < obstacleDensity)
                     {

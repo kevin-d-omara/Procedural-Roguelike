@@ -126,7 +126,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55627fbdf31f712469a1ab4459cfdb41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHitPoints: 2
+  MaxHitPoints: 4
   _isHardTarget: 0
 --- !u!114 &114666721463089972
 MonoBehaviour:
@@ -170,7 +170,7 @@ MonoBehaviour:
   wanderDistance: 5
   wanderCooldown: 2
   threatDistance: 2
-  threatCooldown: 0.1
+  threatCooldown: 0.25
   target: {fileID: 1416659830590262, guid: 11a9655053daff04c87f701f5b02e756, type: 2}
 --- !u!212 &212937747364184936
 SpriteRenderer:
