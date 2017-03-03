@@ -14,6 +14,7 @@ namespace ProceduralRoguelike
 
         public bool IsOnCooldown { get; private set; }
 
+        [Header("Wander:")]
         /// <summary>
         /// Maximum distance from target to still take actions.
         /// </summary>
@@ -27,6 +28,7 @@ namespace ProceduralRoguelike
         [Range(0.01f, 5f)]
         public float wanderCooldown = 0.1f;
 
+        [Header("Threat:")]
         /// <summary>
         /// Maximum distance from target to draw murderous attention.
         /// </summary>

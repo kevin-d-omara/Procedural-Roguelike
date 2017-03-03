@@ -11,6 +11,7 @@ namespace ProceduralRoguelike
         [SerializeField] private GameObject entrancePrefab;
 
         // Randomizer parameters.
+        [Header("Density values:")]
         [Range(0f, 1.01f)]
         [SerializeField] private float obstacleDensity = 0.15f;
         [Range(0f, 1.01f)]

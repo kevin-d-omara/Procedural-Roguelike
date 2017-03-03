@@ -9,6 +9,7 @@ namespace ProceduralRoguelike
     public abstract class BoardManager : MonoBehaviour
     {
         // ScriptableObject data.
+        [Header("Tile sets:")]
         [SerializeField] protected WeightedSet obstacleSet;
         [SerializeField] protected WeightedSet enemySet;
 
@@ -20,6 +21,7 @@ namespace ProceduralRoguelike
         protected Dictionary<string, Transform> holders = new Dictionary<string, Transform>();
 
         // Floor
+        [Header("Individual prefabs:")]
         [SerializeField] protected GameObject floorPrefab;
         protected Dictionary<Vector3, GameObject> floorTiles = new Dictionary<Vector3, GameObject>();
 
