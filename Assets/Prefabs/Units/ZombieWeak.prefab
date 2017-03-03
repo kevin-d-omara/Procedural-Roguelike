@@ -113,7 +113,7 @@ MonoBehaviour:
   cooldown: 1
   attackDelay: 0.2
   damage: 2
-  range: 1
+  range: 1.1
   _isHardAttack: 0
 --- !u!114 &114453325705142554
 MonoBehaviour:
@@ -167,9 +167,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2106938a43c67843a2acbd649322399, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wanderDistance: 6
+  wanderDistance: 8
   wanderCooldown: 2
-  threatDistance: 3
+  threatDistance: 4
   threatCooldown: 0.3
   target: {fileID: 1416659830590262, guid: 11a9655053daff04c87f701f5b02e756, type: 2}
 --- !u!212 &212937747364184936

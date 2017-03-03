@@ -57,32 +57,20 @@ namespace ProceduralRoguelike
                 var dy = aiComponent.target.position.y - transform.position.y;
                 var dxAbs = Math.Abs(dx);
                 var dyAbs = Math.Abs(dy);
-                var attackRange = attackComponent.range;
+                var rng = attackComponent.range;
 
-                // Target is adjacent (non-diagonal) -> Attack.
-                if (dxAbs == 1 && dyAbs == 0)
+                // Target is adjacent (non-diagonal) & within range -> Attack.
+                if (!(dxAbs != 0 && dyAbs !=0) && (Mathf.Max(dxAbs, dyAbs) <= rng))
                 {
                     basicAttack = true;
                     basicAttackDir = new Vector2(dx, dy);
                 }
-                else if (dxAbs == 0 && dyAbs == 1)
-                {
-                    basicAttack = true;
-                    basicAttackDir = new Vector2(dx, dy);
-                }
-                else if (dxAbs == 0 && dyAbs == 0)
-                {
-                    // Grapple attack (target in same position).
-                    basicAttack = true;
-                    basicAttackDir = Vector2.one;
-                }
-
                 // Target is out of attack-range -> Pursue.
                 else
                 {
                     // Move toward Player.
                     horizontalInput = dxAbs > dyAbs ? (int)Math.Sign(dx) : 0;
-                    verticalInput = dxAbs > dyAbs ? 0 : (int)Math.Sign(dy);
+                    verticalInput   = dxAbs > dyAbs ? 0 : (int)Math.Sign(dy);
                 }
             }
 
