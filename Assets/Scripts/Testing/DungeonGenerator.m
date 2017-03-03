@@ -1,54 +1,43 @@
 clc;clear;clf;close all;
 
 % Starting parameters
-start = [0, 0];
-startAngle = deg2rad(45);   % rad
+startAngle = deg2rad(360*rand);   % rad
 
 % Path parameters
 depth = 50;        % meters
-bendAngle = deg2rad(1); % rad; tangent to path
-stepSize = .1;          % meters
-inflectionRate = .05;   % percent
+bendAngle = deg2rad(25);    % rad/meter; tangent to path
+inflectionRate = .5;       % percent/meter
+stepSize = .1;              % meters
 
-% Compute essential path.
-numSteps = round(depth * 1/stepSize);
-pathX = zeros(1, numSteps);
-pathY = zeros(1, numSteps);
-theta = zeros(1, numSteps);
-stepL = zeros(1, numSteps);
-% inflectionPts = cell(1, numSteps);
-pathX(1) = start(1);
-pathY(1) = start(2);
-theta(1) = startAngle;
-stepL(1) = 0;
-for i=2:numSteps
-    if (rand < inflectionRate)
-        bendAngle = -bendAngle;
-    end
-    
-    theta(i) = theta(i-1) + bendAngle;
-    pathX(i) = stepSize * cos(theta(i)) + pathX(i-1);
-    pathY(i) = stepSize * sin(theta(i)) + pathY(i-1);
-    
-    dx = pathX(i) - pathX(i-1);
-    dy = pathY(i) - pathY(i-1);
-    stepL(i) = sqrt(dx^2 + dy^2);
-end
-
-% Plot essential path.
 figure('units','normalized','outerposition',[0 0 1 1])
-plot(pathX, pathY, 'b');
-hold on
-plot(start(1), start(2), 'or');
-title({'Essential Path', strcat('depth = ', num2str(depth), 'm'),...
-    strcat('bend = ', num2str(rad2deg(bendAngle)), '°')});
-bounds = 50;
-axis('equal');
-axis([-bounds, bounds, -bounds, bounds]);
+nPlotsX = 4;
+nPlotsY = 2;
+for plotIdx=1:nPlotsX * nPlotsY
+    % Compute essential path.
+    path = zeros(2, round(depth * 1/stepSize));
+    path(1,1) = 0; path(2,1) = 0;
+    inflectionChance = inflectionRate * stepSize;
+    dTheta = bendAngle * stepSize;
+    theta = startAngle;
+    for i=2:round(depth * 1/stepSize)
+        if (rand < inflectionChance)
+            dTheta = -dTheta;
+        end
 
-% % Format display window.
-% pos = get(gcf, 'Position');
-% % pos(1) = pos(1) * .75
-% pos(2) = pos(2) * .66;
-% % pos(3:4) = pos(3:4) * 1.25;
-% set(gcf, 'position', pos);
+        theta = theta + dTheta;
+        path(1,i) = stepSize * cos(theta) + path(1,i-1);
+        path(2,i) = stepSize * sin(theta) + path(2,i-1);
+    end
+
+    % Plot essential path.
+    subplot(nPlotsY, nPlotsX, plotIdx);
+    plot(path(1,:), path(2,:), 'b');
+    hold on
+    plot(path(1,1), path(2,1), 'or');
+    title({'Essential Path', strcat('depth = ', num2str(depth), 'm'),...
+        strcat('bend = ', num2str(rad2deg(bendAngle)), '°'),...
+        strcat('inflection = ', num2str(inflectionRate*100), '%/m')});
+    bounds = 35;
+    axis('equal');
+    axis([-bounds, bounds, -bounds, bounds]);
+end
