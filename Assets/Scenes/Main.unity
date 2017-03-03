@@ -206,8 +206,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  damping: 1
-  lookAheadFactor: 1
+  damping: 0.6
+  lookAheadFactor: 0.6
   lookAheadReturnSpeed: 0.5
   lookAheadMoveThreshold: 0.1
 --- !u!114 &1347147825

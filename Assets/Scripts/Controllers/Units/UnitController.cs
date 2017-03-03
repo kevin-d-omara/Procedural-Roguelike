@@ -18,6 +18,7 @@ namespace ProceduralRoguelike
         protected int horizontalInput;
         protected int verticalInput;
         protected bool basicAttack;
+        protected Vector2 basicAttackDir;
 
         // Componenets.
         protected SpriteRenderer spriteRenderer;
@@ -108,7 +109,7 @@ namespace ProceduralRoguelike
         {
             if (basicAttack)
             {
-                if (attackComponent.DoAttack(moveableComponent.Facing))
+                if (attackComponent.DoAttack(basicAttackDir))
                 {
                     if (AnimationBasicAttack != null) { animator.SetTrigger(AnimationBasicAttack); }
                 }

@@ -71,6 +71,7 @@ namespace ProceduralRoguelike
             if (horizontalInput != 0 || verticalInput != 0)
             {
                 moveableComponent.Facing = new Vector2(horizontalInput, verticalInput);
+                basicAttackDir = moveableComponent.Facing;
             }
         }
 

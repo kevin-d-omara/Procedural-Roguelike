@@ -40,32 +40,51 @@ namespace ProceduralRoguelike
         protected override void GetInputs() { }
 
         /// <summary>
-        /// Called each time the Intelligence component "thinks".
+        /// Called each time an Intelligence component thread "thinks".
         /// </summary>
         protected void OnMakeDecision(Intelligence.Mode mode, float distanceToTarget)
         {
-            switch (mode)
+            // Assault target.
+            if (mode == Intelligence.Mode.Threat)
             {
-                // Pursue player.
-                case Intelligence.Mode.Threat:
+                var dx = aiComponent.target.position.x - transform.position.x;
+                var dy = aiComponent.target.position.y - transform.position.y;
+                var dxAbs = Math.Abs(dx);
+                var dyAbs = Math.Abs(dy);
+
+                // Target is adjacent (non-diagonal) -> Attack.
+                if (dxAbs == 1 && dyAbs == 0)
+                {
                     basicAttack = true;
-                    break;
+                    basicAttackDir = new Vector2(dx, dy);
+                }
+                else if (dxAbs == 0 && dyAbs == 1)
+                {
+                    basicAttack = true;
+                    basicAttackDir = new Vector2(dx, dy);
+                }
 
-                // Wander aimlessly.
-                case Intelligence.Mode.Wander:
-                    var direction = Random.Range(0.0f, 1.0f) < 0.5f ? -1 : +1;
-                    if (Random.Range(0.0f, 1.0f) <= 0.5f)
-                    {
-                        horizontalInput = direction;
-                    }
-                    else
-                    {
-                        verticalInput = direction;
-                    }
-                    break;
+                // Target is out of attack-range -> Pursue.
+                else
+                {
+                    // Move toward Player.
+                    horizontalInput = dxAbs > dyAbs ? (int)Math.Sign(dx) : 0;
+                    verticalInput = dxAbs > dyAbs ? 0 : (int)Math.Sign(dy);
+                }
+            }
 
-                default:
-                    break;
+            // Wander aimlessley.
+            else if (mode == Intelligence.Mode.Wander)
+            {
+                var direction = Random.Range(0.0f, 1.0f) < 0.5f ? -1 : +1;
+                if (Random.Range(0.0f, 1.0f) <= 0.5f)
+                {
+                    horizontalInput = direction;
+                }
+                else
+                {
+                    verticalInput = direction;
+                }
             }
         }
     }
