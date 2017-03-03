@@ -22,5 +22,27 @@ namespace ProceduralRoguelike
             }
             return objects;
         }
+
+        /// <summary>
+        /// Transforms X into -1, 0, or 1.
+        /// </summary>
+        /// <returns>Negative one, zero, or positive one.</returns>
+        public static int MakeUnitLength(float x)
+        {
+            return Mathf.Abs(x) > 0 ? (int)Mathf.Sign(x) : 0;
+        }
+
+        /// <summary>
+        /// Transforms V into a vector whose components x, y = -1, 0, or 1.
+        /// </summary>
+        /// <returns>Vector with x, y ϵ {-1, 0, 1}.</returns>
+        public static Vector2 MakeUnitLength(Vector2 V)
+        {
+            return new Vector2
+                (
+                    Mathf.Abs(V.x) > 0 ? Mathf.Sign(V.x) : 0,
+                    Mathf.Abs(V.y) > 0 ? Mathf.Sign(V.y) : 0
+                );
+        }
 	}
 }

@@ -88,18 +88,17 @@ namespace ProceduralRoguelike
         /// First waits for the backswing to finish, then deals damage to the first target struck by
         /// a raycast.
         /// </summary>
+        /// <param name="direction">X & Y directions to attack. Constrained to a unit value.</param>
+        /// <returns></returns>
         private IEnumerator StartAttackSequence(Vector2 direction)
         {
-            if (OnStartBackswing != null)
-            {
-                OnStartBackswing();
-            }
+            if (OnStartBackswing != null) { OnStartBackswing(); }
             yield return new WaitForSeconds(attackDelay);
 
-            if (OnStartSwing != null)
-            {
-                OnStartSwing();
-            }
+            if (OnStartSwing != null) { OnStartSwing(); }
+
+            // Constrain direction vector to unit value (-1, 0, or 1).
+            direction = Utility.MakeUnitLength(direction);
 
             // Raycast to check if target exits.
             boxCollider.enabled = false;

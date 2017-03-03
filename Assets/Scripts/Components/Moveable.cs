@@ -73,8 +73,7 @@ namespace ProceduralRoguelike
         /// <summary>
         /// Moves the object if the path is not blocked. Does nothing otherwise.
         /// </summary>
-        /// <param name="xDir">How far in the x-direction to move.</param>
-        /// <param name="yDir">How far in the y-direction to move.</param>
+        /// <param name="direction">X & Y directions to move. Constrained to a unit value.</param>
         /// <param name="hit">Object blocking movement or null if none.</param>
         /// <returns>True if movemet was successful. False otherwise.</returns>
         protected virtual bool Move(Vector2 direction, out RaycastHit2D hit)
@@ -129,12 +128,14 @@ namespace ProceduralRoguelike
         /// <summary>
         /// Attempts to move the object in the specified direction.
         /// </summary>
-        /// <param name="xDir">How far in the x-direction to move.</param>
-        /// <param name="yDir">How far in the y-direction to move.</param>
+        /// <param name="direction">X & Y directions to move. Constrained to a unit value.</param>
         /// <returns>True if move started successfully, false otherwise.</returns>
         public virtual bool AttemptMove(Vector2 direction)
         {
             if (IsMoving) { return false; }
+
+            // Constrain direction to a unit value (-1, 0, or 1).
+            direction = Utility.MakeUnitLength(direction);
 
             RaycastHit2D hit;
             if (Move(direction, out hit))

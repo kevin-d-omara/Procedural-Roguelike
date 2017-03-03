@@ -57,6 +57,7 @@ namespace ProceduralRoguelike
                 var dy = aiComponent.target.position.y - transform.position.y;
                 var dxAbs = Math.Abs(dx);
                 var dyAbs = Math.Abs(dy);
+                var attackRange = attackComponent.range;
 
                 // Target is adjacent (non-diagonal) -> Attack.
                 if (dxAbs == 1 && dyAbs == 0)
