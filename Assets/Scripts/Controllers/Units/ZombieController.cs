@@ -63,6 +63,12 @@ namespace ProceduralRoguelike
                     basicAttack = true;
                     basicAttackDir = new Vector2(dx, dy);
                 }
+                else if (dxAbs == 0 && dyAbs == 0)
+                {
+                    // Grapple attack (target in same position).
+                    basicAttack = true;
+                    basicAttackDir = Vector2.one;
+                }
 
                 // Target is out of attack-range -> Pursue.
                 else

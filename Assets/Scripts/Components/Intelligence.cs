@@ -60,7 +60,7 @@ namespace ProceduralRoguelike
 
         public IEnumerator ThinkThreadWander()
         {
-            yield return new WaitForSeconds(Random.Range(0f, 1f));
+            //yield return new WaitForSeconds(Random.Range(0f, 1f));
 
             while (true)
             {
@@ -79,7 +79,7 @@ namespace ProceduralRoguelike
 
         public IEnumerator ThinkThreadThreat()
         {
-            yield return new WaitForSeconds(Random.Range(0f, 1f));
+            //yield return new WaitForSeconds(Random.Range(0f, 1f));
 
             while (true)
             {

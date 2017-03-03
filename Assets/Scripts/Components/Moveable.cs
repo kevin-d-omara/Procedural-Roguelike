@@ -41,8 +41,8 @@ namespace ProceduralRoguelike
         /// <summary>
         /// Speed (units/sec) of movement (i.e. 10 units/sec = 0.1 sec to move 1 units).
         /// </summary>
-        [Range(1, 100)]
-        [SerializeField] private int speed = 10;
+        [Range(0.01f, 5f)]
+        [SerializeField] private float speed = 10;
 
         /// <summary>
         /// Time that must be waited between movements.
