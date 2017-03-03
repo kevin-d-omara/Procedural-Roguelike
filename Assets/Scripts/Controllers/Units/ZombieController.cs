@@ -37,6 +37,12 @@ namespace ProceduralRoguelike
             aiComponent.OnMakeDecision -= OnMakeDecision;
         }
 
+        protected override void Start()
+        {
+            // Match difficulty.
+
+        }
+
         protected override void GetInputs() { }
 
         /// <summary>

@@ -13,6 +13,13 @@ namespace ProceduralRoguelike
         public delegate void IncreaseDifficulty(int difficulty);
         public static event IncreaseDifficulty OnIncreaseDifficulty;
 
+        /// <summary>
+        /// Multiplier applied each time the difficulty increases.
+        /// Cumulative (i.e. Lvl 2 => X * mult * mult);
+        /// </summary>
+        [Range(0f, 100f)]
+        public float DifficultyMultiplier = 0.35f;
+
         public GameObject Player { get; private set; }
 
         // Singleton instance.

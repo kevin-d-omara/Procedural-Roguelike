@@ -48,6 +48,8 @@ namespace ProceduralRoguelike
             IsPaused = false;
         }
 
+        protected virtual void Start() { }
+
         protected virtual void OnEnable()
         {
             moveableComponent.OnFlippedDirectionX += OnFlippedDirection;
