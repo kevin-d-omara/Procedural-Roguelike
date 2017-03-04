@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -12,71 +13,78 @@ namespace ProceduralRoguelike
     {
         public GameObject plotPoint;
 
-        [SerializeField] private PathParameters essentialPathParameters;
+        [SerializeField] private List<PathParameters> branchParameters;
+        private Path dungeon;
 
-        private Path essentialPath;
-        private Dictionary<Vector2, GameObject> tiles = new Dictionary<Vector2, GameObject>();
+        private Dictionary<Path, Dictionary<Vector2, GameObject>> Tiles = new Dictionary<Path, Dictionary<Vector2, GameObject>>();
 
         private void Awake()
         {
             UnityEditor.SceneView.FocusWindowIfItsOpen(typeof(UnityEditor.SceneView));
 
-            // Create copy to avoid changing original ScriptableObject
-            essentialPathParameters = Object.Instantiate(essentialPathParameters);
-
             // Get origin and initialFacing from Player.
-            essentialPathParameters.origin = Vector2.zero;
-            essentialPathParameters.initialFacing = Random.Range(0f, 360f);
+            branchParameters[0].origin = Vector2.zero;
 
             // Create essential path.
-            essentialPath = new Path(essentialPathParameters);
+            dungeon = new Path(branchParameters);
         }
 
         private void Start()
         {
-            PlotConstrainedPoints();
+            RecursivelyPlotConstrainedPoints(dungeon);
         }
 
-        private void PlotConstrainedPoints()
+        private void RecursivelyPlotConstrainedPoints(Path path)
+        {
+            Tiles.Add(path, new Dictionary<Vector2, GameObject>());
+            PlotConstrainedPoints(path, Tiles[path]);
+
+            foreach (Path p in path.Branches)
+            {
+                RecursivelyPlotConstrainedPoints(p);
+            }
+        }
+
+        private void PlotConstrainedPoints(Path path, Dictionary<Vector2, GameObject> tiles)
         {
             // Mark origin.
-            var origin = Instantiate(plotPoint, essentialPath.Main[0], Quaternion.identity);
+            var origin = Instantiate(plotPoint, path.Main[0], Quaternion.identity);
             origin.GetComponent<SpriteRenderer>().color = Color.red;
-            tiles.Add(Constrain(essentialPath.Main[0]), origin);
+            tiles.Add(Constrain(path.Main[0]), origin);
 
             // Plot path.
-            foreach (Vector2 pt in essentialPath.Main)
+            foreach (Vector2 pt in path.Main)
             {
                 var constrainedPt = Constrain(pt);
 
                 if (!tiles.ContainsKey(constrainedPt))
                 {
                     var tile = Instantiate(plotPoint, constrainedPt, Quaternion.identity);
+                    tile.GetComponent<SpriteRenderer>().color = Color.white;
                     tiles.Add(constrainedPt, tile);
                 }
             }
 
             // Color inflection points.
-            foreach (Path.FeaturePoint featurePt in essentialPath.InflectionPts)
-            {
-                var constrainedPt = Constrain(featurePt.Pt);
-
-                GameObject tile;
-                if (tiles.TryGetValue(constrainedPt, out tile))
-                {
-                    tile.GetComponent<SpriteRenderer>().color = Color.green;
-                }
-            }
+            ColorFeaturePoints(path.InflectionPts, Color.yellow, tiles);
 
             // Color bottleneck points.
-            foreach (Path.FeaturePoint featurePt in essentialPath.BottleneckPts)
+            ColorFeaturePoints(path.BottleneckPts, Color.magenta, tiles);
+
+            // Color branch points.
+            ColorFeaturePoints(path.BranchPts, Color.red, tiles);
+        }
+
+        private void ColorFeaturePoints(List<Path.FeaturePoint> list, Color color, Dictionary<Vector2, GameObject> tiles)
+        {
+            foreach (Path.FeaturePoint featurePt in list)
             {
                 var constrainedPt = Constrain(featurePt.Pt);
 
                 GameObject tile;
                 if (tiles.TryGetValue(constrainedPt, out tile))
                 {
-                    tile.GetComponent<SpriteRenderer>().color = Color.magenta;
+                    tile.GetComponent<SpriteRenderer>().color = color;
                 }
             }
         }

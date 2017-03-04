@@ -17,9 +17,14 @@ namespace ProceduralRoguelike
 
         /// <summary>
         /// Initial direction of the path, counter-clockwise. (0° == East == [+1, 0])
-        /// [degrees]
+        /// [radians] {!: internally stored as degress, therefore set w/ degrees not radians.}
         /// </summary>
-        [HideInInspector] public float initialFacing;
+        public float InitialFacing
+        {
+            get { return _initialFacing * Mathf.Deg2Rad; }
+            set { _initialFacing = value; }
+        }
+        private float _initialFacing;
 
         /// <summary>
         /// Length of the path.
@@ -30,10 +35,15 @@ namespace ProceduralRoguelike
 
         /// <summary>
         /// Curvature of the path.
-        /// [degrees/meter]
+        /// [radians/meter] {!: internally stored as degress, therefore set w/ degrees not radians.}
         /// </summary>
+        public float Curvature
+        {
+            get { return _curvature * Mathf.Deg2Rad; }
+            set { _curvature = value; }
+        }
         [Range(0f, 360f)]
-        public float curvature = 15f;
+        [SerializeField] private float _curvature = 15f;
 
         /// <summary>
         /// How often inflection points occur.
@@ -53,7 +63,7 @@ namespace ProceduralRoguelike
         /// Number of branches in the path. Fractional values offer a chance for 1 extra branch.
         /// [# branches/path]
         /// </summary>
-        [Range(0f, 1f)]
+        [Range(0f, 5f)]
         public float branchNumber = 2.5f;
 
         /// <summary>
