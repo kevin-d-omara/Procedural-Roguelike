@@ -17,7 +17,7 @@ namespace ProceduralRoguelike
         public class FeaturePoint
         {
             /// <summary>
-            /// Where this point is.
+            /// Where this point is in space.
             /// </summary>
             public Vector2 Pt { get; private set; }
 
@@ -26,10 +26,24 @@ namespace ProceduralRoguelike
             /// </summary>
             public int Index { get; private set; }
 
-            public FeaturePoint(Vector2 pt, int index)
+            /// <summary>
+            /// Direction of the path at this point, counter-clockwise. (0° == East == [+1, 0])
+            /// [radians]
+            /// </summary>
+            public float Facing { get; private set; }
+
+            /// <summary>
+            /// Curvature of the path at this point.
+            /// [radians]
+            /// </summary>
+            public float Curvature { get; private set; }
+
+            public FeaturePoint(Vector2 pt, int index, float facing, float curvature)
             {
                 Pt = pt;
                 Index = index;
+                Facing = facing;
+                Curvature = curvature;
             }
         }
 
@@ -118,22 +132,22 @@ namespace ProceduralRoguelike
             var theta = p.InitialFacing;
             for (int i = 1; i < Main.Length; ++i)
             {
-                // Inflection points.
-                if (Random.value < inflectionChance)
-                {
-                    dTheta = -dTheta;
-                    InflectionPts.Add(new FeaturePoint(Main[i - 1], i));
-                }
-                // Bottleneck points.
-                else if (Random.value < bottleneckChance)
-                {
-                    BottleneckPts.Add(new FeaturePoint(Main[i - 1], i));
-                }
-
                 // Move one step along the path.
                 theta += dTheta;
                 var dV = new Vector2(p.stepSize * Mathf.Cos(theta), p.stepSize * Mathf.Sin(theta));
                 Main[i] = Main[i - 1] + dV;
+
+                // Inflection points.
+                if (Random.value < inflectionChance)
+                {
+                    dTheta = -dTheta;
+                    InflectionPts.Add(new FeaturePoint(Main[i - 1], i, theta, dTheta));
+                }
+                // Bottleneck points.
+                else if (Random.value < bottleneckChance)
+                {
+                    BottleneckPts.Add(new FeaturePoint(Main[i - 1], i, theta, dTheta));
+                }
             }
 
             // Mark branch points. Must have at least 2 inflection points.
@@ -150,7 +164,13 @@ namespace ProceduralRoguelike
                     var index2 = InflectionPts[rIdx + 1].Index;
                     var midIndex = (index2 + index1) / 2;
 
-                    BranchPts.Add(new FeaturePoint(Main[midIndex], midIndex));
+                    // Facing at midpoint is the curvature * N steps from the first inflection pt.
+                    var dIdx = (index2 - index1) / 2;
+                    var midFacing = InflectionPts[rIdx].Facing
+                                    + dIdx * InflectionPts[rIdx].Curvature;
+                    var midCurve = InflectionPts[rIdx].Curvature;
+
+                    BranchPts.Add(new FeaturePoint(Main[midIndex], midIndex, midFacing, midCurve));
                 }
             }
         }
