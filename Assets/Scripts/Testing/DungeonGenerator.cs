@@ -48,7 +48,7 @@ namespace ProceduralRoguelike
         private void PlotConstrainedPoints(Path path, Dictionary<Vector2, GameObject> tiles)
         {
             // Mark origin.
-            var origin = Instantiate(plotPoint, path.Main[0], Quaternion.identity);
+            var origin = Instantiate(plotPoint, Constrain(path.Main[0]), Quaternion.identity);
             origin.GetComponent<SpriteRenderer>().color = Color.red;
             tiles.Add(Constrain(path.Main[0]), origin);
 
