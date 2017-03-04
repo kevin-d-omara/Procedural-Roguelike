@@ -54,7 +54,8 @@ namespace ProceduralRoguelike
 
         public List<FeaturePoint> InflectionPts { get; private set; }
         public List<FeaturePoint> BottleneckPts { get; private set; }
-        public List<FeaturePoint> BranchPts { get; private set; }
+        public List<FeaturePoint> BranchPts     { get; private set; }
+        public List<Vector2>      ChamberPts    { get; private set; }
 
         /// <summary>
         /// Pointer to child offshoot branches.
@@ -126,12 +127,14 @@ namespace ProceduralRoguelike
             Main[0] = p.origin;
             InflectionPts = new List<FeaturePoint>();
             BottleneckPts = new List<FeaturePoint>();
-            BranchPts = new List<FeaturePoint>();
+            BranchPts     = new List<FeaturePoint>();
+            ChamberPts    = new List<Vector2>();
             Branches = new List<Path>();
 
             // Scale parameters to stepSize.
             var inflectionChance = p.inflectionRate * p.stepSize;
             var bottleneckChance = p.bottleneckRate * p.stepSize;
+            var chamberChance    = p.chamberNumber    * p.stepSize;
             var dTheta = p.Curvature * p.stepSize;
 
             // Create path.
@@ -143,17 +146,26 @@ namespace ProceduralRoguelike
                 var dV = new Vector2(p.stepSize * Mathf.Cos(theta), p.stepSize * Mathf.Sin(theta));
                 Main[i] = Main[i - 1] + dV;
 
-                // Inflection points.
-                if (Random.value < inflectionChance)
+                // Mark feature points.
+                if (Random.value < bottleneckChance)
+                {
+                    BottleneckPts.Add(new FeaturePoint(Main[i - 1], i, theta, dTheta));
+                }
+                else if (Random.value < inflectionChance)
                 {
                     dTheta = -dTheta;
                     InflectionPts.Add(new FeaturePoint(Main[i - 1], i, theta, dTheta));
                 }
-                // Bottleneck points.
-                else if (Random.value < bottleneckChance)
-                {
-                    BottleneckPts.Add(new FeaturePoint(Main[i - 1], i, theta, dTheta));
-                }
+            }
+
+            // Mark chamber points.
+            var chamberNumber = Mathf.FloorToInt(p.chamberNumber);
+            chamberNumber += Random.value < (p.chamberNumber % 1) ? 1 : 0;
+
+            for (int i = 0; i < chamberNumber; ++i)
+            {
+                var rIdx = Random.Range(0, Main.Length);
+                ChamberPts.Add(Main[rIdx]);
             }
 
             // Mark branch points. Must have at least 2 inflection points.

@@ -57,17 +57,7 @@ namespace ProceduralRoguelike
             tiles.Add(Constrain(path.Main[0]), origin);
 
             // Plot path.
-            foreach (Vector2 pt in path.Main)
-            {
-                var constrainedPt = Constrain(pt);
-
-                if (!tiles.ContainsKey(constrainedPt))
-                {
-                    var tile = Instantiate(plotPoint, constrainedPt, Quaternion.identity);
-                    tile.GetComponent<SpriteRenderer>().color = Color.white;
-                    tiles.Add(constrainedPt, tile);
-                }
-            }
+            PlotPoints(path.Main, Color.white, tiles);
 
             // Color inflection points.
             ColorFeaturePoints(path.InflectionPts, Color.yellow, tiles);
@@ -75,8 +65,40 @@ namespace ProceduralRoguelike
             // Color bottleneck points.
             ColorFeaturePoints(path.BottleneckPts, Color.magenta, tiles);
 
+            // Color chamber points.
+            ColorPoints(path.ChamberPts, Color.blue, tiles);
+
             // Color branch points.
             ColorFeaturePoints(path.BranchPts, Color.red, tiles);
+        }
+
+        private void PlotPoints(Vector2[] array, Color color, Dictionary<Vector2, GameObject> tiles)
+        {
+            foreach (Vector2 pt in array)
+            {
+                var constrainedPt = Constrain(pt);
+
+                if (!tiles.ContainsKey(constrainedPt))
+                {
+                    var tile = Instantiate(plotPoint, constrainedPt, Quaternion.identity);
+                    tile.GetComponent<SpriteRenderer>().color = color;
+                    tiles.Add(constrainedPt, tile);
+                }
+            }
+        }
+
+        private void ColorPoints(List<Vector2> list, Color color, Dictionary<Vector2, GameObject> tiles)
+        {
+            foreach (Vector2 pt in list)
+            {
+                var constrainedPt = Constrain(pt);
+
+                GameObject tile;
+                if (tiles.TryGetValue(constrainedPt, out tile))
+                {
+                    tile.GetComponent<SpriteRenderer>().color = color;
+                }
+            }
         }
 
         private void ColorFeaturePoints(List<Path.FeaturePoint> list, Color color, Dictionary<Vector2, GameObject> tiles)

@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Name: EssentialPath
   m_EditorClassIdentifier: 
   origin: {x: 0, y: 0}
-  length: 60
+  _initialFacing: 0
+  length: 50
   _curvature: 15
+  stepSize: 0.25
   inflectionRate: 0.4
   bottleneckRate: 0.025
-  branchNumber: 4
-  stepSize: 0.25
+  chamberNumber: 2
+  branchNumber: 1.5

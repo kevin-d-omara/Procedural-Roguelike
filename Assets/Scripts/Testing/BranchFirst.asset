@@ -11,10 +11,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e2a5d198de0b3f4b991be63384a0b8a, type: 3}
   m_Name: BranchFirst
   m_EditorClassIdentifier: 
-  origin: {x: 12.9940405, y: 35.191475}
+  origin: {x: -6.9401255, y: -9.187972}
+  _initialFacing: -37.81077
   length: 15
   _curvature: 15
+  stepSize: 0.25
   inflectionRate: 0.4
   bottleneckRate: 0.025
-  branchNumber: 2
-  stepSize: 0.1
+  chamberNumber: 1
+  branchNumber: 0.5

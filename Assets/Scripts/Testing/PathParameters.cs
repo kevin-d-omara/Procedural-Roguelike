@@ -47,6 +47,14 @@ namespace ProceduralRoguelike
         [SerializeField] private float _curvature = 15f;
 
         /// <summary>
+        /// Distance between steps along the path.
+        /// [meters]
+        /// </summary>
+        [Range(0.01f, 1f)]
+        public float stepSize = 0.1f;
+
+        [Header("Feature points:")]
+        /// <summary>
         /// How often inflection points occur.
         /// [% chance of inflection point / meter]
         /// </summary>
@@ -61,17 +69,17 @@ namespace ProceduralRoguelike
         public float bottleneckRate = 0.025f;
 
         /// <summary>
+        /// Number of chambers in the path. Fractional values offer a chance for 1 extra chamber.
+        /// [# chambers/path]
+        /// </summary>
+        [Range(0f, 5f)]
+        public float chamberNumber = 2.5f;
+
+        /// <summary>
         /// Number of branches in the path. Fractional values offer a chance for 1 extra branch.
         /// [# branches/path]
         /// </summary>
         [Range(0f, 5f)]
         public float branchNumber = 2.5f;
-
-        /// <summary>
-        /// Distance between steps along the path.
-        /// [meters]
-        /// </summary>
-        [Range(0.01f, 1f)]
-        public float stepSize = 0.1f;
     }
 }
