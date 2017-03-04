@@ -13,7 +13,7 @@ namespace ProceduralRoguelike
     {
         public GameObject plotPoint;
 
-        [SerializeField] private List<PathParameters> branchParameters;
+        [SerializeField] private List<PathParameters> pathParameters;
         private Path dungeon;
 
         private Dictionary<Path, Dictionary<Vector2, GameObject>> Tiles = new Dictionary<Path, Dictionary<Vector2, GameObject>>();
@@ -23,14 +23,14 @@ namespace ProceduralRoguelike
             UnityEditor.SceneView.FocusWindowIfItsOpen(typeof(UnityEditor.SceneView));
 
             // Create copy so original Asset is not modified.
-            branchParameters[0] = UnityEngine.Object.Instantiate(branchParameters[0]);
+            pathParameters[0] = UnityEngine.Object.Instantiate(pathParameters[0]);
 
             // Get origin and initialFacing from Player.
-            branchParameters[0].origin = Vector2.zero;
-            branchParameters[0].InitialFacing = Random.Range(0f, 360f);
+            pathParameters[0].origin = Vector2.zero;
+            pathParameters[0].InitialFacing = Random.Range(0f, 360f);
 
            // Create essential path.
-           dungeon = new Path(branchParameters);
+           dungeon = new Path(pathParameters);
         }
 
         private void Start()
@@ -43,7 +43,7 @@ namespace ProceduralRoguelike
             Tiles.Add(path, new Dictionary<Vector2, GameObject>());
             PlotConstrainedPoints(path, Tiles[path]);
 
-            foreach (Path p in path.Branches)
+            foreach (Path p in path.Forks)
             {
                 RecursivelyPlotConstrainedPoints(p);
             }
@@ -68,8 +68,8 @@ namespace ProceduralRoguelike
             // Color chamber points.
             ColorPoints(path.ChamberPts, Color.blue, tiles);
 
-            // Color branch points.
-            ColorFeaturePoints(path.BranchPts, Color.red, tiles);
+            // Color fork points.
+            ColorFeaturePoints(path.ForkPts, Color.red, tiles);
         }
 
         private void PlotPoints(Vector2[] array, Color color, Dictionary<Vector2, GameObject> tiles)

@@ -43,10 +43,10 @@ namespace ProceduralRoguelike
 
         [SerializeField] private GameObject playerPrefab;
         [SerializeField] private GameObject overWorldPrefab;
-        [SerializeField] private GameObject dungeonPrefab;
+        [SerializeField] private GameObject cavePrefab;
         [SerializeField] private Vector2 startSize = new Vector2(5, 5);
         private OverWorldManager overWorld;
-        private DungeonManager currentDungeon;
+        private CaveManager currentCave;
         private GameObject mainCamera;
         private CameraController mainCameraController;
 
@@ -67,14 +67,14 @@ namespace ProceduralRoguelike
 
         private void OnEnable()
         {
-            PassageController.OnEnterDungeon += OnEnterDungeon;
-            PassageController.OnExitDungeon += OnExitDungeon;
+            PassageController.OnEnterCave += OnEnterCave;
+            PassageController.OnExitCave  += OnExitCave;
         }
 
         private void OnDisable()
         {
-            PassageController.OnEnterDungeon -= OnEnterDungeon;
-            PassageController.OnExitDungeon -= OnExitDungeon;
+            PassageController.OnEnterCave -= OnEnterCave;
+            PassageController.OnExitCave  -= OnExitCave;
         }
 
         /// <summary>
@@ -97,20 +97,20 @@ namespace ProceduralRoguelike
             mainCameraController = mainCamera.GetComponent<CameraController>();
         }
 
-        private void OnEnterDungeon(Vector2 dungeonEntrancePosition)
+        private void OnEnterCave(Vector2 caveEntrancePosition)
         {
-            StartCoroutine(DungeonTransition(dungeonEntrancePosition, true));
+            StartCoroutine(CaveTransition(caveEntrancePosition, true));
         }
 
-        private void OnExitDungeon(Vector2 dungeonExitPosition)
+        private void OnExitCave(Vector2 caveExitPosition)
         {
-            StartCoroutine(DungeonTransition(dungeonExitPosition, false));
+            StartCoroutine(CaveTransition(caveExitPosition, false));
         }
 
         /// <summary>
-        /// Fade camera out to black. Transition to new world (OverWorld <=> Dungeon). Fade back in.
+        /// Fade camera out to black. Transition to new world (OverWorld <=> Cave). Fade back in.
         /// </summary>
-        private IEnumerator DungeonTransition(Vector2 passagePosition, bool entering)
+        private IEnumerator CaveTransition(Vector2 passagePosition, bool entering)
         {
             if (OnPassageTransition != null) { OnPassageTransition(Timing.Start, passagePosition); }
             mainCameraController.FadeOut();
@@ -119,21 +119,21 @@ namespace ProceduralRoguelike
             // Transition between worlds.
             if (entering)
             {
-                // Destroy Dungeon entrance (in OverWorld).
+                // Destroy Cave entrance (in OverWorld).
                 // TODO: ^ or transition to "collapsed" graphic
 
                 // Deactivate OverWorld.
                 overWorld.gameObject.SetActive(false);
 
-                // Create new dungeon.
-                currentDungeon = (Instantiate(dungeonPrefab, passagePosition,
-                    Quaternion.identity) as GameObject).GetComponent<DungeonManager>();
-                currentDungeon.SetupEntrance(startSize, passagePosition);
+                // Create new cave.
+                currentCave = (Instantiate(cavePrefab, passagePosition,
+                    Quaternion.identity) as GameObject).GetComponent<CaveManager>();
+                currentCave.SetupEntrance(startSize, passagePosition);
             }
             else
             {
-                // Destroy Dungeon.
-                Destroy(currentDungeon.gameObject);
+                // Destroy Cave.
+                Destroy(currentCave.gameObject);
 
                 // Reactivate Overworld.
                 overWorld.gameObject.SetActive(true);

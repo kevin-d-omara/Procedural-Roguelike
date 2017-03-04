@@ -87,7 +87,7 @@ namespace ProceduralRoguelike
 
         /// <summary>
         /// Action the Player takes when movement is blocked. For example, opening a chest, entering
-        /// a dungeon, etc.
+        /// a cave, etc.
         /// </summary>
         private void OnCantMove(GameObject blockingObject)
         {

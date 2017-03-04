@@ -191,9 +191,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   plotPoint: {fileID: 1805106258950374, guid: cd175c4bfed41174881d5dd3577edc62, type: 2}
-  essentialPathParameters: {fileID: 11400000, guid: faaedf28de20d39479a9d27924b499c9,
-    type: 2}
-  branchParameters:
+  pathParameters:
   - {fileID: 11400000, guid: faaedf28de20d39479a9d27924b499c9, type: 2}
-  - {fileID: 11400000, guid: b335b9b5510864c4f84f2261ef0f0fb8, type: 2}
-  - {fileID: 11400000, guid: a761c3a3218c5304ab69d148cbd0b573, type: 2}
+  - {fileID: 11400000, guid: c522a2872a5b68b4cbcc45ccac0ccc28, type: 2}
+  - {fileID: 11400000, guid: c7de76bc87b3a514185852183938e837, type: 2}

@@ -12,8 +12,8 @@ TagManager:
   - Rock
   - Gem
   - Floor
-  - DungeonEntrance
-  - DungeonExit
+  - CaveEntrance
+  - CaveExit
   layers:
   - Default
   - TransparentFX

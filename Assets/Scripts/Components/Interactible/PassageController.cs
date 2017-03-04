@@ -5,15 +5,15 @@ using UnityEngine;
 namespace ProceduralRoguelike
 {
     /// <summary>
-    /// The passage between two 'worlds' (i.e. OverWorld and Dungeon).
+    /// The passage between two 'worlds' (i.e. OverWorld and Cave).
     /// </summary>
 	public class PassageController : Interactable
 	{
-        public delegate void EnterDungeon(Vector2 position);
-        public static event EnterDungeon OnEnterDungeon;
+        public delegate void EnterCave(Vector2 position);
+        public static event EnterCave OnEnterCave;
 
-        public delegate void ExitDungeon(Vector2 position);
-        public static event ExitDungeon OnExitDungeon;
+        public delegate void ExitCave(Vector2 position);
+        public static event ExitCave OnExitCave;
 
         private enum Type { Entrance, Exit }
         [SerializeField] private Type type;
@@ -27,11 +27,11 @@ namespace ProceduralRoguelike
                 HasBeenUsed = true;
                 if (type == Type.Entrance)
                 {
-                    if (OnEnterDungeon != null) { OnEnterDungeon(transform.position); }
+                    if (OnEnterCave != null) { OnEnterCave(transform.position); }
                 }
                 else if (type == Type.Exit)
                 {
-                    if (OnExitDungeon != null) { OnExitDungeon(transform.position); }
+                    if (OnExitCave != null) { OnExitCave(transform.position); }
                 }
             }
         }

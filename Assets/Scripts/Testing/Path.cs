@@ -7,12 +7,12 @@ using Random = UnityEngine.Random;
 namespace ProceduralRoguelike
 {
     /// <summary>
-    /// A set of points and feature points describing a path in a dungeon.
+    /// A set of points and feature points describing a path in a cave.
     /// </summary>
 	public class Path
 	{
         /// <summary>
-        /// Point along the Main path which is notable for some feature (inflection, branch, etc.).
+        /// Point along the Main path which is notable for some feature (inflection, fork, etc.).
         /// </summary>
         public class FeaturePoint
         {
@@ -54,20 +54,20 @@ namespace ProceduralRoguelike
 
         public List<FeaturePoint> InflectionPts { get; private set; }
         public List<FeaturePoint> BottleneckPts { get; private set; }
-        public List<FeaturePoint> BranchPts     { get; private set; }
+        public List<FeaturePoint> ForkPts       { get; private set; }
         public List<Vector2>      ChamberPts    { get; private set; }
 
         /// <summary>
-        /// Pointer to child offshoot branches.
+        /// Pointer to child offshoot forked paths.
         /// </summary>
-        public List<Path> Branches { get; private set; }
+        public List<Path> Forks { get; private set; }
 
         /// <summary>
-        /// Recursively creates a full tree from the list of parameters. Each set of parameters is
-        /// used for a given branch level. The deepest level will be either (A) the # of parameters
-        /// or (B) the level on which all branches terminate (have no branch points).
+        /// Recursively creates a full cave from the list of parameters. Each set of parameters is
+        /// used for a given fork level. The deepest level will be either (A) the # of parameters
+        /// or (B) the level on which all forks terminate (have no fork points).
         /// </summary>
-        /// <param name="pList">Parameters for each branch level.</param>
+        /// <param name="pList">Parameters for each fork level.</param>
         public Path(List<PathParameters> parameterList) : this(parameterList, 0) { }
 
         /// <summary>
@@ -96,8 +96,8 @@ namespace ProceduralRoguelike
             // Terminating level reached.
             if (index == parameterList.Count - 1) { return; }
 
-            // Recursively created child branches.
-            foreach (FeaturePoint featurePt in BranchPts)
+            // Recursively created forked child paths.
+            foreach (FeaturePoint featurePt in ForkPts)
             {
                 parameterList[index + 1].origin = featurePt.Pt;
 
@@ -105,7 +105,7 @@ namespace ProceduralRoguelike
                 parameterList[index + 1].InitialFacing =
                     featurePt.Facing - Random.Range(15f, 60f) * Mathf.Sign(featurePt.Curvature);
 
-                Branches.Add(new Path(parameterList, index + 1));
+                Forks.Add(new Path(parameterList, index + 1));
             }
         }
 
@@ -127,9 +127,9 @@ namespace ProceduralRoguelike
             Main[0] = p.origin;
             InflectionPts = new List<FeaturePoint>();
             BottleneckPts = new List<FeaturePoint>();
-            BranchPts     = new List<FeaturePoint>();
+            ForkPts       = new List<FeaturePoint>();
             ChamberPts    = new List<Vector2>();
-            Branches = new List<Path>();
+            Forks = new List<Path>();
 
             // Scale parameters to stepSize.
             var inflectionChance = p.inflectionRate * p.stepSize;
@@ -168,15 +168,15 @@ namespace ProceduralRoguelike
                 ChamberPts.Add(Main[rIdx]);
             }
 
-            // Mark branch points. Must have at least 2 inflection points.
+            // Mark fork points. Must have at least 2 inflection points.
             if (InflectionPts.Count > 1)
             {
-                var branchNumber = Mathf.FloorToInt(p.branchNumber);
-                branchNumber += Random.value < (p.branchNumber % 1) ? 1 : 0;
+                var forkNumber = Mathf.FloorToInt(p.forkNumber);
+                forkNumber += Random.value < (p.forkNumber % 1) ? 1 : 0;
 
-                for (int i = 0; i < branchNumber; ++i)
+                for (int i = 0; i < forkNumber; ++i)
                 {
-                    // Branch points are always midway between two inflection points.
+                    // Fork points are always midway between two inflection points.
                     var rIdx = Random.Range(0, InflectionPts.Count - 1);
                     var index1 = InflectionPts[rIdx].Index;
                     var index2 = InflectionPts[rIdx + 1].Index;
@@ -188,7 +188,7 @@ namespace ProceduralRoguelike
                                     + dIdx * InflectionPts[rIdx].Curvature;
                     var midCurve = InflectionPts[rIdx].Curvature;
 
-                    BranchPts.Add(new FeaturePoint(Main[midIndex], midIndex, midFacing, midCurve));
+                    ForkPts.Add(new FeaturePoint(Main[midIndex], midIndex, midFacing, midCurve));
                 }
             }
         }

@@ -51,11 +51,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ef01eb831339af42b7fdd641253536d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DifficultyMultiplier: 0.35
   playerPrefab: {fileID: 1416659830590262, guid: 11a9655053daff04c87f701f5b02e756,
     type: 2}
   overWorldPrefab: {fileID: 1027493567648644, guid: a873e98dd8266b0498d55b9bd37845cb,
     type: 2}
-  dungeonPrefab: {fileID: 1819100073960492, guid: ab048007128ecac4fa970eab7492e392,
-    type: 2}
+  cavePrefab: {fileID: 1179652474278126, guid: 46cfd439a8e0a30458c00b0292ae30a3, type: 2}
   startSize: {x: 5, y: 5}
-  mainCamera: {fileID: 0}

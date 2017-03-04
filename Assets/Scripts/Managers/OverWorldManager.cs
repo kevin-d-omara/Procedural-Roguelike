@@ -17,14 +17,14 @@ namespace ProceduralRoguelike
         [Range(0f, 1.01f)]
         [SerializeField] private float enemyDensity = 0.02f;
         [Range(0f,1f)]
-        [SerializeField] private float dungeonEntranceDensity = 0.005f;
+        [SerializeField] private float caveEntranceDensity = 0.005f;
 
         protected override void Awake()
         {
             base.Awake();
 
             // Wire up holder GameObjects for organizational parenting.
-            holders.Add("DungeonEntrance", transform.Find("DungeonEntrance"));
+            holders.Add("CaveEntrance", transform.Find("CaveEntrance"));
         }
 
         protected override void OnEnable()
@@ -44,7 +44,7 @@ namespace ProceduralRoguelike
         /// </summary>
         /// <param name="location">Location in the world to center the offsets.</param>
         /// <param name="offsets">List of offsets specifying pattern to reveal.</param>
-        public override void RevealFogOfWar(Vector2 location, List<Vector2> offsets)
+        public override void RevealDarkness(Vector2 location, List<Vector2> offsets)
         {
             foreach (Vector2 offset in offsets)
             {
@@ -54,9 +54,9 @@ namespace ProceduralRoguelike
                 if (!floorTiles.TryGetValue(position, out tile))
                 {
                     AddFloorTile(position);
-                    if (Random.Range(0f, 1f) < dungeonEntranceDensity)
+                    if (Random.Range(0f, 1f) < caveEntranceDensity)
                     {
-                        AddTile(entrancePrefab, position, holders["DungeonEntrance"]);
+                        AddTile(entrancePrefab, position, holders["CaveEntrance"]);
                     }
                     else if (Random.Range(0f, 1f) < enemyDensity)
                     {

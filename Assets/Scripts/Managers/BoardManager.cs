@@ -45,12 +45,12 @@ namespace ProceduralRoguelike
 
         protected virtual void OnEnable()
         {
-            LightSource.OnIlluminate += RevealFogOfWar;
+            LightSource.OnIlluminate += RevealDarkness;
         }
 
         protected virtual void OnDisable()
         {
-            LightSource.OnIlluminate -= RevealFogOfWar;
+            LightSource.OnIlluminate -= RevealDarkness;
         }
 
 
@@ -116,6 +116,6 @@ namespace ProceduralRoguelike
         /// </summary>
         /// <param name="location">Location in the world to center the offsets.</param>
         /// <param name="offsets">List of offsets specifying pattern to reveal.</param>
-        public abstract void RevealFogOfWar(Vector2 location, List<Vector2> offsets);
+        public abstract void RevealDarkness(Vector2 location, List<Vector2> offsets);
     }
 }

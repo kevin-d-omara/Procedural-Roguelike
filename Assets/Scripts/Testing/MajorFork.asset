@@ -9,14 +9,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6e2a5d198de0b3f4b991be63384a0b8a, type: 3}
-  m_Name: BranchFirst
+  m_Name: MajorFork
   m_EditorClassIdentifier: 
-  origin: {x: -6.9401255, y: -9.187972}
-  _initialFacing: -37.81077
+  origin: {x: 0, y: 0}
+  _initialFacing: 0
   length: 15
   _curvature: 15
   stepSize: 0.25
   inflectionRate: 0.4
   bottleneckRate: 0.025
   chamberNumber: 1
-  branchNumber: 0.5
+  forkNumber: 0.5

@@ -76,10 +76,10 @@ namespace ProceduralRoguelike
         public float chamberNumber = 2.5f;
 
         /// <summary>
-        /// Number of branches in the path. Fractional values offer a chance for 1 extra branch.
-        /// [# branches/path]
+        /// Number of forks in the path. Fractional values offer a chance for 1 extra fork.
+        /// [# forks/path]
         /// </summary>
         [Range(0f, 5f)]
-        public float branchNumber = 2.5f;
+        public float forkNumber = 2.5f;
     }
 }
