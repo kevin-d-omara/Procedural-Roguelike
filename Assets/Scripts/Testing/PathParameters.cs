@@ -13,7 +13,7 @@ namespace ProceduralRoguelike
         /// <summary>
         /// Root of the path.
         /// </summary>
-        [HideInInspector] public Vector2 origin;
+        [HideInInspector] public Vector2 origin = Vector2.zero;
 
         /// <summary>
         /// Initial direction of the path, counter-clockwise. (0° == East == [+1, 0])
@@ -24,7 +24,8 @@ namespace ProceduralRoguelike
             get { return _initialFacing * Mathf.Deg2Rad; }
             set { _initialFacing = value; }
         }
-        private float _initialFacing;
+        // Serialized so clones keep the same value (i.e. through UnityEngine.Object.Instantiate()).
+        [HideInInspector] [SerializeField] private float _initialFacing = 0f;
 
         /// <summary>
         /// Length of the path.

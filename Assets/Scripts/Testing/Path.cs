@@ -81,9 +81,7 @@ namespace ProceduralRoguelike
             }
 
             // Create copy to avoid changing original Asset.
-            var originalAsset = parameterList[index];
             parameterList[index] = UnityEngine.Object.Instantiate(parameterList[index]);
-            parameterList[index].InitialFacing = originalAsset.InitialFacing * Mathf.Rad2Deg;
 
             // Create main path.
             CreatePath(parameterList[index]);
@@ -95,11 +93,10 @@ namespace ProceduralRoguelike
             foreach (FeaturePoint featurePt in BranchPts)
             {
                 parameterList[index + 1].origin = featurePt.Pt;
-                // Calculate new facing.
-                var newFacing = featurePt.Facing;
-                //Random.Range(0f, 360f);
 
-                parameterList[index + 1].InitialFacing = newFacing;
+                // Calculate new facing - branch away from direction of curve.
+                parameterList[index + 1].InitialFacing =
+                    featurePt.Facing - Random.Range(15f, 60f) * Mathf.Sign(featurePt.Curvature);
 
                 Branches.Add(new Path(parameterList, index + 1));
             }
