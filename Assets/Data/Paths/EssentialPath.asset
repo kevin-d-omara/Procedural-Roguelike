@@ -19,4 +19,4 @@ MonoBehaviour:
   inflectionRate: 0.4
   bottleneckRate: 0.025
   chamberNumber: 2
-  branchNumber: 1.5
+  forkNumber: 2.5

@@ -196,8 +196,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b0be906506ca97478469a0c801fe322, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  obstacleSet: {fileID: 11400000, guid: 638ce02f992478c4fb59c445dc953d54, type: 2}
-  enemySet: {fileID: 11400000, guid: 28f5b3c50a067504e92aaa882853a578, type: 2}
   floorPrefab: {fileID: 1824461938962674, guid: 814a547538354aa4c9d6b78321f733a8,
     type: 2}
-  exitPrefab: {fileID: 1424463981362758, guid: 089abc587836be846ad6325c4fc8b453, type: 2}
+  passagePrefab: {fileID: 1424463981362758, guid: 089abc587836be846ad6325c4fc8b453,
+    type: 2}
+  obstacleSets:
+  - {fileID: 11400000, guid: 638ce02f992478c4fb59c445dc953d54, type: 2}
+  enemySets:
+  - {fileID: 11400000, guid: 28f5b3c50a067504e92aaa882853a578, type: 2}
+  obstacleDensity: 0.15
+  enemyDensity: 0.02
+  passageDensity: 0.005
+  essentialPathParameters:
+  - {fileID: 11400000, guid: faaedf28de20d39479a9d27924b499c9, type: 2}
+  majorPathParameters:
+  - {fileID: 11400000, guid: c522a2872a5b68b4cbcc45ccac0ccc28, type: 2}
+  minorPathParameters:
+  - {fileID: 11400000, guid: c7de76bc87b3a514185852183938e837, type: 2}

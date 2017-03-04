@@ -196,12 +196,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d967553969046d44e9d6fa90072c90f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  obstacleSet: {fileID: 11400000, guid: 638ce02f992478c4fb59c445dc953d54, type: 2}
-  enemySet: {fileID: 11400000, guid: 28f5b3c50a067504e92aaa882853a578, type: 2}
+  obstacleSets:
+  - {fileID: 11400000, guid: 638ce02f992478c4fb59c445dc953d54, type: 2}
+  enemySets:
+  - {fileID: 11400000, guid: 28f5b3c50a067504e92aaa882853a578, type: 2}
   floorPrefab: {fileID: 1824461938962674, guid: 814a547538354aa4c9d6b78321f733a8,
     type: 2}
-  entrancePrefab: {fileID: 1002092664610950, guid: 539ef98c61923714ea7c15e8f1eee354,
+  passagePrefab: {fileID: 1002092664610950, guid: 539ef98c61923714ea7c15e8f1eee354,
     type: 2}
   obstacleDensity: 0.15
   enemyDensity: 0.02
-  caveEntranceDensity: 0.005
+  passageDensity: 0.005

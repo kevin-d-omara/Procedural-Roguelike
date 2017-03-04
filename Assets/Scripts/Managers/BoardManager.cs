@@ -8,25 +8,36 @@ namespace ProceduralRoguelike
 {
     public abstract class BoardManager : MonoBehaviour
     {
+        // Floor
+        [Header("Individual prefabs:")]
+        [SerializeField] protected GameObject floorPrefab;
+        protected Dictionary<Vector3, GameObject> floorTiles = new Dictionary<Vector3, GameObject>();
+        [SerializeField] protected GameObject passagePrefab;
+
         // ScriptableObject data.
         [Header("Tile sets:")]
-        [SerializeField] protected WeightedSet obstacleSet;
-        [SerializeField] protected WeightedSet enemySet;
+        [SerializeField] protected List<WeightedSet> obstacleSets;
+        [SerializeField] protected List<WeightedSet> enemySets;
 
         // Randomizers.
         protected WeightedRandomSet<GameObject> obstacles = new WeightedRandomSet<GameObject>();
         protected WeightedRandomSet<GameObject> enemies = new WeightedRandomSet<GameObject>();
 
+        // Randomizer parameters.
+        [Header("Density values:")]
+        [Range(0f, 1.01f)] [SerializeField] protected float obstacleDensity = 0.15f;
+        [Range(0f, 1.01f)] [SerializeField] protected float enemyDensity = 0.02f;
+        [Range(0f, 1f)]    [SerializeField] protected float passageDensity = 0.005f;
+
         // Parents to place instantiated tiles under for organization.
         protected Dictionary<string, Transform> holders = new Dictionary<string, Transform>();
 
-        // Floor
-        [Header("Individual prefabs:")]
-        [SerializeField] protected GameObject floorPrefab;
-        protected Dictionary<Vector3, GameObject> floorTiles = new Dictionary<Vector3, GameObject>();
-
         protected virtual void Awake()
         {
+            // Select a single obstacle set and enemy set for this BoardManager instance.
+            var obstacleSet = obstacleSets[Random.Range(0, obstacleSets.Count)];
+            var enemySet    = enemySets   [Random.Range(0, enemySets.Count)];
+
             // Transform each WeightedSet into a WeightedRandomSet
             foreach (WeightedPairGO pair in obstacleSet.list)
             {

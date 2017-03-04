@@ -8,17 +8,6 @@ namespace ProceduralRoguelike
 {
     public class OverWorldManager : BoardManager
     {
-        [SerializeField] private GameObject entrancePrefab;
-
-        // Randomizer parameters.
-        [Header("Density values:")]
-        [Range(0f, 1.01f)]
-        [SerializeField] private float obstacleDensity = 0.15f;
-        [Range(0f, 1.01f)]
-        [SerializeField] private float enemyDensity = 0.02f;
-        [Range(0f,1f)]
-        [SerializeField] private float caveEntranceDensity = 0.005f;
-
         protected override void Awake()
         {
             base.Awake();
@@ -54,9 +43,9 @@ namespace ProceduralRoguelike
                 if (!floorTiles.TryGetValue(position, out tile))
                 {
                     AddFloorTile(position);
-                    if (Random.Range(0f, 1f) < caveEntranceDensity)
+                    if (Random.Range(0f, 1f) < passageDensity)
                     {
-                        AddTile(entrancePrefab, position, holders["CaveEntrance"]);
+                        AddTile(passagePrefab, position, holders["CaveEntrance"]);
                     }
                     else if (Random.Range(0f, 1f) < enemyDensity)
                     {
