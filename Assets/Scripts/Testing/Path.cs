@@ -80,8 +80,10 @@ namespace ProceduralRoguelike
                 throw new ArgumentException("parameterList cannot be empty");
             }
 
-            // Create copy to avoid changing original ScriptableObject
+            // Create copy to avoid changing original Asset.
+            var originalAsset = parameterList[index];
             parameterList[index] = UnityEngine.Object.Instantiate(parameterList[index]);
+            parameterList[index].InitialFacing = originalAsset.InitialFacing * Mathf.Rad2Deg;
 
             // Create main path.
             CreatePath(parameterList[index]);
@@ -93,7 +95,11 @@ namespace ProceduralRoguelike
             foreach (FeaturePoint featurePt in BranchPts)
             {
                 parameterList[index + 1].origin = featurePt.Pt;
-                parameterList[index + 1].InitialFacing = Random.Range(0f, 360f);
+                // Calculate new facing.
+                var newFacing = featurePt.Facing;
+                //Random.Range(0f, 360f);
+
+                parameterList[index + 1].InitialFacing = newFacing;
 
                 Branches.Add(new Path(parameterList, index + 1));
             }
@@ -119,9 +125,6 @@ namespace ProceduralRoguelike
             BottleneckPts = new List<FeaturePoint>();
             BranchPts = new List<FeaturePoint>();
             Branches = new List<Path>();
-
-            // Convert degrees to radians.
-            p.InitialFacing *= Mathf.Deg2Rad;
 
             // Scale parameters to stepSize.
             var inflectionChance = p.inflectionRate * p.stepSize;

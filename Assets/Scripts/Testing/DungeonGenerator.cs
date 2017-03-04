@@ -22,11 +22,15 @@ namespace ProceduralRoguelike
         {
             UnityEditor.SceneView.FocusWindowIfItsOpen(typeof(UnityEditor.SceneView));
 
+            // Create copy so original Asset is not modified.
+            branchParameters[0] = UnityEngine.Object.Instantiate(branchParameters[0]);
+
             // Get origin and initialFacing from Player.
             branchParameters[0].origin = Vector2.zero;
+            branchParameters[0].InitialFacing = Random.Range(0f, 360f);
 
-            // Create essential path.
-            dungeon = new Path(branchParameters);
+           // Create essential path.
+           dungeon = new Path(branchParameters);
         }
 
         private void Start()
