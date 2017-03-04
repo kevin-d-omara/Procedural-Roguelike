@@ -198,7 +198,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   floorPrefab: {fileID: 1824461938962674, guid: 814a547538354aa4c9d6b78321f733a8,
     type: 2}
-  passagePrefab: {fileID: 1424463981362758, guid: 089abc587836be846ad6325c4fc8b453,
+  passagePrefab: {fileID: 1443244629694100, guid: 08b94ffa68691e0488ebdda60f4bb514,
     type: 2}
   obstacleSets:
   - {fileID: 11400000, guid: 638ce02f992478c4fb59c445dc953d54, type: 2}

@@ -198,7 +198,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   floorPrefab: {fileID: 1824461938962674, guid: 814a547538354aa4c9d6b78321f733a8,
     type: 2}
-  passagePrefab: {fileID: 1002092664610950, guid: 539ef98c61923714ea7c15e8f1eee354,
+  passagePrefab: {fileID: 1443244629694100, guid: 08b94ffa68691e0488ebdda60f4bb514,
     type: 2}
   obstacleSets:
   - {fileID: 11400000, guid: 638ce02f992478c4fb59c445dc953d54, type: 2}
@@ -206,4 +206,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 28f5b3c50a067504e92aaa882853a578, type: 2}
   obstacleDensity: 0.15
   enemyDensity: 0.02
-  passageDensity: 1
+  passageDensity: 0.05

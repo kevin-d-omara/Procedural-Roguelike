@@ -7,16 +7,35 @@ namespace ProceduralRoguelike
     /// <summary>
     /// The passage between two 'worlds' (i.e. OverWorld and Cave).
     /// </summary>
-	public class PassageController : Interactable
+    [RequireComponent(typeof(SpriteRenderer))]
+    [RequireComponent(typeof(TwoSidedTile))]
+    public class PassageController : Interactable
 	{
-        public delegate void EnterCave(Vector2 position);
-        public static event EnterCave OnEnterCave;
+        public delegate void EnterPassage(Vector2 position);
+        public static event EnterPassage OnEnterPassage;
 
-        public delegate void ExitCave(Vector2 position);
-        public static event ExitCave OnExitCave;
+        // Componenets
+        private SpriteRenderer spriteRenderer;
+        private TwoSidedTile twoSidedTileComponent;
 
-        private enum Type { Entrance, Exit }
-        [SerializeField] private Type type;
+        public override bool HasBeenUsed
+        {
+            get { return base.HasBeenUsed; }
+
+            set
+            {
+                base.HasBeenUsed = value;
+                if (HasBeenUsed) { twoSidedTileComponent.SetSpriteToBack(); }
+                else             { twoSidedTileComponent.SetSpriteToBack(); }
+            }
+        }
+
+        private void Awake()
+        {
+            // Get references to all components.
+            spriteRenderer = GetComponent<SpriteRenderer>();
+            twoSidedTileComponent = GetComponent<TwoSidedTile>();
+        }   
 
         protected override void OnTriggerEnter2D(Collider2D collision)
         {
@@ -25,14 +44,7 @@ namespace ProceduralRoguelike
             if (collision.attachedRigidbody.tag == "Player")
             {
                 HasBeenUsed = true;
-                if (type == Type.Entrance)
-                {
-                    if (OnEnterCave != null) { OnEnterCave(transform.position); }
-                }
-                else if (type == Type.Exit)
-                {
-                    if (OnExitCave != null) { OnExitCave(transform.position); }
-                }
+                if (OnEnterPassage != null) { OnEnterPassage(transform.position); }
             }
         }
     }

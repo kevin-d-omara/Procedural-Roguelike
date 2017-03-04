@@ -12,7 +12,6 @@ namespace ProceduralRoguelike
         // Components
         private Health healthComponent;
         private TwoSidedTile twoSidedTileComponent;
-        private Sprite sprite;
 
         private void Awake()
         {

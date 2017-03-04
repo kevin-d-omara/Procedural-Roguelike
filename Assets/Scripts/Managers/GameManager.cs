@@ -49,6 +49,7 @@ namespace ProceduralRoguelike
         private CaveManager currentCave;
         private GameObject mainCamera;
         private CameraController mainCameraController;
+        private bool isInOverWorld = true;
 
         private void Awake()
         {
@@ -67,14 +68,12 @@ namespace ProceduralRoguelike
 
         private void OnEnable()
         {
-            PassageController.OnEnterCave += OnEnterCave;
-            PassageController.OnExitCave  += OnExitCave;
+            PassageController.OnEnterPassage += OnEnterPassage;
         }
 
         private void OnDisable()
         {
-            PassageController.OnEnterCave -= OnEnterCave;
-            PassageController.OnExitCave  -= OnExitCave;
+            PassageController.OnEnterPassage -= OnEnterPassage;
         }
 
         /// <summary>
@@ -97,14 +96,10 @@ namespace ProceduralRoguelike
             mainCameraController = mainCamera.GetComponent<CameraController>();
         }
 
-        private void OnEnterCave(Vector2 caveEntrancePosition)
+        private void OnEnterPassage(Vector2 caveEntrancePosition)
         {
-            StartCoroutine(CaveTransition(caveEntrancePosition, true));
-        }
-
-        private void OnExitCave(Vector2 caveExitPosition)
-        {
-            StartCoroutine(CaveTransition(caveExitPosition, false));
+            StartCoroutine(CaveTransition(caveEntrancePosition, isInOverWorld));
+            isInOverWorld = !isInOverWorld;
         }
 
         /// <summary>
