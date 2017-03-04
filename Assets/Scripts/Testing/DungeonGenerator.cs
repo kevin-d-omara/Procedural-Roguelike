@@ -28,6 +28,7 @@ namespace ProceduralRoguelike
             essentialPathParameters.origin = Vector2.zero;
             essentialPathParameters.initialFacing = Random.Range(0f, 360f);
 
+            // Create essential path.
             essentialPath = new Path(essentialPathParameters);
         }
 
@@ -56,9 +57,9 @@ namespace ProceduralRoguelike
             }
 
             // Color inflection points.
-            foreach (Vector2 pt in essentialPath.InflectionPts)
+            foreach (Path.FeaturePoint featurePt in essentialPath.InflectionPts)
             {
-                var constrainedPt = Constrain(pt);
+                var constrainedPt = Constrain(featurePt.Pt);
 
                 GameObject tile;
                 if (tiles.TryGetValue(constrainedPt, out tile))
@@ -68,9 +69,9 @@ namespace ProceduralRoguelike
             }
 
             // Color bottleneck points.
-            foreach (Vector2 pt in essentialPath.BottleneckPts)
+            foreach (Path.FeaturePoint featurePt in essentialPath.BottleneckPts)
             {
-                var constrainedPt = Constrain(pt);
+                var constrainedPt = Constrain(featurePt.Pt);
 
                 GameObject tile;
                 if (tiles.TryGetValue(constrainedPt, out tile))

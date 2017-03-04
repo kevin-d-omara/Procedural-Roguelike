@@ -50,6 +50,13 @@ namespace ProceduralRoguelike
         public float bottleneckRate = 0.025f;
 
         /// <summary>
+        /// Number of branches in the path. Fractional values offer a chance for 1 extra branch.
+        /// [# branches/path]
+        /// </summary>
+        [Range(0f, 1f)]
+        public float branchNumber = 2.5f;
+
+        /// <summary>
         /// Distance between steps along the path.
         /// [meters]
         /// </summary>
