@@ -83,6 +83,12 @@ namespace ProceduralRoguelike
             // Create copy to avoid changing original Asset.
             parameterList[index] = UnityEngine.Object.Instantiate(parameterList[index]);
 
+            // Randomly set root level to +/- rotation.
+            if (index == 0 && Random.value < 0.5f)
+            {
+                parameterList[index].Curvature *= -Mathf.Rad2Deg;
+            }
+
             // Create main path.
             CreatePath(parameterList[index]);
 
