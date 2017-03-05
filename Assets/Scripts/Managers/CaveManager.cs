@@ -13,9 +13,60 @@ namespace ProceduralRoguelike
         public GameObject plotPrefab;
         private void PlotPoint(Vector2 position, Color color)
         {
-            return;
             var plotPt = Instantiate(plotPrefab, position, Quaternion.identity);
             plotPt.GetComponent<SpriteRenderer>().color = color;
+        }
+
+        private enum Feature { Inflection, Bottleneck, Fork, Chamber }
+        private enum Entity { Chest, Obstacle, Enemy }
+        private Dictionary<Vector2, Feature> featureTiles = new Dictionary<Vector2, Feature>();
+        private Dictionary<Vector2, Entity> entityTiles   = new Dictionary<Vector2, Entity>();
+
+        /// <summary>
+        /// Display a simple debug version of the cave.
+        /// </summary>
+        private void PlotPaintedCave()
+        {
+            foreach (KeyValuePair<Vector2, Feature> feature in featureTiles)
+            {
+                switch (feature.Value)
+                {
+                    case Feature.Bottleneck:
+                        PlotPoint(feature.Key, Color.magenta);
+                        break;
+                    case Feature.Fork:
+                        PlotPoint(feature.Key, Color.red);
+                        break;
+                    case Feature.Chamber:
+                        PlotPoint(feature.Key, Color.blue);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            foreach (KeyValuePair<Vector2, Entity> entity in entityTiles)
+            {
+                switch (entity.Value)
+                {
+                    case Entity.Chest:
+                        PlotPoint(entity.Key, Color.green);
+                        break;
+                    case Entity.Obstacle:
+                        PlotPoint(entity.Key, Color.grey);
+                        break;
+                    case Entity.Enemy:
+                        PlotPoint(entity.Key, Color.yellow);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            foreach (Vector2 pt in caveFloor)
+            {
+                PlotPoint(pt, Color.white);
+            }
         }
         // END TESTING
 
@@ -39,19 +90,20 @@ namespace ProceduralRoguelike
         private List<PathInfo>[] level;
 
         /// <summary>
-        /// Contains already placed tiles.
+        /// Set of all positions which make up the cave floor. No cave tiles may be placed outside
+        /// of this set (i.e. 
         /// </summary>
-        private Dictionary<Vector2, Tile> tiles = new Dictionary<Vector2, Tile>();
-
-        /// <summary>
-        /// Set of all positions which make up the cave (floor tiles).
-        /// </summary>
-        private HashSet<Vector2> caveTiles = new HashSet<Vector2>();
+        private HashSet<Vector2> caveFloor = new HashSet<Vector2>();
 
         /// <summary>
         /// Set of all positions which have an entity (obstacle, enemy, etc.).
         /// </summary>
         private HashSet<Vector2> caveEntity = new HashSet<Vector2>();
+
+        /// <summary>
+        /// Set of all tiles with zero choke. Don't place blocking entities on these tiles.
+        /// </summary>
+        private HashSet<Vector2> zeroChokeTiles = new HashSet<Vector2>();
 
         /// <summary>
         /// Set of all bottleneck regions
@@ -135,13 +187,14 @@ namespace ProceduralRoguelike
         /// </summary>
         private class Tile
         {
-            public readonly Vector2 position;
+            public Vector2 position;
             public float facing;
-            public int choke;   // TODO - assign and use choke value
+            public int choke;
 
-            public Tile(Vector2 position)
+            public Tile(Vector2 position, float facing)
             {
                 this.position = position;
+                this.facing = facing;
             }
         }
 
@@ -161,8 +214,8 @@ namespace ProceduralRoguelike
             public List<Vector2> forkTiles       = new List<Vector2>();
             public List<Vector2> chamberTiles    = new List<Vector2>();
 
-            // Size of each chamber.
-            public Dictionary<Vector2, int> chamberRegions = new Dictionary<Vector2, int>();
+            // Coordinates of each chamber tile.
+            public Dictionary<Vector2, List<Vector2>> chamberRegions = new Dictionary<Vector2, List<Vector2>>();
         }
 
         private Vector2 Constrain(Vector2 pt)
@@ -204,36 +257,36 @@ namespace ProceduralRoguelike
                 }
             }
 
-            // Place path tiles for each level before descending to the next.
+            // Record essential path and feature tiles for each level before descending to the next.
             for (int lvl = 0; lvl < level.Length; ++lvl)
             {
                 foreach (PathInfo pathInfo in level[lvl])
                 {
-                    // Lay floor tiles
+                    // Record path tile locations.
                     var points = pathInfo.path.Main;
                     for (int i = 0; i < points.Length; ++i)
                     {
                         var pt = Constrain(points[i].Pt);
-                        Tile tile;
-                        if (!tiles.TryGetValue(pt, out tile))
+                        if (!caveFloor.Contains(pt))
                         {
-                            tile = LayFloorTile(pt, pathInfo.tiles, Visibility.Full);
-                            tile.facing = points[i].Facing;
+                            caveFloor.Add(pt);
+                            pathInfo.tiles.Add(new Tile(pt, points[i].Facing));
                         }
                     }
 
-                    // Record feature tile locations
+                    // Record feature tile locations.
                     if (pathInfo.tiles.Count > 0)
                     {
-                        pathInfo.originTile = pathInfo.tiles[0].position;
-                        pathInfo.terminusTile = pathInfo.tiles[pathInfo.tiles.Count - 1].position;
+                        pathInfo.originTile = Constrain(pathInfo.path.Main[0].Pt);
+                        pathInfo.terminusTile = Constrain(pathInfo.path.Main[
+                            pathInfo.path.Main.Length - 1].Pt);
                     }
                     MarkFeaturePoints(pathInfo.path.InflectionPts, pathInfo.inflectionTiles);
                     MarkFeaturePoints(pathInfo.path.BottleneckPts, pathInfo.bottleneckTiles);
                     MarkFeaturePoints(pathInfo.path.ForkPts, pathInfo.forkTiles);
                     MarkFeaturePoints(pathInfo.path.ChamberPts, pathInfo.chamberTiles);
 
-                    // Mark bottleneck regions
+                    // Record bottleneck regions.
                     foreach (Vector2 bottleneckPt in pathInfo.bottleneckTiles)
                     {
                         var bounds = (pathParameters[lvl].bottleneck.Value * 2) + 1;
@@ -241,36 +294,50 @@ namespace ProceduralRoguelike
                         {
                             bottleneckRegions.Add(new Bounds(bottleneckPt,
                                 new Vector3(bounds, bounds, bounds)));
-                            PlotPoint(bottleneckPt, Color.magenta);
+                            if (!featureTiles.ContainsKey(bottleneckPt))
+                            {
+                                featureTiles.Add(bottleneckPt, Feature.Bottleneck);
+                            }
                         }
                     }
 
-                    foreach (Vector2 forkPt in pathInfo.forkTiles) { PlotPoint(forkPt, Color.red); }
+                    foreach (Vector2 forkPt in pathInfo.forkTiles)
+                    {
+                        if (!featureTiles.ContainsKey(forkPt))
+                        {
+                            featureTiles.Add(forkPt, Feature.Fork);
+                        }
+                    }
                 }
             }
 
-            // Fill in chambers (except where overlapped with bottleneck regions)
+            // Record chamber region tiles.
             for (int lvl = 0; lvl < level.Length; ++lvl)
             {
                 foreach (PathInfo pathInfo in level[lvl])
                 {
                     foreach (Vector2 chamberPt in pathInfo.chamberTiles)
                     {
-                        PlotPoint(chamberPt, Color.blue);
-
                         var sizeOfRegion = pathParameters[lvl].chamber.Value;
-                        pathInfo.chamberRegions.Add(chamberPt, sizeOfRegion);
                         var region = new LineOfSight(sizeOfRegion);
+                        var regionTiles = new List<Vector2>();
                         foreach (Vector2 offset in region.Offsets)
                         {
                             var point = chamberPt + offset;
-                            AttemptToLayFloorTile(point, pathInfo.tiles, Visibility.Full);
+                            if (!caveFloor.Contains(point)) { caveFloor.Add(point); }
+                            regionTiles.Add(point);
+                        }
+                        pathInfo.chamberRegions.Add(chamberPt, regionTiles);
+
+                        if (!featureTiles.ContainsKey(chamberPt))
+                        {
+                            featureTiles.Add(chamberPt, Feature.Chamber);
                         }
                     }
                 }
             }
 
-            // Widen each path.
+            // Record widened path.
             var directions = new char[] { 'H', 'D', 'V', 'D', 'H', 'D', 'V' ,'D', 'H' };
             for (int lvl = 0; lvl < level.Length; ++lvl)
             {
@@ -286,14 +353,16 @@ namespace ProceduralRoguelike
                         var index = (degrees + 23) / 45;
 
                         var centerPt = pathInfo.tiles[i].position;
+                        if (choke == 0) { zeroChokeTiles.Add(centerPt); }
+
                         switch (directions[index])
                         {
                             // horizontal
                             case 'H':
                                 for (int y = -choke; y <= choke; ++y)
                                 {
-                                    Vector2 newPt = centerPt + new Vector2(0, y);
-                                    AttemptToLayFloorTile(newPt, pathInfo.tiles, Visibility.Full);
+                                    var newPt = centerPt + new Vector2(0, y);
+                                    if (!caveFloor.Contains(newPt)) { caveFloor.Add(newPt); }
                                 }
                                 break;
 
@@ -301,8 +370,8 @@ namespace ProceduralRoguelike
                             case 'V':
                                 for (int x = -choke; x <= choke; ++x)
                                 {
-                                    Vector2 newPt = centerPt + new Vector2(x, 0);
-                                    AttemptToLayFloorTile(newPt, pathInfo.tiles, Visibility.Full);
+                                    var newPt = centerPt + new Vector2(x, 0);
+                                    if (!caveFloor.Contains(newPt)) { caveFloor.Add(newPt); }
                                 }
                                 break;
 
@@ -312,8 +381,8 @@ namespace ProceduralRoguelike
 
                                 foreach (Vector2 offset in region.Offsets)
                                 {
-                                    var point = centerPt + offset;
-                                    AttemptToLayFloorTile(point, pathInfo.tiles, Visibility.Full);
+                                    var newPt = centerPt + offset;
+                                    if (!caveFloor.Contains(newPt)) { caveFloor.Add(newPt); }
                                 }
                                 break;
                         }
@@ -321,8 +390,9 @@ namespace ProceduralRoguelike
                 }
             }
 
+            PlotPaintedCave();
             // --[ Fill the dungeon with loot and denizens. ]--
-            var passage = AddTile(passagePrefab, level[0][0].terminusTile, holders["CaveExit"]);
+            //var passage = AddTile(passagePrefab, level[0][0].terminusTile, holders["CaveExit"]);
 
             //      (optional) randomly pick entrance and exit locations (@ ForkPts and/or PathEnds)
             //      Place entrance and exit tiles
@@ -334,6 +404,7 @@ namespace ProceduralRoguelike
 
         }
 
+        /*
         /// <summary>
         /// Create a new floortile at the position specified and bookmark it in the dictionary.
         /// </summary>
@@ -345,7 +416,7 @@ namespace ProceduralRoguelike
         {
             var floorTile = AddFloorTile(constrainedPt);
             var tile = new Tile(constrainedPt);
-            tiles.Add(constrainedPt, tile);
+            caveFloor.Add(constrainedPt);
             tileList.Add(tile);
 
             Visible visibleComponenet = floorTile.GetComponent<Visible>();
@@ -370,7 +441,7 @@ namespace ProceduralRoguelike
             Visibility visibility)
         {
             Tile tile;
-            if (!tiles.TryGetValue(constrainedPt, out tile))
+            if (!caveFloor.Contains(constrainedPt))
             {
                 if (!IsInBottleneckRegion(constrainedPt))
                 {
@@ -380,6 +451,7 @@ namespace ProceduralRoguelike
 
             return null;
         }
+        */
 
         /// <summary>
         /// Determine if a point is inside a bottleneck region.
@@ -405,8 +477,7 @@ namespace ProceduralRoguelike
             {
                 var pt = Constrain(featurePt.Pt);
 
-                Tile tile;
-                if (tiles.TryGetValue(pt, out tile))
+                if (caveFloor.Contains(pt))
                 {
                     if (!featureTiles.Contains(pt))
                     {
@@ -427,8 +498,7 @@ namespace ProceduralRoguelike
             {
                 var pt = Constrain(featurePt);
 
-                Tile tile;
-                if (tiles.TryGetValue(pt, out tile))
+                if (caveFloor.Contains(pt))
                 {
                     if (!featureTiles.Contains(pt))
                     {
