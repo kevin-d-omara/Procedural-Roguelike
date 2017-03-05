@@ -14,6 +14,18 @@ namespace ProceduralRoguelike
         public delegate void EnterPassage(Vector2 position, PassageController passageController);
         public static event EnterPassage OnEnterPassage;
 
+        public override bool HasBeenUsed
+        {
+            get { return base.HasBeenUsed; }
+
+            set
+            {
+                base.HasBeenUsed = value;
+                if (boxCollider == null) { boxCollider = GetComponent<BoxCollider2D>(); }
+                boxCollider.enabled = !HasBeenUsed;
+            }
+        }
+
         // Componenets
         private TwoSidedTile twoSidedTileComponent;
 

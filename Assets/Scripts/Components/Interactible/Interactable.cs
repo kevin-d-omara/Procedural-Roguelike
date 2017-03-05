@@ -14,6 +14,15 @@ namespace ProceduralRoguelike
             set { _hasBeenUsed = value; }
         }
 
+        // Components
+        protected BoxCollider2D boxCollider;
+
+        protected virtual void Awake()
+        {
+            // Get references to all components.
+            boxCollider = GetComponent<BoxCollider2D>();
+        }
+
         /// <summary>
         /// Action to take when this object blocks another's movement.
         /// </summary>
