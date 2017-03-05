@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 212819308060873360}
   - component: {fileID: 61975165608468404}
   - component: {fileID: 114887123396815970}
+  - component: {fileID: 114479459626255862}
   m_Layer: 8
   m_Name: Chest
   m_TagString: DungeonEntrance
@@ -56,6 +57,18 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
+--- !u!114 &114479459626255862
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1545690713873162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac3bbffd72b7e3149be3db44a5544d0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _visibilityLevel: 0
 --- !u!114 &114887123396815970
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -67,6 +80,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c00f4554fa9e524bbee638ea96ffecc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _hasBeenUsed: 0
   chestClosed: {fileID: 21300006, guid: 4935c03520ee98a46973687879b02a31, type: 3}
   chestOpened: {fileID: 21300008, guid: 4935c03520ee98a46973687879b02a31, type: 3}
 --- !u!212 &212819308060873360

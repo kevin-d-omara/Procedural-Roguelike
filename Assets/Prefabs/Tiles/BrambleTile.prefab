@@ -24,6 +24,7 @@ GameObject:
   - component: {fileID: 114795789880565764}
   - component: {fileID: 114826743729133800}
   - component: {fileID: 114086632537887274}
+  - component: {fileID: 114936040796263748}
   m_Layer: 8
   m_Name: BrambleTile
   m_TagString: Bramble
@@ -94,6 +95,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _maxHitPoints: 4
   isHardTarget: 0
+--- !u!114 &114936040796263748
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1303947485840834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac3bbffd72b7e3149be3db44a5544d0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _visibilityLevel: 0
 --- !u!212 &212621291381772518
 SpriteRenderer:
   m_ObjectHideFlags: 1

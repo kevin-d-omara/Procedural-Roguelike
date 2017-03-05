@@ -28,6 +28,7 @@ GameObject:
   - component: {fileID: 114685383022143314}
   - component: {fileID: 114453325705142554}
   - component: {fileID: 114183675135667670}
+  - component: {fileID: 114148122680362248}
   m_Layer: 8
   m_Name: ZombieWeak
   m_TagString: Enemy
@@ -99,6 +100,18 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
+--- !u!114 &114148122680362248
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1184339373815018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac3bbffd72b7e3149be3db44a5544d0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _visibilityLevel: 0
 --- !u!114 &114183675135667670
 MonoBehaviour:
   m_ObjectHideFlags: 1

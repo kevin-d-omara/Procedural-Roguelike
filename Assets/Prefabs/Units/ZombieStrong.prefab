@@ -28,6 +28,7 @@ GameObject:
   - component: {fileID: 114868351168395258}
   - component: {fileID: 114653064982180912}
   - component: {fileID: 114299025966839386}
+  - component: {fileID: 114504541267467660}
   m_Layer: 8
   m_Name: ZombieStrong
   m_TagString: Enemy
@@ -142,6 +143,18 @@ MonoBehaviour:
   threatDistance: 5
   threatCooldown: 0.15
   target: {fileID: 1416659830590262, guid: 11a9655053daff04c87f701f5b02e756, type: 2}
+--- !u!114 &114504541267467660
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1474960654405924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac3bbffd72b7e3149be3db44a5544d0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _visibilityLevel: 0
 --- !u!114 &114653064982180912
 MonoBehaviour:
   m_ObjectHideFlags: 1
