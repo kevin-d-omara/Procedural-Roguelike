@@ -77,6 +77,42 @@ namespace ProceduralRoguelike
         /// </summary>
         private List<Bounds> bottleneckRegions = new List<Bounds>();
 
+        /// <summary>
+        /// Pairs a tile's coordinates with it's choke and facing.
+        /// </summary>
+        private class Tile
+        {
+            public Vector2 position;
+            public float facing;
+            public int choke;
+
+            public Tile(Vector2 position, float facing)
+            {
+                this.position = position;
+                this.facing = facing;
+            }
+        }
+
+        /// <summary>
+        /// Holds coordinates for each floor tile and feature tile on this path.
+        /// </summary>
+        private class PathInfo
+        {
+            public Path path;
+            public List<Tile> tiles = new List<Tile>();
+            public Vector2 originTile;
+            public Vector2 terminusTile;
+
+            // Coordinates of each feature tile.
+            public List<Vector2> inflectionTiles = new List<Vector2>();
+            public List<Vector2> bottleneckTiles = new List<Vector2>();
+            public List<Vector2> forkTiles = new List<Vector2>();
+            public List<Vector2> chamberTiles = new List<Vector2>();
+
+            // Coordinates of each chamber tile.
+            public Dictionary<Vector2, List<Vector2>> chamberRegions = new Dictionary<Vector2, List<Vector2>>();
+        }
+
         protected override void Awake()
         {
             base.Awake();
@@ -159,42 +195,6 @@ namespace ProceduralRoguelike
             }
         }
 
-        /// <summary>
-        /// Pairs a tile's coordinates with it's choke and facing.
-        /// </summary>
-        private class Tile
-        {
-            public Vector2 position;
-            public float facing;
-            public int choke;
-
-            public Tile(Vector2 position, float facing)
-            {
-                this.position = position;
-                this.facing = facing;
-            }
-        }
-
-        /// <summary>
-        /// Holds coordinates for each floor tile and feature tile on this path.
-        /// </summary>
-        private class PathInfo
-        {
-            public Path path;
-            public List<Tile> tiles = new List<Tile>();
-            public Vector2 originTile;
-            public Vector2 terminusTile;
-
-            // Coordinates of each feature tile.
-            public List<Vector2> inflectionTiles = new List<Vector2>();
-            public List<Vector2> bottleneckTiles = new List<Vector2>();
-            public List<Vector2> forkTiles       = new List<Vector2>();
-            public List<Vector2> chamberTiles    = new List<Vector2>();
-
-            // Coordinates of each chamber tile.
-            public Dictionary<Vector2, List<Vector2>> chamberRegions = new Dictionary<Vector2, List<Vector2>>();
-        }
-
         private Vector2 Constrain(Vector2 pt)
         {
             return new Vector2(Mathf.Round(pt.x), Mathf.Round(pt.y));
@@ -214,6 +214,7 @@ namespace ProceduralRoguelike
             caveEntrance = position;
             InstantiateCave();
             RecordEssentialPathAndDetails();
+            MakeEssentialPathTraversable();
             RecordChamberTiles();
             WidenPaths();
 
@@ -423,6 +424,40 @@ namespace ProceduralRoguelike
 
                     // DEBUG: record forks
                     foreach (Vector2 forkPt in pathInfo.forkTiles) { if (!featurePlots.ContainsKey(forkPt)) { featurePlots.Add(forkPt, Feature.Fork); } }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Thicken path along diagonal crossing points.
+        /// </summary>
+        private void MakeEssentialPathTraversable()
+        {
+            for (int lvl = 0; lvl < level.Length; ++lvl)
+            {
+                foreach (PathInfo pathInfo in level[lvl])
+                {
+                    var lengthOfPath = pathInfo.tiles.Count;
+                    if (lengthOfPath < 2) { continue; }
+
+                    Vector2 prev = pathInfo.tiles[0].position;
+                    for (int i = 1; i < lengthOfPath; ++i)
+                    {
+                        var curr = pathInfo.tiles[i].position;
+
+                        var dx = (int)Mathf.Abs(curr.x - prev.x);
+                        var dy = (int)Mathf.Abs(curr.y - prev.y);
+
+                        // Thicken essential path between diagonal steps.
+                        if (dx == 1 && dy == 1)
+                        {
+                            if (Random.Range(0.0f, 1.0f) <= 0.5f) { dx = 0; }
+                            else                                  { dy = 0; }
+                            caveFloor.Add(prev + new Vector2(dx, dy));
+                        }
+
+                        prev = curr;
+                    }
                 }
             }
         }
