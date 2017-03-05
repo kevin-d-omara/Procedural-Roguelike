@@ -174,7 +174,7 @@ namespace ProceduralRoguelike
                         Tile tile;
                         if (!tiles.TryGetValue(pt, out tile))
                         {
-                            tile = LayFloorTile(pt, pathInfo.tiles);
+                            tile = LayFloorTile(pt, pathInfo.tiles, Visibility.Full);
                             tile.facing = points[i].Facing;
                         }
                     }
@@ -225,7 +225,7 @@ namespace ProceduralRoguelike
                         foreach (Vector2 offset in region.Offsets)
                         {
                             var point = chamberPt + offset;
-                            AttemptToLayFloorTile(point, pathInfo.tiles);
+                            AttemptToLayFloorTile(point, pathInfo.tiles, Visibility.Full);
                         }
                     }
                 }
@@ -254,7 +254,7 @@ namespace ProceduralRoguelike
                                 for (int y = -choke; y <= choke; ++y)
                                 {
                                     Vector2 newPt = centerPt + new Vector2(0, y);
-                                    AttemptToLayFloorTile(newPt, pathInfo.tiles);
+                                    AttemptToLayFloorTile(newPt, pathInfo.tiles, Visibility.Full);
                                 }
                                 break;
 
@@ -263,7 +263,7 @@ namespace ProceduralRoguelike
                                 for (int x = -choke; x <= choke; ++x)
                                 {
                                     Vector2 newPt = centerPt + new Vector2(x, 0);
-                                    AttemptToLayFloorTile(newPt, pathInfo.tiles);
+                                    AttemptToLayFloorTile(newPt, pathInfo.tiles, Visibility.Full);
                                 }
                                 break;
 
@@ -274,7 +274,7 @@ namespace ProceduralRoguelike
                                 foreach (Vector2 offset in region.Offsets)
                                 {
                                     var point = centerPt + offset;
-                                    AttemptToLayFloorTile(point, pathInfo.tiles);
+                                    AttemptToLayFloorTile(point, pathInfo.tiles, Visibility.Full);
                                 }
                                 break;
                         }
@@ -300,13 +300,21 @@ namespace ProceduralRoguelike
         /// </summary>
         /// <param name="constrainedPt">Point which has already been constrained.</param>
         /// <param name="tileList">i.e. pathInfo.tiles</param>
+        /// /// <param name="visibility">Level of visibility to create the tile with.</param>
         /// <returns>Tile that was layed.</returns>
-        private Tile LayFloorTile(Vector2 constrainedPt, List<Tile> tileList)
+        private Tile LayFloorTile(Vector2 constrainedPt, List<Tile> tileList, Visibility visibility)
         {
-            AddFloorTile(constrainedPt);
+            var floorTile = AddFloorTile(constrainedPt);
             var tile = new Tile(constrainedPt);
             tiles.Add(constrainedPt, tile);
             tileList.Add(tile);
+
+            Visible visibleComponenet = floorTile.GetComponent<Visible>();
+            if (visibleComponenet != null)
+            {
+                visibleComponenet.VisibilityLevel = visibility;
+            }
+
             return tile;
         }
 
@@ -317,16 +325,19 @@ namespace ProceduralRoguelike
         /// <param name="constrainedPt">Point which has already been constrained.</param>
         /// <param name="tileList">i.e. pathInfo.tiles</param>
         /// <returns>Tile that was layed or null if not layed.</returns>
-        private Tile AttemptToLayFloorTile(Vector2 constrainedPt, List<Tile> tileList)
+        /// /// /// <param name="visibility">Level of visibility to create the tile with.</param>
+        private Tile AttemptToLayFloorTile(Vector2 constrainedPt, List<Tile> tileList,
+            Visibility visibility)
         {
             Tile tile;
             if (!tiles.TryGetValue(constrainedPt, out tile))
             {
                 if (!IsInBottleneckRegion(constrainedPt))
                 {
-                    return LayFloorTile(constrainedPt, tileList);
+                    return LayFloorTile(constrainedPt, tileList, visibility);
                 }
             }
+
             return null;
         }
 

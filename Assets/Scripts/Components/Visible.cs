@@ -4,14 +4,14 @@ using UnityEngine;
 
 namespace ProceduralRoguelike
 {
+    public enum Visibility { Full, Half, None }
+
     /// <summary>
     /// Gives the attached GameObject three leveles of visibility: {0, 50, 100}%
     /// </summary>
     [RequireComponent(typeof(SpriteRenderer))]
 	public class Visible : MonoBehaviour
 	{
-        public enum Visibility { Visible, HalfVisible, Invisible }
-
         public Visibility VisibilityLevel
         {
             get { return _visibilityLevel; }
@@ -45,15 +45,15 @@ namespace ProceduralRoguelike
             var color = spriteRenderer.color;
             switch(VisibilityLevel)
             {
-                case Visibility.Visible:
+                case Visibility.Full:
                     color.a = 1f;
                     break;
 
-                case Visibility.HalfVisible:
+                case Visibility.Half:
                     color.a = 0.5f;
                     break;
 
-                case Visibility.Invisible:
+                case Visibility.None:
                     color.a = 0f;
                     break;
 
