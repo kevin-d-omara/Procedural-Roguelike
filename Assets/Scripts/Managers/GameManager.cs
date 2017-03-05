@@ -123,7 +123,7 @@ namespace ProceduralRoguelike
                 // Create new cave.
                 currentCave = (Instantiate(cavePrefab, passagePosition,
                     Quaternion.identity) as GameObject).GetComponent<CaveManager>();
-                currentCave.SetupEntrance(startSize, passagePosition);
+                currentCave.SetupCave(passagePosition);
             }
             else
             {
