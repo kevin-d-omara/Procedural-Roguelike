@@ -44,5 +44,5 @@ namespace ProceduralRoguelike
                     Mathf.Abs(V.y) > 0 ? Mathf.Sign(V.y) : 0
                 );
         }
-	}
+    }
 }

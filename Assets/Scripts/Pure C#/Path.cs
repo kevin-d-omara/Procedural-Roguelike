@@ -145,7 +145,6 @@ namespace ProceduralRoguelike
             // Scale parameters to stepSize.
             var inflectionChance = p.inflectionRate * p.stepSize;
             var bottleneckChance = p.bottleneckRate * p.stepSize;
-            var chamberChance    = p.chamberNumber    * p.stepSize;
             var dTheta = p.Curvature * p.stepSize;
 
             // Create path.

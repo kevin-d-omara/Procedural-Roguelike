@@ -95,6 +95,7 @@ namespace ProceduralRoguelike
         private class Tile
         {
             public readonly Vector2 position;
+            public float facing;
             public int choke;
 
             public Tile(Vector2 position)
@@ -132,6 +133,13 @@ namespace ProceduralRoguelike
         /// <param name="location">Location in the world to center the entrance passage.</param>
         public void SetupCave(Vector2 position)
         {
+            // TESTING
+            var random = (int)System.DateTime.Now.Ticks;
+            //var random = 623006791;
+            Debug.Log(random);
+            Random.InitState(random);
+            // END TESTING
+
             // Instantiate paths for entire cave system.
             pathParameters[0].origin = position;
             pathParameters[0].InitialFacing = Random.Range(0f, 360f);
@@ -165,13 +173,17 @@ namespace ProceduralRoguelike
                         Tile tile;
                         if (!tiles.TryGetValue(pt, out tile))
                         {
-                            LayFloorTile(pt, pathInfo.tiles);
+                            tile = LayFloorTile(pt, pathInfo.tiles);
+                            tile.facing = points[i].Facing;
                         }
                     }
 
                     // Record feature tile locations
-                    pathInfo.originTile = pathInfo.tiles[0].position;
-                    pathInfo.terminusTile = pathInfo.tiles[pathInfo.tiles.Count - 1].position;
+                    if (pathInfo.tiles.Count > 0)
+                    {
+                        pathInfo.originTile = pathInfo.tiles[0].position;
+                        pathInfo.terminusTile = pathInfo.tiles[pathInfo.tiles.Count - 1].position;
+                    }
                     MarkFeaturePoints(pathInfo.path.InflectionPts, pathInfo.inflectionTiles);
                     MarkFeaturePoints(pathInfo.path.BottleneckPts, pathInfo.bottleneckTiles);
                     MarkFeaturePoints(pathInfo.path.ForkPts, pathInfo.forkTiles);
@@ -180,13 +192,20 @@ namespace ProceduralRoguelike
                     // Mark bottleneck regions
                     foreach (Vector2 bottleneckPt in pathInfo.bottleneckTiles)
                     {
-                        var bounds = pathParameters[lvl].bottleneck.Value;
+                        var bounds = (pathParameters[lvl].bottleneck.Value * 2) + 1;
                         if (bounds > 0)
                         {
                             bottlenecks.Add(new Bounds(bottleneckPt,
                                 new Vector3(bounds, bounds, bounds)));
                             PlotPoint(bottleneckPt, Color.magenta);
                         }
+                    }
+
+                    // TESTING
+                    // Plot fork points.
+                    foreach (Vector2 forkPt in pathInfo.forkTiles)
+                    {
+                        PlotPoint(forkPt, Color.red);
                     }
                 }
             }
@@ -205,39 +224,59 @@ namespace ProceduralRoguelike
                         foreach (Vector2 offset in region.Offsets)
                         {
                             var point = chamberPt + offset;
-
-                            Tile tile;
-                            if (!tiles.TryGetValue(point, out tile))
-                            {
-                                var shouldLayTile = true;
-
-                                foreach (Bounds bound in bottlenecks)
-                                {
-                                    if (bound.Contains(point))
-                                    {
-                                        shouldLayTile = false;
-                                        break;
-                                    }
-                                }
-
-                                if (shouldLayTile)
-                                {
-                                    LayFloorTile(point, pathInfo.tiles);
-                                }
-                            }
+                            AttemptToLayFloorTile(point, pathInfo.tiles);
                         }
                     }
                 }
             }
 
             // Widen each path.
+            var directions = new char[] { 'H', 'D', 'V', 'D', 'H', 'D', 'V' ,'D', 'H' };
             for (int lvl = 0; lvl < level.Length; ++lvl)
             {
                 foreach (PathInfo pathInfo in level[lvl])
                 {
-                    for (int i = 0; i < pathInfo.tiles.Count; ++i)
+                    var numTiles = pathInfo.tiles.Count;
+                    for (int i = 0; i < numTiles; ++i)
                     {
+                        var choke = pathParameters[lvl].choke.Value;
 
+                        var degrees = (int)(pathInfo.tiles[i].facing * Mathf.Rad2Deg);
+                            degrees = Mathf.Abs(degrees) % 360;
+                        var index = (degrees + 23) / 45;
+
+                        var centerPt = pathInfo.tiles[i].position;
+                        switch (directions[index])
+                        {
+                            // horizontal
+                            case 'H':
+                                for (int y = -choke; y <= choke; ++y)
+                                {
+                                    Vector2 newPt = centerPt + new Vector2(0, y);
+                                    AttemptToLayFloorTile(newPt, pathInfo.tiles);
+                                }
+                                break;
+
+                            // vertical
+                            case 'V':
+                                for (int x = -choke; x <= choke; ++x)
+                                {
+                                    Vector2 newPt = centerPt + new Vector2(x, 0);
+                                    AttemptToLayFloorTile(newPt, pathInfo.tiles);
+                                }
+                                break;
+
+                            // diagonal
+                            default:
+                                var region = new LineOfSight(choke);
+
+                                foreach (Vector2 offset in region.Offsets)
+                                {
+                                    var point = centerPt + offset;
+                                    AttemptToLayFloorTile(point, pathInfo.tiles);
+                                }
+                                break;
+                        }
                     }
                 }
             }
@@ -260,12 +299,47 @@ namespace ProceduralRoguelike
         /// </summary>
         /// <param name="constrainedPt">Point which has already been constrained.</param>
         /// <param name="tileList">i.e. pathInfo.tiles</param>
-        private void LayFloorTile(Vector2 constrainedPt, List<Tile> tileList)
+        /// <returns>Tile that was layed.</returns>
+        private Tile LayFloorTile(Vector2 constrainedPt, List<Tile> tileList)
         {
             AddFloorTile(constrainedPt);
             var tile = new Tile(constrainedPt);
             tiles.Add(constrainedPt, tile);
             tileList.Add(tile);
+            return tile;
+        }
+
+        /// <summary>
+        /// Create a new floortile at the position specified if it is not already existant and not
+        /// in a bottleneck region. Then, bookmark it in the dictionary.
+        /// </summary>
+        /// <param name="constrainedPt">Point which has already been constrained.</param>
+        /// <param name="tileList">i.e. pathInfo.tiles</param>
+        /// <returns>Tile that was layed or null if not layed.</returns>
+        private Tile AttemptToLayFloorTile(Vector2 constrainedPt, List<Tile> tileList)
+        {
+            Tile tile;
+            if (!tiles.TryGetValue(constrainedPt, out tile))
+            {
+                if (!IsInBottleneckRegion(constrainedPt))
+                {
+                    return LayFloorTile(constrainedPt, tileList);
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Determine if a point is inside a bottleneck region.
+        /// </summary>
+        /// <returns>True if the point is inside a bottleneck region, false otherwise.</returns>
+        private bool IsInBottleneckRegion(Vector2 point)
+        {
+            foreach (Bounds bound in bottlenecks)
+            {
+                if (bound.Contains(point)) { return true; }
+            }
+            return false;
         }
 
         /// <summary>
@@ -291,7 +365,7 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
-        /// Wires up the set of Feature Points (Vector2) to the Feature Tiles.
+        /// Wire up the set of Feature Points (Vector2) to the Feature Tiles.
         /// </summary>
         /// <param name="featurePoints">i.e. pathInfo.path.ChamberPts</param>
         /// <param name="featureTiles">i.e. pathInfo.chamberTiles</param>
