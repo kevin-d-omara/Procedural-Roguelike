@@ -50,7 +50,7 @@ namespace ProceduralRoguelike
             var passage = AddTile(passagePrefab, position, holders["CaveEntrance"]);
             var pController = passage.GetComponent<PassageController>();
             pController.HasBeenUsed = true;
-            StartCoroutine(CollapsePassage(pController, .33f));
+            pController.UpdateSprite();
 
             // Center tile placement on position.
             var startY = 1 - ((int)size.y + 1) / 2 + (int)position.y;
@@ -107,15 +107,6 @@ namespace ProceduralRoguelike
         {
             // Increase obstacle density by multiplier (cumulative).
             obstacleDensity *= 1.2f;
-        }
-
-        /// <summary>
-        /// Sets the Passage sprite to collapsed after a delay.
-        /// </summary>
-        private IEnumerator CollapsePassage(PassageController passageController, float delay)
-        {
-            yield return new WaitForSeconds(delay);
-            passageController.UpdateSprite();
         }
     }
 }

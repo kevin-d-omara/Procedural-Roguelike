@@ -14,11 +14,15 @@ namespace ProceduralRoguelike
         private TwoSidedTileSet.TwoSidedSprite twoSidedSprite;
         private SpriteRenderer spriteRenderer;
 
-        private void Start()
+        private void Awake()
         {
             // Get a random two-sided tile from the set.
             spriteRenderer = GetComponent<SpriteRenderer>();
             twoSidedSprite = twoSidedTileSet.RandomTwoSidedSprite;
+        }
+
+        private void Start()
+        {
             SetSpriteToFront();
         }
 

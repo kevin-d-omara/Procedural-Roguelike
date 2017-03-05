@@ -51,14 +51,10 @@ namespace ProceduralRoguelike
         /// </summary>
         public void UpdateSprite()
         {
-            if (HasBeenUsed)
-            {
-                twoSidedTileComponent.SetSpriteToBack();
-            }
-            else
-            {
-                twoSidedTileComponent.SetSpriteToFront();
-            }
+            if (twoSidedTileComponent == null) twoSidedTileComponent = GetComponent<TwoSidedTile>();
+
+            if (HasBeenUsed) { twoSidedTileComponent.SetSpriteToBack(); }
+            else             { twoSidedTileComponent.SetSpriteToFront(); }
         }
     }
 }
