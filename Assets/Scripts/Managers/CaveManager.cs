@@ -11,7 +11,23 @@ namespace ProceduralRoguelike
     /// </summary>
     public partial class CaveManager : BoardManager
     {
+        // Base class extra fields -----------------------------------------------------------------
+        // Prefabs
         [SerializeField] private GameObject rockPrefab;
+        [SerializeField] private GameObject bramblePrefab;
+
+        // ScriptableObject data.
+        [SerializeField] private List<WeightedSet> bottleneckObstacleSets;
+
+        // Randomizers.
+        protected WeightedRandomSet<GameObject> bottleneckObstacles
+            = new WeightedRandomSet<GameObject>();
+
+        // Randomizer parameters.
+        [Range(0f, 1.0f)]
+        [SerializeField]
+        protected float bottleneckObstacleDensity = 0.65f;
+        // -----------------------------------------------------------------------------------------
 
         [Header("Path parameters:")]
         [SerializeField] private List<PathParameters> essentialPathParameterSet;
@@ -31,6 +47,11 @@ namespace ProceduralRoguelike
         private List<PathInfo>[] level;
 
         /// <summary>
+        /// Location of the entrance to this cave. This is where the Player spawns.
+        /// </summary>
+        private Vector2 caveEntrance;
+
+        /// <summary>
         /// Set of all positions which make up the cave floor. No cave tiles may be placed outside
         /// of this set (i.e. 
         /// </summary>
@@ -40,6 +61,11 @@ namespace ProceduralRoguelike
         /// Set of all positions which have an entity (obstacle, enemy, etc.).
         /// </summary>
         private HashSet<Vector2> caveEntity = new HashSet<Vector2>();
+
+        /// <summary>
+        /// Set of all positions on all essential paths.
+        /// </summary>
+        private HashSet<Vector2> caveEssentialPath = new HashSet<Vector2>();
 
         /// <summary>
         /// Set of all tiles with zero choke. Don't place blocking entities on these tiles.
@@ -54,6 +80,16 @@ namespace ProceduralRoguelike
         protected override void Awake()
         {
             base.Awake();
+
+            // Select a single bottleneck set for this CaveManager instance.
+            var bottleneckSet = bottleneckObstacleSets[Random.Range(0,
+                bottleneckObstacleSets.Count)];
+
+            // Transform each WeightedSet into a WeightedRandomSet
+            foreach (WeightedPairGO pair in bottleneckSet.list)
+            {
+                bottleneckObstacles.Add(pair.item, pair.weight);
+            }
 
             // Wire up holder GameObjects for organizational parenting.
             holders.Add("CaveExit", transform.Find("CaveExit"));
@@ -94,14 +130,12 @@ namespace ProceduralRoguelike
         /// <param name="offsets">List of offsets specifying pattern to reveal.</param>
         public override void RevealDarkness(Vector2 location, List<Vector2> offsets)
         {
-            /*
             foreach (Vector2 offset in offsets)
             {
                 var position = location + offset;
 
-                Tile tile;
                 // Make pre-existing tiles visible.
-                if (tiles.TryGetValue(position, out tile))
+                if (caveFloor.Contains(position))
                 {
                     var gameObjects = Utility.FindObjectsAt(position);
                     foreach (GameObject gObject in gameObjects)
@@ -116,11 +150,13 @@ namespace ProceduralRoguelike
                 // Make non-existing tiles Rocks.
                 else
                 {
-                    var tileObject = AddTile(rockPrefab, position, holders["Obstacles"]);
-                    tiles.Add(position, new Tile(position));
+                    AddTile(floorPrefab, position, holders["Floor"]);
+                    caveFloor.Add(position);
+
+                    AddTile(rockPrefab, position, holders["Obstacles"]);
+                    caveEntity.Add(position);
                 }
             }
-            */
         }
 
         /// <summary>
@@ -171,23 +207,22 @@ namespace ProceduralRoguelike
         /// <param name="location">Location in the world to center the entrance passage.</param>
         public void SetupCave(Vector2 position)
         {
-            // TESTING
-            var random = (int)System.DateTime.Now.Ticks;
-            //var random = -1603824397;
-            Debug.Log(random);
-            Random.InitState(random);
-            // END TESTING
+            // DEBUG:
+            SetRandomState();
 
             // Create logical cave
-            InstantiateCave(position);
+            caveEntrance = position;
+            InstantiateCave();
             RecordEssentialPathAndDetails();
             RecordChamberTiles();
             WidenPaths();
 
-            PlotPaintedCave();
+            //PlotPaintedCave();
 
             // Create physical cave
-
+            LayCaveFloor();
+            LayKeyEntities();
+            LayBottleneckObstacles();
 
             // --[ Fill the dungeon with loot and denizens. ]--
             //var passage = AddTile(passagePrefab, level[0][0].terminusTile, holders["CaveExit"]);
@@ -200,6 +235,7 @@ namespace ProceduralRoguelike
             //      Spawn obstacles
             //          do not place non-bramble on choke=0 tiles
 
+            PlotPaintedCave(false);
         }
 
         /*
@@ -312,10 +348,10 @@ namespace ProceduralRoguelike
         /// Instantiate the Path's belonging to this cave.
         /// </summary>
         /// <param name="location">Location in the world to center the entrance passage.</param>
-        private void InstantiateCave(Vector2 position)
+        private void InstantiateCave()
         {
             // Instantiate paths for entire cave system.
-            pathParameters[0].origin = position;
+            pathParameters[0].origin = caveEntrance;
             pathParameters[0].InitialFacing = Random.Range(0f, 360f);
             level[0].Add(new PathInfo());
             level[0][0].path = new Path(pathParameters);
@@ -354,6 +390,7 @@ namespace ProceduralRoguelike
                         if (!caveFloor.Contains(pt))
                         {
                             caveFloor.Add(pt);
+                            caveEssentialPath.Add(pt);
                             pathInfo.tiles.Add(new Tile(pt, points[i].Facing));
                         }
                     }
@@ -473,6 +510,63 @@ namespace ProceduralRoguelike
                                     if (!caveFloor.Contains(newPt)) { caveFloor.Add(newPt); }
                                 }
                                 break;
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Instantiates floor tiles to lay the cave footprint.
+        /// </summary>
+        private void LayCaveFloor()
+        {
+            foreach (Vector2 pt in caveFloor)
+            {
+                AddFloorTile(pt);
+            }
+        }
+
+        /// <summary>
+        /// Instantiates key features: entrance passage, exit passage.
+        /// </summary>
+        private void LayKeyEntities()
+        {
+            // Create the cave entrance, then collapse it!
+            var passage = AddTile(passagePrefab, caveEntrance, holders["Passages"]);
+            var pController = passage.GetComponent<PassageController>();
+            pController.HasBeenUsed = true;
+            pController.UpdateSprite();
+            caveEntity.Add(caveEntrance);
+
+            // Create the cave exit.
+            var exitPt = level[0][0].terminusTile;
+            AddTile(passagePrefab, exitPt, holders["Passages"]);
+            caveEntity.Add(exitPt);
+        }
+
+        /// <summary>
+        /// Instantiates obstacles within all bottleneck regions.
+        /// </summary>
+        private void LayBottleneckObstacles()
+        {
+            foreach (Bounds bound in bottleneckRegions)
+            {
+                var centerPt = (Vector2)bound.center;
+                var radius = (int)bound.extents.x;
+                var region = new LineOfSight(radius);
+
+                // TODO: add jitter to *outer* size
+                foreach (Vector2 offset in region.Offsets)
+                {
+                    var position = centerPt + offset;
+
+                    if (Random.value < bottleneckObstacleDensity && !caveEntity.Contains(position))
+                    {
+                        if (!caveEssentialPath.Contains(position))
+                        {
+                            AddTile(bottleneckObstacles.RandomItem(), position, holders["Obstacles"]);
+                            caveEntity.Add(position);
                         }
                     }
                 }

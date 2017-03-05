@@ -7,6 +7,17 @@ namespace ProceduralRoguelike
     // This file contains all the debug methods which extend CaveManager.
     public partial class CaveManager : BoardManager
     {
+        /// <summary>
+        /// Set the seed to a random or specific value.
+        /// </summary>
+        private void SetRandomState()
+        {
+            var random = (int)System.DateTime.Now.Ticks;
+            //var random = -1603824397;
+            Debug.Log(random); Random.InitState(random);
+
+        }
+
         public GameObject plotPrefab;
         private enum Feature { Bottleneck, Fork, Chamber }
         private enum Entity { Chest, Obstacle, Enemy }
@@ -24,7 +35,7 @@ namespace ProceduralRoguelike
         /// <summary>
         /// Display a simple debug version of the cave.
         /// </summary>
-        private void PlotPaintedCave()
+        private void PlotPaintedCave(bool allTiles)
         {
             // Plot feature points.
             foreach (KeyValuePair<Vector2, Feature> feature in featurePlots)
@@ -64,10 +75,13 @@ namespace ProceduralRoguelike
                 }
             }
 
-            // Plot cave floor.
-            foreach (Vector2 pt in caveFloor)
+            if (allTiles)
             {
-                PlotPoint(pt, Color.white);
+                // Plot cave floor.
+                foreach (Vector2 pt in caveFloor)
+                {
+                    PlotPoint(pt, Color.white);
+                }
             }
         }
 
@@ -77,6 +91,7 @@ namespace ProceduralRoguelike
         private void PlotPoint(Vector2 position, Color color)
         {
             var plotPt = Instantiate(plotPrefab, position, Quaternion.identity);
+            color.a = .05f;
             plotPt.GetComponent<SpriteRenderer>().color = color;
         }
     }

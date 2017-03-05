@@ -52,6 +52,7 @@ namespace ProceduralRoguelike
             holders.Add("Floor", transform.Find("Floor"));
             holders.Add("Obstacles", transform.Find("Obstacles"));
             holders.Add("Enemies", transform.Find("Enemies"));
+            holders.Add("Passages", transform.Find("Passages"));
         }
 
         protected virtual void OnEnable()

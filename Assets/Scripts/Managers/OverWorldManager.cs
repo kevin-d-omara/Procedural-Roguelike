@@ -8,14 +8,6 @@ namespace ProceduralRoguelike
 {
     public class OverWorldManager : BoardManager
     {
-        protected override void Awake()
-        {
-            base.Awake();
-
-            // Wire up holder GameObjects for organizational parenting.
-            holders.Add("CaveEntrance", transform.Find("CaveEntrance"));
-        }
-
         protected override void OnEnable()
         {
             base.OnEnable();
@@ -47,7 +39,7 @@ namespace ProceduralRoguelike
             }
 
             // Create (and then collapse) a passage at the entrance location.
-            var passage = AddTile(passagePrefab, position, holders["CaveEntrance"]);
+            var passage = AddTile(passagePrefab, position, holders["Passages"]);
             var pController = passage.GetComponent<PassageController>();
             pController.HasBeenUsed = true;
             pController.UpdateSprite();
@@ -89,7 +81,7 @@ namespace ProceduralRoguelike
                     AddFloorTile(position);
                     if (Random.Range(0f, 1f) < passageDensity)
                     {
-                        AddTile(passagePrefab, position, holders["CaveEntrance"]);
+                        AddTile(passagePrefab, position, holders["Passages"]);
                     }
                     else if (Random.Range(0f, 1f) < enemyDensity)
                     {
