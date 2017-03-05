@@ -59,6 +59,11 @@ namespace ProceduralRoguelike
         /// </summary>
         private BoxCollider2D boxCollider;
 
+        /// <summary>
+        /// Layer on which collision will be checked.
+        /// </summary>
+        [SerializeField] private LayerMask blockingLayer;
+
         private void Awake()
         {
             IsOnCooldown = false;
@@ -102,7 +107,7 @@ namespace ProceduralRoguelike
 
             // Raycast to check if target exits.
             boxCollider.enabled = false;
-            var hit = Physics2D.Raycast(transform.position, direction, range);
+            var hit = Physics2D.Raycast(transform.position, direction, range, blockingLayer);
             boxCollider.enabled = true;
 
             if (hit.transform != null)

@@ -116,6 +116,9 @@ MonoBehaviour:
   damage: 2
   range: 1.4
   _isHardAttack: 0
+  blockingLayer:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!114 &114395627649689354
 MonoBehaviour:
   m_ObjectHideFlags: 1
