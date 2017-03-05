@@ -64,45 +64,6 @@ namespace ProceduralRoguelike
             LightSource.OnIlluminate -= RevealDarkness;
         }
 
-
-        /// <summary>
-        /// Creates an entrance location of to board. This is an "m x n" rectangle of floor
-        /// tiles centered at the specified position.
-        /// </summary>
-        /// <param name="size">Width and Height of the starting location.</param>
-        /// <param name="position">Position to center starting location at.</param>
-        public virtual void SetupEntrance(Vector2 size, Vector2 position)
-        {
-            // Clear blocking tiles at center position.
-            var blockingObjects = Utility.FindObjectsAt(position);
-            foreach (GameObject blockingObject in blockingObjects)
-            {
-                if (blockingObject.tag != "Player")
-                {
-                    Destroy(blockingObject);
-                }
-            }
-
-            // Center tile placement on position.
-            var startY = 1 - ((int)size.y + 1) / 2 + (int)position.y;
-            var startX = 1 - ((int)size.x + 1) / 2 + (int)position.x;
-            var endY = (int)size.y - ((int)size.y + 1) / 2 + (int)position.y;
-            var endX = (int)size.x - ((int)size.x + 1) / 2 + (int)position.x;
-
-            // Place floor tiles in "m x n" rectangle.
-            for (int y = startY; y <= endY; ++y)
-            {
-                for (int x = startX; x <= endX; ++x)
-                {
-                    var newPosition = new Vector2(x, y);
-                    if (!floorTiles.ContainsKey(newPosition))
-                    {
-                        AddFloorTile(newPosition);
-                    }
-                }
-            }
-        }
-
         /// <summary>
         /// Creates a new tile at the position specified.
         /// </summary>
