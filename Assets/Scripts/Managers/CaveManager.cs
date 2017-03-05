@@ -21,9 +21,9 @@ namespace ProceduralRoguelike
         private List<PathParameters> pathParameters = new List<PathParameters>();
 
         /// <summary>
-        /// Each element holds all paths on that level.
+        /// Each element holds a PathInfo for each path on that level.
         /// </summary>
-        private PathInfo[] level;
+        private List<PathInfo>[] level;
 
         /// <summary>
         /// Contains already placed tiles.
@@ -51,8 +51,8 @@ namespace ProceduralRoguelike
                 pathParameters.Add(minorPathParameterSet[Random.Range(0,
                     minorPathParameterSet.Count)]);
             }
-            level = new PathInfo[pathParameters.Count];
-            for (int i = 0; i < level.Length; ++i) { level[i] = new PathInfo(); }
+            level = new List<PathInfo>[pathParameters.Count];
+            for (int i = 0; i < level.Length; ++i) { level[i] = new List<PathInfo>(); }
 
             // Create copy so original Asset is not modified.
             pathParameters[0] = UnityEngine.Object.Instantiate(pathParameters[0]);
@@ -75,12 +75,11 @@ namespace ProceduralRoguelike
         private class Tile
         {
             public readonly Vector2 position;
-            public readonly int choke;
+            public int choke;
 
-            public Tile(Vector2 position, int choke)
+            public Tile(Vector2 position)
             {
                 this.position = position;
-                this.choke = choke;
             }
         }
 
@@ -89,9 +88,10 @@ namespace ProceduralRoguelike
         /// </summary>
         private class PathInfo
         {
-            public List<Path> paths = new List<Path>();
+            public Path path;
             public List<Tile> tiles = new List<Tile>();
-            public Vector2 origin;
+            public Vector2 originTile;
+            public Vector2 terminusTile;
 
             // Coordinates of each feature tile.
             public List<Vector2> inflectionTiles = new List<Vector2>();
@@ -115,34 +115,57 @@ namespace ProceduralRoguelike
             // Create set of paths for entire cave system.
             pathParameters[0].origin = position;
             pathParameters[0].InitialFacing = Random.Range(0f, 360f);
-            level[0].paths.Add(new Path(pathParameters));
-            level[0].origin = position;
+            level[0].Add(new PathInfo());
+            level[0][0].path = new Path(pathParameters);
 
             // Get pointers to each path on each level.
             for (int i = 1; i < level.Length; ++i)
             {
-                foreach (Path path in level[i - 1].paths)
+                foreach (PathInfo pathInfo in level[i - 1])
                 {
-                    level[i].paths.Add(path);
+                    foreach (Path path in pathInfo.path.Forks)
+                    {
+                        var newPathInfo = new PathInfo();
+                        newPathInfo.path = path;
+                        level[i].Add(newPathInfo);
+                    }
                 }
             }
 
             // --[ Fill in floor tiles for each path and chamber. ]--
             // Starting with the root level, fill in all floor tiles.
 
-            // Mark origin.
-            Tile tile;
-            if (tiles.TryGetValue(level[0].origin, out tile)) { }
-            else
+            // Place all tiles for a given level before descending to a lower level.
+            for (int lvl = 0; lvl < level.Length; ++lvl)
             {
-                AddFloorTile(level[0].origin);
+                foreach (PathInfo pathInfo in level[lvl])
+                {
+                    // Lay floor tiles
+                    var points = pathInfo.path.Main;
+                    for (int i = 0; i < points.Length; ++i)
+                    {
+                        var pt = Constrain(points[i]);
+                        Tile tile;
+                        if (!tiles.TryGetValue(pt, out tile))
+                        {
+                            AddFloorTile(pt);
+                            tile = new Tile(pt);
+                            tiles.Add(pt, tile);
+                            pathInfo.tiles.Add(tile);
+                        }
+                    }
+
+                    // Record feature tile locations
+
+                    // record origin tile
+                    // record terminus tile
+                    // record inflection tiles
+                    // record bottleneck tiles
+                    // record chamber tiles
+                    // record fork tiles
+                }
             }
 
-
-            for (int i = 0; i < pathParameters.Count; ++i)
-            {
-
-            }
 
 
             //      Mark bottleneck regions
@@ -156,7 +179,7 @@ namespace ProceduralRoguelike
             //      Spawn chests
             //      Spawn enemies
             //      Spawn obstacles
-            //          do not place non-bramble on choke 0 tiles
+            //          do not place non-bramble on choke=0 tiles
 
         }
     }
