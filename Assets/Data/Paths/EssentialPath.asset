@@ -13,7 +13,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   origin: {x: 0, y: 0}
   _initialFacing: 0
-  length: 80
+  length: 60
   _curvature: 15
   stepSize: 0.25
   inflectionRate: 0.4
@@ -21,20 +21,20 @@ MonoBehaviour:
   chamberNumber: 1.5
   forkNumber: 1.5
   choke:
-    min: 2
-    max: 2
-    jitterSize: 0
-    jitterRate: 0
+    min: 3
+    max: 3
+    jitterSize: 2
+    jitterRate: 1
     _value: 0
   bottleneck:
     min: 2
-    max: 2
-    jitterSize: 0
-    jitterRate: 0
+    max: 3
+    jitterSize: 1
+    jitterRate: 0.5
     _value: 0
   chamber:
-    min: 2
-    max: 2
-    jitterSize: 0
-    jitterRate: 0
+    min: 3
+    max: 4
+    jitterSize: 1
+    jitterRate: 0.5
     _value: 0

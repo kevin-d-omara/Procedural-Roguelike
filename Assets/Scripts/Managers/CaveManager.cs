@@ -14,6 +14,7 @@ namespace ProceduralRoguelike
 
         private void PlotPoint(Vector2 position, Color color)
         {
+            return;
             var plotPt = Instantiate(plotPrefab, position, Quaternion.identity);
             plotPt.GetComponent<SpriteRenderer>().color = color;
         }
@@ -96,7 +97,7 @@ namespace ProceduralRoguelike
         {
             public readonly Vector2 position;
             public float facing;
-            public int choke;
+            public int choke;   // TODO - assign and use choke value
 
             public Tile(Vector2 position)
             {
@@ -135,7 +136,7 @@ namespace ProceduralRoguelike
         {
             // TESTING
             var random = (int)System.DateTime.Now.Ticks;
-            //var random = 623006791;
+            //var random = -1603824397;
             Debug.Log(random);
             Random.InitState(random);
             // END TESTING
@@ -281,9 +282,9 @@ namespace ProceduralRoguelike
                 }
             }
 
-            //      Expand essential paths via Choke & Jitter
-
             // --[ Fill the dungeon with loot and denizens. ]--
+            AddTile(passagePrefab, level[0][0].terminusTile, holders["CaveExit"]);
+
             //      (optional) randomly pick entrance and exit locations (@ ForkPts and/or PathEnds)
             //      Place entrance and exit tiles
             //      Spawn gems

@@ -125,7 +125,7 @@ namespace ProceduralRoguelike
             public float jitterRate;
 
             /// <summary>
-            /// Get: current setting w/ chance for jitter.
+            /// Value of the current setting w/ a chance for jitter. Value always >= 0.
             /// </summary>
             public int Value
             {
@@ -137,7 +137,7 @@ namespace ProceduralRoguelike
                     {
                         measurement += Random.Range(-jitterSize, jitterSize + 1);
                     }
-                    return measurement;
+                    return measurement > 0 ? measurement : 0;
                 }
                 private set { _value = value; }
             }

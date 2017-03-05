@@ -11,20 +11,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e2a5d198de0b3f4b991be63384a0b8a, type: 3}
   m_Name: MinorFork
   m_EditorClassIdentifier: 
-  origin: {x: -31.218834, y: -3.3818467}
-  _initialFacing: 27.424763
-  length: 5
+  origin: {x: 4.681099, y: 39.0102}
+  _initialFacing: -21.42902
+  length: 6
   _curvature: 15
   stepSize: 0.25
   inflectionRate: 0.4
-  bottleneckRate: 0.025
+  bottleneckRate: 0
   chamberNumber: 0
   forkNumber: 0
   choke:
     min: 0
     max: 0
-    jitterSize: 0
-    jitterRate: 0
+    jitterSize: 1
+    jitterRate: 0.5
     _value: 0
   bottleneck:
     min: 0

@@ -11,31 +11,17 @@ namespace ProceduralRoguelike
     [RequireComponent(typeof(TwoSidedTile))]
     public class PassageController : Interactable
 	{
-        public delegate void EnterPassage(Vector2 position);
+        public delegate void EnterPassage(Vector2 position, PassageController passageController);
         public static event EnterPassage OnEnterPassage;
 
         // Componenets
-        private SpriteRenderer spriteRenderer;
         private TwoSidedTile twoSidedTileComponent;
-
-        public override bool HasBeenUsed
-        {
-            get { return base.HasBeenUsed; }
-
-            set
-            {
-                base.HasBeenUsed = value;
-                if (HasBeenUsed) { twoSidedTileComponent.SetSpriteToBack(); }
-                else             { twoSidedTileComponent.SetSpriteToBack(); }
-            }
-        }
 
         private void Awake()
         {
             // Get references to all components.
-            spriteRenderer = GetComponent<SpriteRenderer>();
             twoSidedTileComponent = GetComponent<TwoSidedTile>();
-        }   
+        }
 
         protected override void OnTriggerEnter2D(Collider2D collision)
         {
@@ -44,7 +30,22 @@ namespace ProceduralRoguelike
             if (collision.attachedRigidbody.tag == "Player")
             {
                 HasBeenUsed = true;
-                if (OnEnterPassage != null) { OnEnterPassage(transform.position); }
+                if (OnEnterPassage != null) { OnEnterPassage(transform.position, this); }
+            }
+        }
+
+        /// <summary>
+        /// Toggle the passage sprite to the opposite side.
+        /// </summary>
+        public void UpdateSprite()
+        {
+            if (HasBeenUsed)
+            {
+                twoSidedTileComponent.SetSpriteToBack();
+            }
+            else
+            {
+                twoSidedTileComponent.SetSpriteToFront();
             }
         }
     }

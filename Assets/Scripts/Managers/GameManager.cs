@@ -96,20 +96,22 @@ namespace ProceduralRoguelike
             mainCameraController = mainCamera.GetComponent<CameraController>();
         }
 
-        private void OnEnterPassage(Vector2 caveEntrancePosition)
+        private void OnEnterPassage(Vector2 caveEntrancePosition, PassageController pController)
         {
-            StartCoroutine(CaveTransition(caveEntrancePosition, isInOverWorld));
+            StartCoroutine(CaveTransition(caveEntrancePosition, isInOverWorld, pController));
             isInOverWorld = !isInOverWorld;
         }
 
         /// <summary>
         /// Fade camera out to black. Transition to new world (OverWorld <=> Cave). Fade back in.
         /// </summary>
-        private IEnumerator CaveTransition(Vector2 passagePosition, bool entering)
+        private IEnumerator CaveTransition(Vector2 passagePosition, bool entering,
+            PassageController passageController)
         {
             if (OnPassageTransition != null) { OnPassageTransition(Timing.Start, passagePosition); }
             mainCameraController.FadeOut();
             yield return new WaitForSeconds(mainCameraController.FadeTime);
+            passageController.UpdateSprite();
 
             // Transition between worlds.
             if (entering)

@@ -67,10 +67,11 @@ namespace ProceduralRoguelike
         /// <summary>
         /// Creates a new tile at the position specified.
         /// </summary>
-        protected void AddTile(GameObject prefab, Vector2 position, Transform holder)
+        protected GameObject AddTile(GameObject prefab, Vector2 position, Transform holder)
         {
             var instance = Instantiate(prefab, position, Quaternion.identity)  as GameObject;
             instance.transform.SetParent(holder);
+            return instance;
         }
 
         /// <summary>
