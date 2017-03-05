@@ -152,7 +152,7 @@ namespace ProceduralRoguelike
                 }
             }
 
-            // Place tiles for each level before descending to the next.
+            // Place path tiles for each level before descending to the next.
             for (int lvl = 0; lvl < level.Length; ++lvl)
             {
                 foreach (PathInfo pathInfo in level[lvl])
@@ -161,7 +161,7 @@ namespace ProceduralRoguelike
                     var points = pathInfo.path.Main;
                     for (int i = 0; i < points.Length; ++i)
                     {
-                        var pt = Constrain(points[i]);
+                        var pt = Constrain(points[i].Pt);
                         Tile tile;
                         if (!tiles.TryGetValue(pt, out tile))
                         {
@@ -230,6 +230,17 @@ namespace ProceduralRoguelike
                 }
             }
 
+            // Widen each path.
+            for (int lvl = 0; lvl < level.Length; ++lvl)
+            {
+                foreach (PathInfo pathInfo in level[lvl])
+                {
+                    for (int i = 0; i < pathInfo.tiles.Count; ++i)
+                    {
+
+                    }
+                }
+            }
 
             //      Expand essential paths via Choke & Jitter
 

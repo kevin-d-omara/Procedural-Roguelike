@@ -12,9 +12,9 @@ namespace ProceduralRoguelike
 	public class Path
 	{
         /// <summary>
-        /// Point along the Main path which is notable for some feature (inflection, fork, etc.).
+        /// Point along the Main path.
         /// </summary>
-        public class FeaturePoint
+        public class Point
         {
             /// <summary>
             /// Where this point is in space.
@@ -22,15 +22,27 @@ namespace ProceduralRoguelike
             public Vector2 Pt { get; private set; }
 
             /// <summary>
-            /// Index into Path.Main where this point is.
-            /// </summary>
-            public int Index { get; private set; }
-
-            /// <summary>
             /// Direction of the path at this point, counter-clockwise. (0° == East == [+1, 0])
             /// [radians]
             /// </summary>
             public float Facing { get; private set; }
+
+            public Point(Vector2 pt, float facing)
+            {
+                Pt = pt;
+                Facing = facing;
+            }
+        }
+
+        /// <summary>
+        /// Point along the Main path which is notable for some feature (inflection, fork, etc.).
+        /// </summary>
+        public class FeaturePoint : Point
+        {
+            /// <summary>
+            /// Index into Path.Main where this point is.
+            /// </summary>
+            public int Index { get; private set; }
 
             /// <summary>
             /// Curvature of the path at this point.
@@ -39,10 +51,9 @@ namespace ProceduralRoguelike
             public float Curvature { get; private set; }
 
             public FeaturePoint(Vector2 pt, int index, float facing, float curvature)
+                : base(pt, facing)
             {
-                Pt = pt;
                 Index = index;
-                Facing = facing;
                 Curvature = curvature;
             }
         }
@@ -50,7 +61,7 @@ namespace ProceduralRoguelike
         /// <summary>
         /// Points creating the main path and on which feature points sit.
         /// </summary>
-		public Vector2[] Main { get; private set; }
+		public Point[] Main { get; private set; }
 
         public List<FeaturePoint> InflectionPts { get; private set; }
         public List<FeaturePoint> BottleneckPts { get; private set; }
@@ -123,8 +134,8 @@ namespace ProceduralRoguelike
         private void CreatePath(PathParameters p)
         {
             // Allocate storage.
-            Main = new Vector2[Mathf.RoundToInt(p.length * 1f / p.stepSize)];
-            Main[0] = p.origin;
+            Main = new Point[Mathf.RoundToInt(p.length * 1f / p.stepSize)];
+            Main[0] = new Point(p.origin, p.InitialFacing);
             InflectionPts = new List<FeaturePoint>();
             BottleneckPts = new List<FeaturePoint>();
             ForkPts       = new List<FeaturePoint>();
@@ -144,17 +155,17 @@ namespace ProceduralRoguelike
                 // Move one step along the path.
                 theta += dTheta;
                 var dV = new Vector2(p.stepSize * Mathf.Cos(theta), p.stepSize * Mathf.Sin(theta));
-                Main[i] = Main[i - 1] + dV;
+                Main[i] = new Point(Main[i - 1].Pt + dV, theta);
 
                 // Mark feature points.
                 if (Random.value < bottleneckChance)
                 {
-                    BottleneckPts.Add(new FeaturePoint(Main[i - 1], i, theta, dTheta));
+                    BottleneckPts.Add(new FeaturePoint(Main[i - 1].Pt, i, theta, dTheta));
                 }
                 else if (Random.value < inflectionChance)
                 {
                     dTheta = -dTheta;
-                    InflectionPts.Add(new FeaturePoint(Main[i - 1], i, theta, dTheta));
+                    InflectionPts.Add(new FeaturePoint(Main[i - 1].Pt, i, theta, dTheta));
                 }
             }
 
@@ -165,7 +176,7 @@ namespace ProceduralRoguelike
             for (int i = 0; i < chamberNumber; ++i)
             {
                 var rIdx = Random.Range(0, Main.Length);
-                ChamberPts.Add(Main[rIdx]);
+                ChamberPts.Add(Main[rIdx].Pt);
             }
 
             // Mark fork points. Must have at least 2 inflection points.
@@ -188,7 +199,7 @@ namespace ProceduralRoguelike
                                     + dIdx * InflectionPts[rIdx].Curvature;
                     var midCurve = InflectionPts[rIdx].Curvature;
 
-                    ForkPts.Add(new FeaturePoint(Main[midIndex], midIndex, midFacing, midCurve));
+                    ForkPts.Add(new FeaturePoint(Main[midIndex].Pt, midIndex, midFacing, midCurve));
                 }
             }
         }

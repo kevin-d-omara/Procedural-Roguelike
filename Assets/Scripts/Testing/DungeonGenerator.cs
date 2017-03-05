@@ -52,9 +52,9 @@ namespace ProceduralRoguelike
         private void PlotConstrainedPoints(Path path, Dictionary<Vector2, GameObject> tiles)
         {
             // Mark origin.
-            var origin = Instantiate(plotPoint, Constrain(path.Main[0]), Quaternion.identity);
+            var origin = Instantiate(plotPoint, Constrain(path.Main[0].Pt), Quaternion.identity);
             origin.GetComponent<SpriteRenderer>().color = Color.red;
-            tiles.Add(Constrain(path.Main[0]), origin);
+            tiles.Add(Constrain(path.Main[0].Pt), origin);
 
             // Plot path.
             PlotPoints(path.Main, Color.white, tiles);
@@ -72,11 +72,11 @@ namespace ProceduralRoguelike
             ColorFeaturePoints(path.ForkPts, Color.red, tiles);
         }
 
-        private void PlotPoints(Vector2[] array, Color color, Dictionary<Vector2, GameObject> tiles)
+        private void PlotPoints(Path.Point[] array, Color color, Dictionary<Vector2, GameObject> tiles)
         {
-            foreach (Vector2 pt in array)
+            foreach (Path.Point pt in array)
             {
-                var constrainedPt = Constrain(pt);
+                var constrainedPt = Constrain(pt.Pt);
 
                 if (!tiles.ContainsKey(constrainedPt))
                 {
