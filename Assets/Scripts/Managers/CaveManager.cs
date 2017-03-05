@@ -37,13 +37,26 @@ namespace ProceduralRoguelike
         /// Each element holds a PathInfo for each path on that level.
         /// </summary>
         private List<PathInfo>[] level;
-        private List<Bounds> bottlenecks = new List<Bounds>();
 
         /// <summary>
         /// Contains already placed tiles.
         /// </summary>
         private Dictionary<Vector2, Tile> tiles = new Dictionary<Vector2, Tile>();
 
+        /// <summary>
+        /// Set of all positions which make up the cave (floor tiles).
+        /// </summary>
+        private HashSet<Vector2> caveTiles = new HashSet<Vector2>();
+
+        /// <summary>
+        /// Set of all positions which have an entity (obstacle, enemy, etc.).
+        /// </summary>
+        private HashSet<Vector2> caveEntity = new HashSet<Vector2>();
+
+        /// <summary>
+        /// Set of all bottleneck regions
+        /// </summary>
+        private List<Bounds> bottleneckRegions = new List<Bounds>();
 
         protected override void Awake()
         {
@@ -118,7 +131,7 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
-        /// Pairs a tile's coordinates with it's choke.
+        /// Pairs a tile's coordinates with it's choke and facing.
         /// </summary>
         private class Tile
         {
@@ -147,6 +160,9 @@ namespace ProceduralRoguelike
             public List<Vector2> bottleneckTiles = new List<Vector2>();
             public List<Vector2> forkTiles       = new List<Vector2>();
             public List<Vector2> chamberTiles    = new List<Vector2>();
+
+            // Size of each chamber.
+            public Dictionary<Vector2, int> chamberRegions = new Dictionary<Vector2, int>();
         }
 
         private Vector2 Constrain(Vector2 pt)
@@ -223,18 +239,13 @@ namespace ProceduralRoguelike
                         var bounds = (pathParameters[lvl].bottleneck.Value * 2) + 1;
                         if (bounds > 0)
                         {
-                            bottlenecks.Add(new Bounds(bottleneckPt,
+                            bottleneckRegions.Add(new Bounds(bottleneckPt,
                                 new Vector3(bounds, bounds, bounds)));
                             PlotPoint(bottleneckPt, Color.magenta);
                         }
                     }
 
-                    // TESTING
-                    // Plot fork points.
-                    foreach (Vector2 forkPt in pathInfo.forkTiles)
-                    {
-                        PlotPoint(forkPt, Color.red);
-                    }
+                    foreach (Vector2 forkPt in pathInfo.forkTiles) { PlotPoint(forkPt, Color.red); }
                 }
             }
 
@@ -248,6 +259,7 @@ namespace ProceduralRoguelike
                         PlotPoint(chamberPt, Color.blue);
 
                         var sizeOfRegion = pathParameters[lvl].chamber.Value;
+                        pathInfo.chamberRegions.Add(chamberPt, sizeOfRegion);
                         var region = new LineOfSight(sizeOfRegion);
                         foreach (Vector2 offset in region.Offsets)
                         {
@@ -375,7 +387,7 @@ namespace ProceduralRoguelike
         /// <returns>True if the point is inside a bottleneck region, false otherwise.</returns>
         private bool IsInBottleneckRegion(Vector2 point)
         {
-            foreach (Bounds bound in bottlenecks)
+            foreach (Bounds bound in bottleneckRegions)
             {
                 if (bound.Contains(point)) { return true; }
             }
