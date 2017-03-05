@@ -12,10 +12,9 @@ namespace ProceduralRoguelike
         /// </summary>
         private void SetRandomState()
         {
-            //var random = (int)System.DateTime.Now.Ticks;
-            var random = -1212239271;
+            var random = (int)System.DateTime.Now.Ticks;
+            //var random = 1617558274;
             Debug.Log(random); Random.InitState(random);
-
         }
 
         public GameObject plotPrefab;

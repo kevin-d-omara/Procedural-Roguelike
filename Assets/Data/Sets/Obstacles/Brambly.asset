@@ -9,7 +9,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 013bfb700ade3324a8fe814a49e9b9ff, type: 3}
-  m_Name: ObstacleSet
+  m_Name: Brambly
   m_EditorClassIdentifier: 
   list:
   - item: {fileID: 1303947485840834, guid: 256a90fede0869d4dbdec4f36edf1522, type: 2}

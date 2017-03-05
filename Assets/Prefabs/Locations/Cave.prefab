@@ -201,7 +201,7 @@ MonoBehaviour:
   passagePrefab: {fileID: 1443244629694100, guid: 08b94ffa68691e0488ebdda60f4bb514,
     type: 2}
   obstacleSets:
-  - {fileID: 11400000, guid: 638ce02f992478c4fb59c445dc953d54, type: 2}
+  - {fileID: 11400000, guid: 7fa60a3303889dd4ba1cce6919ad2734, type: 2}
   enemySets:
   - {fileID: 11400000, guid: 28f5b3c50a067504e92aaa882853a578, type: 2}
   itemSets:
@@ -216,6 +216,8 @@ MonoBehaviour:
   bottleneckObstacleSets:
   - {fileID: 11400000, guid: 1c3fcc0147713ed449dead47ed2e44a6, type: 2}
   bottleneckObstacleDensity: 0.65
+  ambientVisibility: 0
+  entityVisibility: 0
   essentialPathParameterSet:
   - {fileID: 11400000, guid: faaedf28de20d39479a9d27924b499c9, type: 2}
   majorPathParameterSet:

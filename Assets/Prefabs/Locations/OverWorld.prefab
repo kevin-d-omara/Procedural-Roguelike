@@ -201,12 +201,12 @@ MonoBehaviour:
   passagePrefab: {fileID: 1443244629694100, guid: 08b94ffa68691e0488ebdda60f4bb514,
     type: 2}
   obstacleSets:
-  - {fileID: 11400000, guid: 638ce02f992478c4fb59c445dc953d54, type: 2}
+  - {fileID: 11400000, guid: 564fde5313ae8cf4984e87cb6d00118f, type: 2}
   enemySets:
   - {fileID: 11400000, guid: 28f5b3c50a067504e92aaa882853a578, type: 2}
   itemSets:
   - {fileID: 11400000, guid: 566b7e11681b6d14fb53a3a09a86f54b, type: 2}
-  obstacleDensity: 0
-  enemyDensity: 0
-  itemDensity: 0
+  obstacleDensity: 0.15
+  enemyDensity: 0.005
+  itemDensity: 0.005
   passageDensity: 1
