@@ -214,7 +214,7 @@ namespace ProceduralRoguelike
             caveEntrance = position;
             InstantiateCave();
             RecordEssentialPathAndDetails();
-            MakeEssentialPathTraversable();
+            SmoothDiagonalSteps();
             RecordChamberTiles();
             WidenPaths();
 
@@ -226,8 +226,10 @@ namespace ProceduralRoguelike
             // SpawnGems()
             PopulateChambers();
             SpawnEntities();
+            UnblockEssentialPath();
 
-            //PlotPaintedCave(false);
+
+            PlotPaintedCave(false);
         }
 
         /// <summary>
@@ -371,9 +373,10 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
-        /// Thicken path along diagonal crossing points.
+        /// Thicken path along diagonal crossing points. The player cannot move diagonally, so this
+        /// ensures he/she can follow the essential path.
         /// </summary>
-        private void MakeEssentialPathTraversable()
+        private void SmoothDiagonalSteps()
         {
             for (int lvl = 0; lvl < level.Length; ++lvl)
             {
@@ -387,15 +390,19 @@ namespace ProceduralRoguelike
                     {
                         var curr = pathInfo.tiles[i].position;
 
-                        var dx = (int)Mathf.Abs(curr.x - prev.x);
-                        var dy = (int)Mathf.Abs(curr.y - prev.y);
+                        var dxAbs = (int)Mathf.Abs(curr.x - prev.x);
+                        var dyAbs = (int)Mathf.Abs(curr.y - prev.y);
 
                         // Thicken essential path between diagonal steps.
-                        if (dx == 1 && dy == 1)
+                        if (dxAbs == 1 && dyAbs == 1)
                         {
+                            var dx = (int)(curr.x - prev.x);
+                            var dy = (int)(curr.y - prev.y);
+
                             if (Random.Range(0.0f, 1.0f) <= 0.5f) { dx = 0; }
                             else                                  { dy = 0; }
-                            caveFloor.Add(prev + new Vector2(dx, dy));
+                            var newVec = prev + new Vector2(dx, dy);
+                                caveEssentialPath.Add(newVec);
                         }
 
                         prev = curr;
@@ -654,6 +661,25 @@ namespace ProceduralRoguelike
                         {
                             AddTile(obstacles.RandomItem(), position, holders["Obstacles"]);
                         }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Remove all blocking objects along the essential path.
+        /// </summary>
+        private void UnblockEssentialPath()
+        {
+            foreach (Vector2 position in caveEssentialPath)
+            {
+                var gameObjects = Utility.FindObjectsAt(position);
+                foreach (GameObject gObject in gameObjects)
+                {
+                    if (gObject.tag != "Floor"   && gObject.tag != "Bramble" &&
+                        gObject.tag != "Passage" && gObject.tag != "Player")
+                    {
+                        Destroy(gObject);
                     }
                 }
             }

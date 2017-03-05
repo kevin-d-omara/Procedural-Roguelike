@@ -12,8 +12,8 @@ namespace ProceduralRoguelike
         /// </summary>
         private void SetRandomState()
         {
-            var random = (int)System.DateTime.Now.Ticks;
-            //var random = -1603824397;
+            //var random = (int)System.DateTime.Now.Ticks;
+            var random = -1212239271;
             Debug.Log(random); Random.InitState(random);
 
         }
@@ -35,7 +35,7 @@ namespace ProceduralRoguelike
         /// <summary>
         /// Display a simple debug version of the cave.
         /// </summary>
-        private void PlotPaintedCave(bool allTiles)
+        private void PlotPaintedCave(bool shouldPlotEssentialPath)
         {
             // Plot feature points.
             foreach (KeyValuePair<Vector2, Feature> feature in featurePlots)
@@ -75,10 +75,10 @@ namespace ProceduralRoguelike
                 }
             }
 
-            if (allTiles)
+            if (shouldPlotEssentialPath)
             {
-                // Plot cave floor.
-                foreach (Vector2 pt in caveFloor)
+                // Plot essential path.
+                foreach (Vector2 pt in caveEssentialPath)
                 {
                     PlotPoint(pt, Color.white);
                 }
@@ -91,8 +91,9 @@ namespace ProceduralRoguelike
         private void PlotPoint(Vector2 position, Color color)
         {
             var plotPt = Instantiate(plotPrefab, position, Quaternion.identity);
-            color.a = .05f;
+            color.a = .1f;
             plotPt.GetComponent<SpriteRenderer>().color = color;
+            plotPt.transform.SetParent(holders["Floor"]);
         }
     }
 }
