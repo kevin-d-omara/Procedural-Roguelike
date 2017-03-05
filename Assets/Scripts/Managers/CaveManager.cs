@@ -11,7 +11,6 @@ namespace ProceduralRoguelike
         // TODO - remove all testing code (references to PlotPoints(), plotPrefab, etc.)
         // TESTING
         public GameObject plotPrefab;
-
         private void PlotPoint(Vector2 position, Color color)
         {
             return;
@@ -19,6 +18,8 @@ namespace ProceduralRoguelike
             plotPt.GetComponent<SpriteRenderer>().color = color;
         }
         // END TESTING
+
+        [SerializeField] private GameObject rockPrefab;
 
         [Header("Path parameters:")]
         [SerializeField] private List<PathParameters> essentialPathParameterSet;
@@ -87,7 +88,33 @@ namespace ProceduralRoguelike
         /// <param name="offsets">List of offsets specifying pattern to reveal.</param>
         public override void RevealDarkness(Vector2 location, List<Vector2> offsets)
         {
-            // TODO: reveal only rocks
+            /*
+            foreach (Vector2 offset in offsets)
+            {
+                var position = location + offset;
+
+                Tile tile;
+                // Make pre-existing tiles visible.
+                if (tiles.TryGetValue(position, out tile))
+                {
+                    var gameObjects = Utility.FindObjectsAt(position);
+                    foreach (GameObject gObject in gameObjects)
+                    {
+                        var visibleComponenet = gObject.GetComponent<Visible>();
+                        if (visibleComponenet != null)
+                        {
+                            visibleComponenet.VisibilityLevel = Visibility.Full;
+                        }
+                    }
+                }
+                // Make non-existing tiles Rocks.
+                else
+                {
+                    var tileObject = AddTile(rockPrefab, position, holders["Obstacles"]);
+                    tiles.Add(position, new Tile(position));
+                }
+            }
+            */
         }
 
         /// <summary>
@@ -283,7 +310,7 @@ namespace ProceduralRoguelike
             }
 
             // --[ Fill the dungeon with loot and denizens. ]--
-            AddTile(passagePrefab, level[0][0].terminusTile, holders["CaveExit"]);
+            var passage = AddTile(passagePrefab, level[0][0].terminusTile, holders["CaveExit"]);
 
             //      (optional) randomly pick entrance and exit locations (@ ForkPts and/or PathEnds)
             //      Place entrance and exit tiles
@@ -312,6 +339,7 @@ namespace ProceduralRoguelike
             Visible visibleComponenet = floorTile.GetComponent<Visible>();
             if (visibleComponenet != null)
             {
+                //visibleComponenet.VisibilityLevel = visibility;
                 visibleComponenet.VisibilityLevel = visibility;
             }
 
