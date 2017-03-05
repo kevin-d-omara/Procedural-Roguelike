@@ -207,6 +207,7 @@ MonoBehaviour:
   obstacleDensity: 0.15
   enemyDensity: 0.02
   passageDensity: 0.005
+  plotPrefab: {fileID: 1805106258950374, guid: cd175c4bfed41174881d5dd3577edc62, type: 2}
   essentialPathParameterSet:
   - {fileID: 11400000, guid: faaedf28de20d39479a9d27924b499c9, type: 2}
   majorPathParameterSet:

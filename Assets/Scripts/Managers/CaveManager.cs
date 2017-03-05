@@ -8,6 +8,16 @@ namespace ProceduralRoguelike
 {
     public class CaveManager : BoardManager
     {
+        // TESTING
+        public GameObject plotPrefab;
+
+        private void PlotPoint(Vector2 position, Color color)
+        {
+            var plotPt = Instantiate(plotPrefab, position, Quaternion.identity);
+            plotPt.GetComponent<SpriteRenderer>().color = color;
+        }
+        // END TESTING
+
         [Header("Path parameters:")]
         [SerializeField] private List<PathParameters> essentialPathParameterSet;
         [SerializeField] private List<PathParameters> majorPathParameterSet;
@@ -24,6 +34,7 @@ namespace ProceduralRoguelike
         /// Each element holds a PathInfo for each path on that level.
         /// </summary>
         private List<PathInfo>[] level;
+        private List<Bounds> bottlenecks = new List<Bounds>();
 
         /// <summary>
         /// Contains already placed tiles.
@@ -39,7 +50,7 @@ namespace ProceduralRoguelike
             holders.Add("CaveExit", transform.Find("CaveExit"));
 
             // For each set of path parameters, pick a single one for this CaveManager instance.
-            pathParameters.Add(essentialPathParameterSet[Random.Range(0, 
+            pathParameters.Add(essentialPathParameterSet[Random.Range(0,
                 essentialPathParameterSet.Count)]);
             if (Random.value <= majorLevelChance)
             {
@@ -96,8 +107,8 @@ namespace ProceduralRoguelike
             // Coordinates of each feature tile.
             public List<Vector2> inflectionTiles = new List<Vector2>();
             public List<Vector2> bottleneckTiles = new List<Vector2>();
-            public List<Vector2> chamberTiles    = new List<Vector2>();
             public List<Vector2> forkTiles       = new List<Vector2>();
+            public List<Vector2> chamberTiles    = new List<Vector2>();
         }
 
         private Vector2 Constrain(Vector2 pt)
@@ -133,9 +144,8 @@ namespace ProceduralRoguelike
             }
 
             // --[ Fill in floor tiles for each path and chamber. ]--
-            // Starting with the root level, fill in all floor tiles.
 
-            // Place all tiles for a given level before descending to a lower level.
+            // Place tiles for each level before descending to the next.
             for (int lvl = 0; lvl < level.Length; ++lvl)
             {
                 foreach (PathInfo pathInfo in level[lvl])
@@ -156,19 +166,25 @@ namespace ProceduralRoguelike
                     }
 
                     // Record feature tile locations
+                    pathInfo.originTile = pathInfo.tiles[0].position;
+                    pathInfo.terminusTile = pathInfo.tiles[pathInfo.tiles.Count - 1].position;
+                    MarkFeaturePoints(pathInfo.path.InflectionPts, pathInfo.inflectionTiles);
+                    MarkFeaturePoints(pathInfo.path.BottleneckPts, pathInfo.bottleneckTiles);
+                    MarkFeaturePoints(pathInfo.path.ForkPts, pathInfo.forkTiles);
+                    MarkFeaturePoints(pathInfo.path.ChamberPts, pathInfo.chamberTiles);
 
-                    // record origin tile
-                    // record terminus tile
-                    // record inflection tiles
-                    // record bottleneck tiles
-                    // record chamber tiles
-                    // record fork tiles
+                    // Mark bottleneck regions
+                    foreach (Vector2 bottleneckPt in pathInfo.bottleneckTiles)
+                    {
+                        int size = 2;
+                        int x = 2 * size + 1;
+                        bottlenecks.Add(new Bounds(bottleneckPt, new Vector3(x, x, x)));
+                        PlotPoint(bottleneckPt, Color.magenta);
+                    }
                 }
             }
 
 
-
-            //      Mark bottleneck regions
             //      Fill in chambers (except where overlap with bottleneck regions)
             //      Expand essential paths via Choke & Jitter
 
@@ -181,6 +197,50 @@ namespace ProceduralRoguelike
             //      Spawn obstacles
             //          do not place non-bramble on choke=0 tiles
 
+        }
+
+        /// <summary>
+        /// Wires up the set of Feature Points to the Feature Tiles.
+        /// </summary>
+        /// <param name="featurePoints">i.e. pathInfo.path.InflectionPts</param>
+        /// <param name="featureTiles">i.e. pathInfo.inflectionTiles</param>
+        private void MarkFeaturePoints(List<Path.FeaturePoint> featurePoints, List<Vector2> featureTiles)
+        {
+            foreach (Path.FeaturePoint featurePt in featurePoints)
+            {
+                var pt = Constrain(featurePt.Pt);
+
+                Tile tile;
+                if (tiles.TryGetValue(pt, out tile))
+                {
+                    if (!featureTiles.Contains(pt))
+                    {
+                        featureTiles.Add(pt);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Wires up the set of Feature Points (Vector2) to the Feature Tiles.
+        /// </summary>
+        /// <param name="featurePoints">i.e. pathInfo.path.ChamberPts</param>
+        /// <param name="featureTiles">i.e. pathInfo.chamberTiles</param>
+        private void MarkFeaturePoints(List<Vector2> featurePoints, List<Vector2> featureTiles)
+        {
+            foreach (Vector2 featurePt in featurePoints)
+            {
+                var pt = Constrain(featurePt);
+
+                Tile tile;
+                if (tiles.TryGetValue(pt, out tile))
+                {
+                    if (!featureTiles.Contains(pt))
+                    {
+                        featureTiles.Add(pt);
+                    }
+                }
+            }
         }
     }
 }
