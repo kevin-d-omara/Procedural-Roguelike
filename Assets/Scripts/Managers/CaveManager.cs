@@ -6,70 +6,11 @@ using Random = UnityEngine.Random;
 
 namespace ProceduralRoguelike
 {
-    public class CaveManager : BoardManager
+    /// <summary>
+    /// 
+    /// </summary>
+    public partial class CaveManager : BoardManager
     {
-        // TODO - remove all testing code (references to PlotPoints(), plotPrefab, etc.)
-        // TESTING
-        public GameObject plotPrefab;
-        private void PlotPoint(Vector2 position, Color color)
-        {
-            var plotPt = Instantiate(plotPrefab, position, Quaternion.identity);
-            plotPt.GetComponent<SpriteRenderer>().color = color;
-        }
-
-        private enum Feature { Inflection, Bottleneck, Fork, Chamber }
-        private enum Entity { Chest, Obstacle, Enemy }
-        private Dictionary<Vector2, Feature> featureTiles = new Dictionary<Vector2, Feature>();
-        private Dictionary<Vector2, Entity> entityTiles   = new Dictionary<Vector2, Entity>();
-
-        /// <summary>
-        /// Display a simple debug version of the cave.
-        /// </summary>
-        private void PlotPaintedCave()
-        {
-            foreach (KeyValuePair<Vector2, Feature> feature in featureTiles)
-            {
-                switch (feature.Value)
-                {
-                    case Feature.Bottleneck:
-                        PlotPoint(feature.Key, Color.magenta);
-                        break;
-                    case Feature.Fork:
-                        PlotPoint(feature.Key, Color.red);
-                        break;
-                    case Feature.Chamber:
-                        PlotPoint(feature.Key, Color.blue);
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            foreach (KeyValuePair<Vector2, Entity> entity in entityTiles)
-            {
-                switch (entity.Value)
-                {
-                    case Entity.Chest:
-                        PlotPoint(entity.Key, Color.green);
-                        break;
-                    case Entity.Obstacle:
-                        PlotPoint(entity.Key, Color.grey);
-                        break;
-                    case Entity.Enemy:
-                        PlotPoint(entity.Key, Color.yellow);
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            foreach (Vector2 pt in caveFloor)
-            {
-                PlotPoint(pt, Color.white);
-            }
-        }
-        // END TESTING
-
         [SerializeField] private GameObject rockPrefab;
 
         [Header("Path parameters:")]
@@ -237,160 +178,17 @@ namespace ProceduralRoguelike
             Random.InitState(random);
             // END TESTING
 
-            // Instantiate paths for entire cave system.
-            pathParameters[0].origin = position;
-            pathParameters[0].InitialFacing = Random.Range(0f, 360f);
-            level[0].Add(new PathInfo());
-            level[0][0].path = new Path(pathParameters);
-
-            // Get pointers to each path on each level.
-            for (int i = 1; i < level.Length; ++i)
-            {
-                foreach (PathInfo pathInfo in level[i - 1])
-                {
-                    foreach (Path path in pathInfo.path.Forks)
-                    {
-                        var newPathInfo = new PathInfo();
-                        newPathInfo.path = path;
-                        level[i].Add(newPathInfo);
-                    }
-                }
-            }
-
-            // Record essential path and feature tiles for each level before descending to the next.
-            for (int lvl = 0; lvl < level.Length; ++lvl)
-            {
-                foreach (PathInfo pathInfo in level[lvl])
-                {
-                    // Record path tile locations.
-                    var points = pathInfo.path.Main;
-                    for (int i = 0; i < points.Length; ++i)
-                    {
-                        var pt = Constrain(points[i].Pt);
-                        if (!caveFloor.Contains(pt))
-                        {
-                            caveFloor.Add(pt);
-                            pathInfo.tiles.Add(new Tile(pt, points[i].Facing));
-                        }
-                    }
-
-                    // Record feature tile locations.
-                    if (pathInfo.tiles.Count > 0)
-                    {
-                        pathInfo.originTile = Constrain(pathInfo.path.Main[0].Pt);
-                        pathInfo.terminusTile = Constrain(pathInfo.path.Main[
-                            pathInfo.path.Main.Length - 1].Pt);
-                    }
-                    MarkFeaturePoints(pathInfo.path.InflectionPts, pathInfo.inflectionTiles);
-                    MarkFeaturePoints(pathInfo.path.BottleneckPts, pathInfo.bottleneckTiles);
-                    MarkFeaturePoints(pathInfo.path.ForkPts, pathInfo.forkTiles);
-                    MarkFeaturePoints(pathInfo.path.ChamberPts, pathInfo.chamberTiles);
-
-                    // Record bottleneck regions.
-                    foreach (Vector2 bottleneckPt in pathInfo.bottleneckTiles)
-                    {
-                        var bounds = (pathParameters[lvl].bottleneck.Value * 2) + 1;
-                        if (bounds > 0)
-                        {
-                            bottleneckRegions.Add(new Bounds(bottleneckPt,
-                                new Vector3(bounds, bounds, bounds)));
-                            if (!featureTiles.ContainsKey(bottleneckPt))
-                            {
-                                featureTiles.Add(bottleneckPt, Feature.Bottleneck);
-                            }
-                        }
-                    }
-
-                    foreach (Vector2 forkPt in pathInfo.forkTiles)
-                    {
-                        if (!featureTiles.ContainsKey(forkPt))
-                        {
-                            featureTiles.Add(forkPt, Feature.Fork);
-                        }
-                    }
-                }
-            }
-
-            // Record chamber region tiles.
-            for (int lvl = 0; lvl < level.Length; ++lvl)
-            {
-                foreach (PathInfo pathInfo in level[lvl])
-                {
-                    foreach (Vector2 chamberPt in pathInfo.chamberTiles)
-                    {
-                        var sizeOfRegion = pathParameters[lvl].chamber.Value;
-                        var region = new LineOfSight(sizeOfRegion);
-                        var regionTiles = new List<Vector2>();
-                        foreach (Vector2 offset in region.Offsets)
-                        {
-                            var point = chamberPt + offset;
-                            if (!caveFloor.Contains(point)) { caveFloor.Add(point); }
-                            regionTiles.Add(point);
-                        }
-                        pathInfo.chamberRegions.Add(chamberPt, regionTiles);
-
-                        if (!featureTiles.ContainsKey(chamberPt))
-                        {
-                            featureTiles.Add(chamberPt, Feature.Chamber);
-                        }
-                    }
-                }
-            }
-
-            // Record widened path.
-            var directions = new char[] { 'H', 'D', 'V', 'D', 'H', 'D', 'V' ,'D', 'H' };
-            for (int lvl = 0; lvl < level.Length; ++lvl)
-            {
-                foreach (PathInfo pathInfo in level[lvl])
-                {
-                    var numTiles = pathInfo.tiles.Count;
-                    for (int i = 0; i < numTiles; ++i)
-                    {
-                        var choke = pathParameters[lvl].choke.Value;
-
-                        var degrees = (int)(pathInfo.tiles[i].facing * Mathf.Rad2Deg);
-                            degrees = Mathf.Abs(degrees) % 360;
-                        var index = (degrees + 23) / 45;
-
-                        var centerPt = pathInfo.tiles[i].position;
-                        if (choke == 0) { zeroChokeTiles.Add(centerPt); }
-
-                        switch (directions[index])
-                        {
-                            // horizontal
-                            case 'H':
-                                for (int y = -choke; y <= choke; ++y)
-                                {
-                                    var newPt = centerPt + new Vector2(0, y);
-                                    if (!caveFloor.Contains(newPt)) { caveFloor.Add(newPt); }
-                                }
-                                break;
-
-                            // vertical
-                            case 'V':
-                                for (int x = -choke; x <= choke; ++x)
-                                {
-                                    var newPt = centerPt + new Vector2(x, 0);
-                                    if (!caveFloor.Contains(newPt)) { caveFloor.Add(newPt); }
-                                }
-                                break;
-
-                            // diagonal
-                            default:
-                                var region = new LineOfSight(choke);
-
-                                foreach (Vector2 offset in region.Offsets)
-                                {
-                                    var newPt = centerPt + offset;
-                                    if (!caveFloor.Contains(newPt)) { caveFloor.Add(newPt); }
-                                }
-                                break;
-                        }
-                    }
-                }
-            }
+            // Create logical cave
+            InstantiateCave(position);
+            RecordEssentialPathAndDetails();
+            RecordChamberTiles();
+            WidenPaths();
 
             PlotPaintedCave();
+
+            // Create physical cave
+
+
             // --[ Fill the dungeon with loot and denizens. ]--
             //var passage = AddTile(passagePrefab, level[0][0].terminusTile, holders["CaveExit"]);
 
@@ -503,6 +301,179 @@ namespace ProceduralRoguelike
                     if (!featureTiles.Contains(pt))
                     {
                         featureTiles.Add(pt);
+                    }
+                }
+            }
+        }
+
+        // -----------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Instantiate the Path's belonging to this cave.
+        /// </summary>
+        /// <param name="location">Location in the world to center the entrance passage.</param>
+        private void InstantiateCave(Vector2 position)
+        {
+            // Instantiate paths for entire cave system.
+            pathParameters[0].origin = position;
+            pathParameters[0].InitialFacing = Random.Range(0f, 360f);
+            level[0].Add(new PathInfo());
+            level[0][0].path = new Path(pathParameters);
+
+            // Get pointers to each path on each level.
+            for (int i = 1; i < level.Length; ++i)
+            {
+                foreach (PathInfo pathInfo in level[i - 1])
+                {
+                    foreach (Path path in pathInfo.path.Forks)
+                    {
+                        var newPathInfo = new PathInfo();
+                        newPathInfo.path = path;
+                        level[i].Add(newPathInfo);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Beginning with the top level, record the locations of the essential path and feature
+        /// tiles. Also record the bounds of each bottleneck region.
+        /// </summary>
+        private void RecordEssentialPathAndDetails()
+        {
+            // Record essential path and feature tiles for each level before descending to the next.
+            for (int lvl = 0; lvl < level.Length; ++lvl)
+            {
+                foreach (PathInfo pathInfo in level[lvl])
+                {
+                    // Record essential path locations.
+                    var points = pathInfo.path.Main;
+                    for (int i = 0; i < points.Length; ++i)
+                    {
+                        var pt = Constrain(points[i].Pt);
+                        if (!caveFloor.Contains(pt))
+                        {
+                            caveFloor.Add(pt);
+                            pathInfo.tiles.Add(new Tile(pt, points[i].Facing));
+                        }
+                    }
+
+                    // Record feature tile locations.
+                    if (pathInfo.tiles.Count > 0)
+                    {
+                        pathInfo.originTile = Constrain(pathInfo.path.Main[0].Pt);
+                        pathInfo.terminusTile = Constrain(pathInfo.path.Main[
+                            pathInfo.path.Main.Length - 1].Pt);
+                    }
+                    MarkFeaturePoints(pathInfo.path.InflectionPts, pathInfo.inflectionTiles);
+                    MarkFeaturePoints(pathInfo.path.BottleneckPts, pathInfo.bottleneckTiles);
+                    MarkFeaturePoints(pathInfo.path.ForkPts, pathInfo.forkTiles);
+                    MarkFeaturePoints(pathInfo.path.ChamberPts, pathInfo.chamberTiles);
+
+                    // Record bottleneck regions.
+                    foreach (Vector2 bottleneckPt in pathInfo.bottleneckTiles)
+                    {
+                        var bounds = (pathParameters[lvl].bottleneck.Value * 2) + 1;
+                        if (bounds > 0)
+                        {
+                            bottleneckRegions.Add(new Bounds(bottleneckPt,
+                                new Vector3(bounds, bounds, bounds)));
+
+                            // DEBUG: record bottlenecks
+                            if (!featurePlots.ContainsKey(bottleneckPt)) { featurePlots.Add(bottleneckPt, Feature.Bottleneck); }
+                        }
+                    }
+
+                    // DEBUG: record forks
+                    foreach (Vector2 forkPt in pathInfo.forkTiles) { if (!featurePlots.ContainsKey(forkPt)) { featurePlots.Add(forkPt, Feature.Fork); } }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Record the location of all tiles in all chambers.
+        /// </summary>
+        private void RecordChamberTiles()
+        {
+            for (int lvl = 0; lvl < level.Length; ++lvl)
+            {
+                foreach (PathInfo pathInfo in level[lvl])
+                {
+                    foreach (Vector2 chamberPt in pathInfo.chamberTiles)
+                    {
+                        var sizeOfRegion = pathParameters[lvl].chamber.Value;
+                        var region = new LineOfSight(sizeOfRegion);
+                        var regionTiles = new List<Vector2>();
+                        foreach (Vector2 offset in region.Offsets)
+                        {
+                            var point = chamberPt + offset;
+                            if (!caveFloor.Contains(point)) { caveFloor.Add(point); }
+                            regionTiles.Add(point);
+                        }
+                        pathInfo.chamberRegions.Add(chamberPt, regionTiles);
+
+
+                        // DEBUG: record chambers
+                        if (!featurePlots.ContainsKey(chamberPt)) { featurePlots.Add(chamberPt, Feature.Chamber); }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Make each essential path wider according to the choke parameter for its level.
+        /// </summary>
+        private void WidenPaths()
+        {
+            // Record widened path.
+            var directions = new char[] { 'H', 'D', 'V', 'D', 'H', 'D', 'V', 'D', 'H' };
+            for (int lvl = 0; lvl < level.Length; ++lvl)
+            {
+                foreach (PathInfo pathInfo in level[lvl])
+                {
+                    var numTiles = pathInfo.tiles.Count;
+                    for (int i = 0; i < numTiles; ++i)
+                    {
+                        var choke = pathParameters[lvl].choke.Value;
+
+                        var degrees = (int)(pathInfo.tiles[i].facing * Mathf.Rad2Deg);
+                        degrees = Mathf.Abs(degrees) % 360;
+                        var index = (degrees + 23) / 45;
+
+                        var centerPt = pathInfo.tiles[i].position;
+                        if (choke == 0) { zeroChokeTiles.Add(centerPt); }
+
+                        switch (directions[index])
+                        {
+                            // horizontal
+                            case 'H':
+                                for (int y = -choke; y <= choke; ++y)
+                                {
+                                    var newPt = centerPt + new Vector2(0, y);
+                                    if (!caveFloor.Contains(newPt)) { caveFloor.Add(newPt); }
+                                }
+                                break;
+
+                            // vertical
+                            case 'V':
+                                for (int x = -choke; x <= choke; ++x)
+                                {
+                                    var newPt = centerPt + new Vector2(x, 0);
+                                    if (!caveFloor.Contains(newPt)) { caveFloor.Add(newPt); }
+                                }
+                                break;
+
+                            // diagonal
+                            default:
+                                var region = new LineOfSight(choke);
+
+                                foreach (Vector2 offset in region.Offsets)
+                                {
+                                    var newPt = centerPt + offset;
+                                    if (!caveFloor.Contains(newPt)) { caveFloor.Add(newPt); }
+                                }
+                                break;
+                        }
                     }
                 }
             }
