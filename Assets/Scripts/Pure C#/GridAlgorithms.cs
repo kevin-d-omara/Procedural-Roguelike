@@ -125,7 +125,6 @@ namespace ProceduralRoguelike
                 }
             }
 
-            offsets.Remove(Vector2.zero);
             return offsets;
         }
 

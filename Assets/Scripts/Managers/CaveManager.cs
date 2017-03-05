@@ -29,6 +29,10 @@ namespace ProceduralRoguelike
         protected float bottleneckObstacleDensity = 0.65f;
         // -----------------------------------------------------------------------------------------
 
+        [Header("Darkness level:")]
+        [SerializeField] private Visibility ambientVisibility = Visibility.Full;
+        [SerializeField] private Visibility entityVisibility  = Visibility.None;
+
         [Header("Path parameters:")]
         [SerializeField] private List<PathParameters> essentialPathParameterSet;
         [SerializeField] private List<PathParameters> majorPathParameterSet;
@@ -190,7 +194,7 @@ namespace ProceduralRoguelike
                 {
                     AddFloorTile(position);
                     caveFloor.Add(position);
-                    AddTile(rockPrefab, position, holders["Obstacles"]);
+                    AddTile(rockPrefab, position, holders["Obstacles"], Visibility.Full);
                 }
             }
         }
@@ -229,7 +233,8 @@ namespace ProceduralRoguelike
             UnblockEssentialPath();
 
 
-            PlotPaintedCave(false);
+            // DEBUG:
+            //PlotPaintedCave(false);
         }
 
         /// <summary>
@@ -518,14 +523,15 @@ namespace ProceduralRoguelike
         private void LayPassages()
         {
             // Create the cave entrance, then collapse it!
-            var passage = AddTile(passagePrefab, caveEntrance, holders["Passages"]);
+            var passage = AddTile(passagePrefab, caveEntrance, holders["Passages"],
+                Visibility.Full);
             var pController = passage.GetComponent<PassageController>();
             pController.HasBeenUsed = true;
             pController.UpdateSprite();
 
             // Create the cave exit.
             var exitPt = level[0][0].terminusTile;
-            AddTile(passagePrefab, exitPt, holders["Passages"]);
+            AddTile(passagePrefab, exitPt, holders["Passages"], entityVisibility);
         }
 
         /// <summary>
@@ -549,7 +555,7 @@ namespace ProceduralRoguelike
                         if (!caveEssentialPath.Contains(position))
                         {
                             AddTile(bottleneckObstacles.RandomItem(), position,
-                                holders["Obstacles"]);
+                                holders["Obstacles"], ambientVisibility);
                         }
                     }
                 }
@@ -589,7 +595,7 @@ namespace ProceduralRoguelike
                             var randIdx = Random.Range(0, validPts.Count);
                             var randPt = validPts[randIdx];
 
-                            AddTile(items.RandomItem(), randPt, holders["Items"]);
+                            AddTile(items.RandomItem(), randPt, holders["Items"], entityVisibility);
 
                             validPts.Remove(randPt);
                         }
@@ -601,7 +607,8 @@ namespace ProceduralRoguelike
                             var randomIndex = Random.Range(0, validPts.Count);
                             var randomPt = validPts[randomIndex];
 
-                            AddTile(enemies.RandomItem(), randomPt, holders["Enemies"]);
+                            AddTile(enemies.RandomItem(), randomPt, holders["Enemies"],
+                                entityVisibility);
 
                             validPts.Remove(randomPt);
                         }
@@ -613,10 +620,22 @@ namespace ProceduralRoguelike
         /// <summary>
         /// Creates a new tile at the position specified and add it to the list of cave entities.
         /// </summary>
-        protected override GameObject AddTile(GameObject prefab, Vector2 position, Transform holder)
+        private GameObject AddTile(GameObject prefab, Vector2 position, Transform holder,
+            Visibility visibility)
         {
             var addedTile = base.AddTile(prefab, position, holder);
             caveEntity.Add(position);
+
+            addedTile.GetComponent<Visible>().VisibilityLevel = visibility;
+
+            return addedTile;
+        }
+
+        protected override GameObject AddFloorTile(Vector2 position)
+        {
+            var addedTile = base.AddFloorTile(position);
+            addedTile.GetComponent<Visible>().VisibilityLevel = ambientVisibility;
+
             return addedTile;
         }
 
@@ -635,11 +654,12 @@ namespace ProceduralRoguelike
                     {
                         if (Random.Range(0f, 1f) < passageDensity)
                         {
-                            AddTile(passagePrefab, position, holders["Passages"]);
+                            AddTile(passagePrefab, position, holders["Passages"], entityVisibility);
                         }
                         else if (Random.Range(0f, 1f) < obstacleDensity)
                         {
-                            AddTile(bramblePrefab, position, holders["Obstacles"]);
+                            AddTile(bramblePrefab, position, holders["Obstacles"],
+                                ambientVisibility);
                         }
                     }
                     // Wide pathways can have anything.
@@ -647,19 +667,22 @@ namespace ProceduralRoguelike
                     {
                         if (Random.Range(0f, 1f) < passageDensity)
                         {
-                            AddTile(passagePrefab, position, holders["Passages"]);
+                            AddTile(passagePrefab, position, holders["Passages"], entityVisibility);
                         }
                         else if (Random.Range(0f, 1f) < itemDensity)
                         {
-                            AddTile(items.RandomItem(), position, holders["Items"]);
+                            AddTile(items.RandomItem(), position, holders["Items"],
+                                entityVisibility);
                         }
                         else if (Random.Range(0f, 1f) < enemyDensity)
                         {
-                            AddTile(enemies.RandomItem(), position, holders["Enemies"]);
+                            AddTile(enemies.RandomItem(), position, holders["Enemies"],
+                                entityVisibility);
                         }
                         else if (Random.Range(0f, 1f) < obstacleDensity)
                         {
-                            AddTile(obstacles.RandomItem(), position, holders["Obstacles"]);
+                            AddTile(obstacles.RandomItem(), position, holders["Obstacles"],
+                                ambientVisibility);
                         }
                     }
                 }
