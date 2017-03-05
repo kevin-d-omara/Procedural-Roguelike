@@ -20,3 +20,18 @@ MonoBehaviour:
   bottleneckRate: 0.025
   chamberNumber: 2
   forkNumber: 2.5
+  choke:
+    min: 2
+    max: 2
+    jitterSize: 0
+    jitterRate: 0
+  bottleneck:
+    min: 2
+    max: 2
+    jitterSize: 0
+    jitterRate: 0
+  chamber:
+    min: 2
+    max: 2
+    jitterSize: 0
+    jitterRate: 0

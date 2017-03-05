@@ -8,6 +8,7 @@ namespace ProceduralRoguelike
 {
     public class CaveManager : BoardManager
     {
+        // TODO - remove all testing code (references to PlotPoints(), plotPrefab, etc.)
         // TESTING
         public GameObject plotPrefab;
 
@@ -67,6 +68,14 @@ namespace ProceduralRoguelike
 
             // Create copy so original Asset is not modified.
             pathParameters[0] = UnityEngine.Object.Instantiate(pathParameters[0]);
+
+            // Set all knobs to a random value.
+            for (int i = 0; i < pathParameters.Count; ++i)
+            {
+                pathParameters[i].choke.SetValue();
+                pathParameters[i].bottleneck.SetValue();
+                pathParameters[i].chamber.SetValue();
+            }
         }
 
         /// <summary>
@@ -123,7 +132,7 @@ namespace ProceduralRoguelike
         /// <param name="location">Location in the world to center the entrance passage.</param>
         public void SetupCave(Vector2 position)
         {
-            // Create set of paths for entire cave system.
+            // Instantiate paths for entire cave system.
             pathParameters[0].origin = position;
             pathParameters[0].InitialFacing = Random.Range(0f, 360f);
             level[0].Add(new PathInfo());
@@ -143,8 +152,6 @@ namespace ProceduralRoguelike
                 }
             }
 
-            // --[ Fill in floor tiles for each path and chamber. ]--
-
             // Place tiles for each level before descending to the next.
             for (int lvl = 0; lvl < level.Length; ++lvl)
             {
@@ -158,10 +165,7 @@ namespace ProceduralRoguelike
                         Tile tile;
                         if (!tiles.TryGetValue(pt, out tile))
                         {
-                            AddFloorTile(pt);
-                            tile = new Tile(pt);
-                            tiles.Add(pt, tile);
-                            pathInfo.tiles.Add(tile);
+                            LayFloorTile(pt, pathInfo.tiles);
                         }
                     }
 
@@ -176,16 +180,57 @@ namespace ProceduralRoguelike
                     // Mark bottleneck regions
                     foreach (Vector2 bottleneckPt in pathInfo.bottleneckTiles)
                     {
-                        int size = 2;
-                        int x = 2 * size + 1;
-                        bottlenecks.Add(new Bounds(bottleneckPt, new Vector3(x, x, x)));
-                        PlotPoint(bottleneckPt, Color.magenta);
+                        var bounds = pathParameters[lvl].bottleneck.Value;
+                        if (bounds > 0)
+                        {
+                            bottlenecks.Add(new Bounds(bottleneckPt,
+                                new Vector3(bounds, bounds, bounds)));
+                            PlotPoint(bottleneckPt, Color.magenta);
+                        }
+                    }
+                }
+            }
+
+            // Fill in chambers (except where overlapped with bottleneck regions)
+            for (int lvl = 0; lvl < level.Length; ++lvl)
+            {
+                foreach (PathInfo pathInfo in level[lvl])
+                {
+                    foreach (Vector2 chamberPt in pathInfo.chamberTiles)
+                    {
+                        PlotPoint(chamberPt, Color.blue);
+
+                        var sizeOfRegion = pathParameters[lvl].chamber.Value;
+                        var region = new LineOfSight(sizeOfRegion);
+                        foreach (Vector2 offset in region.Offsets)
+                        {
+                            var point = chamberPt + offset;
+
+                            Tile tile;
+                            if (!tiles.TryGetValue(point, out tile))
+                            {
+                                var shouldLayTile = true;
+
+                                foreach (Bounds bound in bottlenecks)
+                                {
+                                    if (bound.Contains(point))
+                                    {
+                                        shouldLayTile = false;
+                                        break;
+                                    }
+                                }
+
+                                if (shouldLayTile)
+                                {
+                                    LayFloorTile(point, pathInfo.tiles);
+                                }
+                            }
+                        }
                     }
                 }
             }
 
 
-            //      Fill in chambers (except where overlap with bottleneck regions)
             //      Expand essential paths via Choke & Jitter
 
             // --[ Fill the dungeon with loot and denizens. ]--
@@ -200,7 +245,20 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
-        /// Wires up the set of Feature Points to the Feature Tiles.
+        /// Create a new floortile at the position specified and bookmark it in the dictionary.
+        /// </summary>
+        /// <param name="constrainedPt">Point which has already been constrained.</param>
+        /// <param name="tileList">i.e. pathInfo.tiles</param>
+        private void LayFloorTile(Vector2 constrainedPt, List<Tile> tileList)
+        {
+            AddFloorTile(constrainedPt);
+            var tile = new Tile(constrainedPt);
+            tiles.Add(constrainedPt, tile);
+            tileList.Add(tile);
+        }
+
+        /// <summary>
+        /// Wire up the set of Feature Points to the Feature Tiles.
         /// </summary>
         /// <param name="featurePoints">i.e. pathInfo.path.InflectionPts</param>
         /// <param name="featureTiles">i.e. pathInfo.inflectionTiles</param>

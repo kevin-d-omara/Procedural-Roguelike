@@ -27,6 +27,8 @@ namespace ProceduralRoguelike
             Radius = radius;
         }
 
+        // TODO - keep a static class with a Dictionary<int, offset> and memoize each radius as it
+        //        is requested.
         private void RecalculateOffsets()
         {
             Offsets = GridAlgorithms.CircleFill(Radius);

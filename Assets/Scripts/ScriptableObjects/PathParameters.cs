@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace ProceduralRoguelike
 {
@@ -81,5 +83,70 @@ namespace ProceduralRoguelike
         /// </summary>
         [Range(0f, 5f)]
         public float forkNumber = 2.5f;
+
+        [Header("Path size:")]
+        /// <summary>
+        /// The width range of the path.
+        /// </summary>
+        public RandomKnob choke;
+
+        [Header("Cavity size")]
+        /// <summary>
+        /// The radius range of bottleneck regions.
+        /// </summary>
+        public RandomKnob bottleneck;
+
+        /// <summary>
+        /// The radius range of chamber rooms.
+        /// </summary>
+        public RandomKnob chamber;
+
+        /// <summary>
+        /// Useful for holding a range instead of single value and for defining a jitter.
+        /// </summary>
+        [Serializable]
+        public class RandomKnob
+        {
+            [Range(0, 10)]
+            public int min;
+            [Range(0, 10)]
+            public int max;
+
+            /// <summary>
+            /// Magnitude of jitter (i.e. jitterSize=2 -> value = value +/- 2;)
+            /// </summary>
+            [Range(0,5)]
+            public int jitterSize;
+
+            /// <summary>
+            /// % of measurements which are affected by jitter.
+            /// </summary>
+            [Range(0f, 1f)]
+            public float jitterRate;
+
+            /// <summary>
+            /// Get: current setting w/ chance for jitter.
+            /// </summary>
+            public int Value
+            {
+                // Returns the current setting w/ a chance for jitter.
+                get
+                {
+                    var measurement = _value;
+                    if (Random.value <= jitterRate)
+                    {
+                        measurement += Random.Range(-jitterSize, jitterSize + 1);
+                    }
+                    return measurement;
+                }
+                private set { _value = value; }
+            }
+            [HideInInspector] [SerializeField] private int _value;
+
+            /// <summary>
+            /// Sets the knob to a random value in [min, max].
+            /// </summary>
+            public void SetValue() { Value = Random.Range(min, max + 1); }
+        }
     }
 }
