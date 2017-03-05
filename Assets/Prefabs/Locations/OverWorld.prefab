@@ -204,6 +204,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 638ce02f992478c4fb59c445dc953d54, type: 2}
   enemySets:
   - {fileID: 11400000, guid: 28f5b3c50a067504e92aaa882853a578, type: 2}
-  obstacleDensity: 0.15
-  enemyDensity: 0.02
-  passageDensity: 0.05
+  itemSets:
+  - {fileID: 11400000, guid: 566b7e11681b6d14fb53a3a09a86f54b, type: 2}
+  obstacleDensity: 0
+  enemyDensity: 0
+  itemDensity: 0
+  passageDensity: 1

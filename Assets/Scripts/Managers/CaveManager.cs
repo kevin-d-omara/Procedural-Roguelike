@@ -110,7 +110,8 @@ namespace ProceduralRoguelike
             public List<Vector2> chamberTiles = new List<Vector2>();
 
             // Coordinates of each chamber tile.
-            public Dictionary<Vector2, List<Vector2>> chamberRegions = new Dictionary<Vector2, List<Vector2>>();
+            public Dictionary<Vector2, List<Vector2>> chamberRegions
+                = new Dictionary<Vector2, List<Vector2>>();
         }
 
         protected override void Awake()
@@ -155,6 +156,7 @@ namespace ProceduralRoguelike
                 pathParameters[i].choke.SetValue();
                 pathParameters[i].bottleneck.SetValue();
                 pathParameters[i].chamber.SetValue();
+                pathParameters[i].chamberItemNumber.SetValue();
             }
         }
 
@@ -186,11 +188,9 @@ namespace ProceduralRoguelike
                 // Make non-existing tiles Rocks.
                 else
                 {
-                    AddTile(floorPrefab, position, holders["Floor"]);
+                    AddFloorTile(position);
                     caveFloor.Add(position);
-
                     AddTile(rockPrefab, position, holders["Obstacles"]);
-                    caveEntity.Add(position);
                 }
             }
         }
@@ -218,75 +218,17 @@ namespace ProceduralRoguelike
             RecordChamberTiles();
             WidenPaths();
 
-            //PlotPaintedCave();
-
             // Create physical cave
             LayCaveFloor();
-            LayKeyEntities();
+            // (optional) randomly pick entrance and exit locations (@ ForkPts and/or TerminusPts)
+            LayPassages();
             LayBottleneckObstacles();
+            // SpawnGems()
+            PopulateChambers();
+            SpawnEntities();
 
-            // --[ Fill the dungeon with loot and denizens. ]--
-            //var passage = AddTile(passagePrefab, level[0][0].terminusTile, holders["CaveExit"]);
-
-            //      (optional) randomly pick entrance and exit locations (@ ForkPts and/or PathEnds)
-            //      Place entrance and exit tiles
-            //      Spawn gems
-            //      Spawn chests
-            //      Spawn enemies
-            //      Spawn obstacles
-            //          do not place non-bramble on choke=0 tiles
-
-            PlotPaintedCave(false);
+            //PlotPaintedCave(false);
         }
-
-        /*
-        /// <summary>
-        /// Create a new floortile at the position specified and bookmark it in the dictionary.
-        /// </summary>
-        /// <param name="constrainedPt">Point which has already been constrained.</param>
-        /// <param name="tileList">i.e. pathInfo.tiles</param>
-        /// /// <param name="visibility">Level of visibility to create the tile with.</param>
-        /// <returns>Tile that was layed.</returns>
-        private Tile LayFloorTile(Vector2 constrainedPt, List<Tile> tileList, Visibility visibility)
-        {
-            var floorTile = AddFloorTile(constrainedPt);
-            var tile = new Tile(constrainedPt);
-            caveFloor.Add(constrainedPt);
-            tileList.Add(tile);
-
-            Visible visibleComponenet = floorTile.GetComponent<Visible>();
-            if (visibleComponenet != null)
-            {
-                //visibleComponenet.VisibilityLevel = visibility;
-                visibleComponenet.VisibilityLevel = visibility;
-            }
-
-            return tile;
-        }
-
-        /// <summary>
-        /// Create a new floortile at the position specified if it is not already existant and not
-        /// in a bottleneck region. Then, bookmark it in the dictionary.
-        /// </summary>
-        /// <param name="constrainedPt">Point which has already been constrained.</param>
-        /// <param name="tileList">i.e. pathInfo.tiles</param>
-        /// <returns>Tile that was layed or null if not layed.</returns>
-        /// /// /// <param name="visibility">Level of visibility to create the tile with.</param>
-        private Tile AttemptToLayFloorTile(Vector2 constrainedPt, List<Tile> tileList,
-            Visibility visibility)
-        {
-            Tile tile;
-            if (!caveFloor.Contains(constrainedPt))
-            {
-                if (!IsInBottleneckRegion(constrainedPt))
-                {
-                    return LayFloorTile(constrainedPt, tileList, visibility);
-                }
-            }
-
-            return null;
-        }
-        */
 
         /// <summary>
         /// Determine if a point is inside a bottleneck region.
@@ -563,21 +505,20 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
-        /// Instantiates key features: entrance passage, exit passage.
+        /// Instantiates the entrance and exit passages.
+        /// TODO: multiple exits
         /// </summary>
-        private void LayKeyEntities()
+        private void LayPassages()
         {
             // Create the cave entrance, then collapse it!
             var passage = AddTile(passagePrefab, caveEntrance, holders["Passages"]);
             var pController = passage.GetComponent<PassageController>();
             pController.HasBeenUsed = true;
             pController.UpdateSprite();
-            caveEntity.Add(caveEntrance);
 
             // Create the cave exit.
             var exitPt = level[0][0].terminusTile;
             AddTile(passagePrefab, exitPt, holders["Passages"]);
-            caveEntity.Add(exitPt);
         }
 
         /// <summary>
@@ -600,8 +541,118 @@ namespace ProceduralRoguelike
                     {
                         if (!caveEssentialPath.Contains(position))
                         {
-                            AddTile(bottleneckObstacles.RandomItem(), position, holders["Obstacles"]);
-                            caveEntity.Add(position);
+                            AddTile(bottleneckObstacles.RandomItem(), position,
+                                holders["Obstacles"]);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Instantiates items in two locations: (1) in chambers and (2) randomly.
+        /// </summary>
+        private void PopulateChambers()
+        {
+            // Spawn loot in chambers.
+            for (int lvl = 0; lvl < level.Length; ++lvl)
+            {
+                foreach (PathInfo pathInfo in level[lvl])
+                {
+                    foreach (KeyValuePair<Vector2, List<Vector2>> chamberRegion in pathInfo.chamberRegions)
+                    {
+                        var numItems = pathParameters[lvl].chamberItemNumber.Value;
+                        var numEnemies = pathParameters[lvl].chamberItemNumber.Value;
+                        if (numItems == 0 || numEnemies == 0) { continue; }
+
+                        // Collect valid placement locations.
+                        var validPts = new List<Vector2>();
+                        foreach (Vector2 pt in chamberRegion.Value)
+                        {
+                            if (!caveEntity.Contains(pt) && !zeroChokeTiles.Contains(pt))
+                            {
+                                validPts.Add(pt);
+                            }
+                        }
+
+                        // Spawn loot!
+                        for (int i = 0; i < numItems; ++i)
+                        {
+                            if (validPts.Count == 0) { break; }
+                            var randIdx = Random.Range(0, validPts.Count);
+                            var randPt = validPts[randIdx];
+
+                            AddTile(items.RandomItem(), randPt, holders["Items"]);
+
+                            validPts.Remove(randPt);
+                        }
+
+                        // Spawn enemies!!
+                        for (int i = 0; i < numEnemies; ++i)
+                        {
+                            if (validPts.Count == 0) { break; }
+                            var randomIndex = Random.Range(0, validPts.Count);
+                            var randomPt = validPts[randomIndex];
+
+                            AddTile(enemies.RandomItem(), randomPt, holders["Enemies"]);
+
+                            validPts.Remove(randomPt);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Creates a new tile at the position specified and add it to the list of cave entities.
+        /// </summary>
+        protected override GameObject AddTile(GameObject prefab, Vector2 position, Transform holder)
+        {
+            var addedTile = base.AddTile(prefab, position, holder);
+            caveEntity.Add(position);
+            return addedTile;
+        }
+
+        /// <summary>
+        /// Fills the dungeon with random passages, obstacles, items, and enemies, according to the
+        /// values this instance has.
+        /// </summary>
+        private void SpawnEntities()
+        {
+            foreach (Vector2 position in caveFloor)
+            {
+                if (!caveEntity.Contains(position))
+                {
+                    // Place only non-blocking entities in tight pathways.
+                    if (zeroChokeTiles.Contains(position))
+                    {
+                        if (Random.Range(0f, 1f) < passageDensity)
+                        {
+                            AddTile(passagePrefab, position, holders["Passages"]);
+                        }
+                        else if (Random.Range(0f, 1f) < obstacleDensity)
+                        {
+                            AddTile(bramblePrefab, position, holders["Obstacles"]);
+                        }
+                    }
+                    // Wide pathways can have anything.
+                    else
+                    {
+                        if (Random.Range(0f, 1f) < passageDensity)
+                        {
+                            AddTile(passagePrefab, position, holders["Passages"]);
+                        }
+                        else if (Random.Range(0f, 1f) < itemDensity)
+                        {
+                            AddTile(items.RandomItem(), position, holders["Items"]);
+                        }
+                        else if (Random.Range(0f, 1f) < enemyDensity)
+                        {
+                            AddTile(enemies.RandomItem(), position, holders["Enemies"]);
+                        }
+                        else if (Random.Range(0f, 1f) < obstacleDensity)
+                        {
+                            AddTile(obstacles.RandomItem(), position, holders["Obstacles"]);
                         }
                     }
                 }

@@ -83,6 +83,10 @@ namespace ProceduralRoguelike
                     {
                         AddTile(passagePrefab, position, holders["Passages"]);
                     }
+                    else if (Random.Range(0f, 1f) < itemDensity)
+                    {
+                        AddTile(items.RandomItem(), position, holders["Items"]);
+                    }
                     else if (Random.Range(0f, 1f) < enemyDensity)
                     {
                         AddTile(enemies.RandomItem(), position, holders["Enemies"]);

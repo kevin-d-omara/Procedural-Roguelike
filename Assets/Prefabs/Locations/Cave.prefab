@@ -204,9 +204,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 638ce02f992478c4fb59c445dc953d54, type: 2}
   enemySets:
   - {fileID: 11400000, guid: 28f5b3c50a067504e92aaa882853a578, type: 2}
+  itemSets:
+  - {fileID: 11400000, guid: 566b7e11681b6d14fb53a3a09a86f54b, type: 2}
   obstacleDensity: 0.15
-  enemyDensity: 0.02
-  passageDensity: 0.005
+  enemyDensity: 0.003
+  itemDensity: 0.0025
+  passageDensity: 0.002
   rockPrefab: {fileID: 1499576223543280, guid: 7626df20ce8a99e46aae8bb309306070, type: 2}
   bramblePrefab: {fileID: 1303947485840834, guid: 256a90fede0869d4dbdec4f36edf1522,
     type: 2}

@@ -18,16 +18,19 @@ namespace ProceduralRoguelike
         [Header("Tile sets:")]
         [SerializeField] protected List<WeightedSet> obstacleSets;
         [SerializeField] protected List<WeightedSet> enemySets;
+        [SerializeField] protected List<WeightedSet> itemSets;
 
         // Randomizers.
         protected WeightedRandomSet<GameObject> obstacles = new WeightedRandomSet<GameObject>();
-        protected WeightedRandomSet<GameObject> enemies = new WeightedRandomSet<GameObject>();
+        protected WeightedRandomSet<GameObject> enemies   = new WeightedRandomSet<GameObject>();
+        protected WeightedRandomSet<GameObject> items     = new WeightedRandomSet<GameObject>();
 
         // Randomizer parameters.
         [Header("Density values:")]
-        [Range(0f, 1.01f)] [SerializeField] protected float obstacleDensity = 0.15f;
-        [Range(0f, 1.01f)] [SerializeField] protected float enemyDensity = 0.02f;
-        [Range(0f, 1f)]    [SerializeField] protected float passageDensity = 0.005f;
+        [Range(0f, 1f)] [SerializeField] protected float obstacleDensity = 0.15f;
+        [Range(0f, 1f)] [SerializeField] protected float enemyDensity    = 0.02f;
+        [Range(0f, 1f)] [SerializeField] protected float itemDensity     = 0.005f;
+        [Range(0f, 1f)] [SerializeField] protected float passageDensity  = 0.005f;
 
         // Parents to place instantiated tiles under for organization.
         protected Dictionary<string, Transform> holders = new Dictionary<string, Transform>();
@@ -37,6 +40,7 @@ namespace ProceduralRoguelike
             // Select a single obstacle set and enemy set for this BoardManager instance.
             var obstacleSet = obstacleSets[Random.Range(0, obstacleSets.Count)];
             var enemySet    = enemySets   [Random.Range(0, enemySets.Count)];
+            var itemSet     = itemSets    [Random.Range(0, itemSets.Count)];
 
             // Transform each WeightedSet into a WeightedRandomSet
             foreach (WeightedPairGO pair in obstacleSet.list)
@@ -47,12 +51,17 @@ namespace ProceduralRoguelike
             {
                 enemies.Add(pair.item, pair.weight);
             }
+            foreach (WeightedPairGO pair in itemSet.list)
+            {
+                items.Add(pair.item, pair.weight);
+            }
 
             // Wire up holder GameObjects for organizational parenting.
-            holders.Add("Floor", transform.Find("Floor"));
+            holders.Add("Floor",     transform.Find("Floor"));
             holders.Add("Obstacles", transform.Find("Obstacles"));
-            holders.Add("Enemies", transform.Find("Enemies"));
-            holders.Add("Passages", transform.Find("Passages"));
+            holders.Add("Enemies",   transform.Find("Enemies"));
+            holders.Add("Items",     transform.Find("Items"));
+            holders.Add("Passages",  transform.Find("Passages"));
         }
 
         protected virtual void OnEnable()
@@ -68,7 +77,7 @@ namespace ProceduralRoguelike
         /// <summary>
         /// Creates a new tile at the position specified.
         /// </summary>
-        protected GameObject AddTile(GameObject prefab, Vector2 position, Transform holder)
+        protected virtual GameObject AddTile(GameObject prefab, Vector2 position, Transform holder)
         {
             var instance = Instantiate(prefab, position, Quaternion.identity)  as GameObject;
             instance.transform.SetParent(holder);

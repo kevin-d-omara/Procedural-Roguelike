@@ -38,3 +38,15 @@ MonoBehaviour:
     jitterSize: 1
     jitterRate: 0.5
     _value: 0
+  chamberItemNumber:
+    min: 1
+    max: 2
+    jitterSize: 0
+    jitterRate: 0
+    _value: 0
+  chamberEnemyNumber:
+    min: 1
+    max: 2
+    jitterSize: 0
+    jitterRate: 0
+    _value: 0

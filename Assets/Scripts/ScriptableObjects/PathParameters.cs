@@ -101,6 +101,17 @@ namespace ProceduralRoguelike
         /// </summary>
         public RandomKnob chamber;
 
+        [Header("Chamber contents:")]
+        /// <summary>
+        /// The number of items in each chamber.
+        /// </summary>
+        public RandomKnob chamberItemNumber;
+
+        /// <summary>
+        /// The number of enemies in each chamber.
+        /// </summary>
+        public RandomKnob chamberEnemyNumber;
+
         /// <summary>
         /// Useful for holding a range instead of single value and for defining a jitter.
         /// </summary>
