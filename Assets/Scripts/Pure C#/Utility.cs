@@ -24,6 +24,18 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
+        /// Enables/Disables all BoxColliders at the specified position.
+        /// </summary>
+        public static void SetActiveBoxColliders(GameObject[] gameObjects, bool shouldEnable)
+        {
+            foreach (GameObject gObject in gameObjects)
+            {
+                var objectBoxCollider = gObject.GetComponent<BoxCollider2D>();
+                if (objectBoxCollider != null) { objectBoxCollider.enabled = shouldEnable; }
+            }
+        }
+
+        /// <summary>
         /// Transforms X into -1, 0, or 1.
         /// </summary>
         /// <returns>Negative one, zero, or positive one.</returns>

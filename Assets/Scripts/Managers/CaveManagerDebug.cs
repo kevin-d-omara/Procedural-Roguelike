@@ -13,7 +13,7 @@ namespace ProceduralRoguelike
         private void SetRandomState()
         {
             var random = (int)System.DateTime.Now.Ticks;
-            //var random = 562858678;
+            //var random = -1847930868;
             Debug.Log(random); Random.InitState(random);
         }
 

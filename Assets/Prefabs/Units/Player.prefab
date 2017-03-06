@@ -171,6 +171,9 @@ MonoBehaviour:
   blockingLayer:
     serializedVersion: 2
     m_Bits: 256
+  floorLayer:
+    serializedVersion: 2
+    m_Bits: 512
 --- !u!212 &212267676895545142
 SpriteRenderer:
   m_ObjectHideFlags: 1

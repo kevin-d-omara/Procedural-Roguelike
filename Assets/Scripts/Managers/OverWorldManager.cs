@@ -104,5 +104,10 @@ namespace ProceduralRoguelike
             // Increase obstacle density by multiplier (cumulative).
             obstacleDensity *= 1.2f;
         }
+
+        protected override void OnTileNotFound(Vector2 position)
+        {
+            AddFloorTile(position);
+        }
     }
 }

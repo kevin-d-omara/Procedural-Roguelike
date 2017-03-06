@@ -690,6 +690,23 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
+        /// Create a floor and rock tile. Set the visibility to none or lightmap.
+        /// </summary>
+        protected override void OnTileNotFound(Vector2 position)
+        {
+            var floorTile = AddFloorTile(position);
+            Visibility visibility;
+            if (lightMap.TryGetValue(position, out visibility)) { }
+            else
+            {
+                visibility = Visibility.None;
+            }
+            floorTile.GetComponent<Visible>().VisibilityLevel = visibility;
+            var rockTile = AddTile(rockPrefab, position, holders["Obstacles"], visibility);
+            caveFloor.Add(position);
+        }
+
+        /// <summary>
         /// Fills the dungeon with random passages, obstacles, items, and enemies, according to the
         /// values this instance has.
         /// </summary>

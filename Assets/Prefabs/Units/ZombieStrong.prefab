@@ -141,8 +141,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2106938a43c67843a2acbd649322399, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wanderDistance: 8
-  wanderCooldown: 1.75
+  wanderDistance: 10
+  wanderCooldown: 1.5
   threatDistance: 5
   threatCooldown: 0.15
   target: {fileID: 1416659830590262, guid: 11a9655053daff04c87f701f5b02e756, type: 2}
@@ -188,6 +188,9 @@ MonoBehaviour:
   blockingLayer:
     serializedVersion: 2
     m_Bits: 256
+  floorLayer:
+    serializedVersion: 2
+    m_Bits: 512
 --- !u!212 &212715765592734676
 SpriteRenderer:
   m_ObjectHideFlags: 1

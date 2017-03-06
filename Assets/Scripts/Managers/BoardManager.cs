@@ -67,11 +67,13 @@ namespace ProceduralRoguelike
         protected virtual void OnEnable()
         {
             LightSource.OnIlluminate += RevealDarkness;
+            Moveable.OnTileNotFound += OnTileNotFound;
         }
 
         protected virtual void OnDisable()
         {
             LightSource.OnIlluminate -= RevealDarkness;
+            Moveable.OnTileNotFound -= OnTileNotFound;
         }
 
         /// <summary>
@@ -94,6 +96,11 @@ namespace ProceduralRoguelike
             floorTiles.Add(position, instance);
             return instance;
         }
+
+        /// <summary>
+        /// Creates a new floor tile and possibly an entity.
+        /// </summary>
+        protected abstract void OnTileNotFound(Vector2 position);
 
         /// <summary>
         /// Checks the tiles surrounding 'location' and creates tiles which are not yet revealed.

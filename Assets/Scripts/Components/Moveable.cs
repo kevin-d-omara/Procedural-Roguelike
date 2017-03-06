@@ -7,20 +7,23 @@ namespace ProceduralRoguelike
     [RequireComponent(typeof(Rigidbody2D))]
     public class Moveable : MonoBehaviour
     {
-        public delegate void FlippedDirectionX(bool flipX);
-        public event FlippedDirectionX OnFlippedDirectionX;
+        public delegate void CanMove(Vector2 destination);
+        public event CanMove OnCanMove;
 
         public delegate void CantMove(GameObject blockingObject);
         public event CantMove OnCantMove;
-
-        public delegate void CanMove(Vector2 destination);
-        public event CanMove OnCanMove;
 
         public delegate void StartMove(GameObject movingObject, Vector2 destination);
         public static event StartMove OnStartMove;
 
         public delegate void EndedSuccessfulMove(Vector2 destination);
         public event EndedSuccessfulMove OnEndedSuccessfulMove;
+
+        public delegate void FlippedDirectionX(bool flipX);
+        public event FlippedDirectionX OnFlippedDirectionX;
+
+        public delegate void TileNotFound(Vector2 position);
+        public static event TileNotFound OnTileNotFound;
 
         public bool IsMoving { get; private set; }
         private Vector2 _facing = Vector2.right;
@@ -64,6 +67,11 @@ namespace ProceduralRoguelike
         /// </summary>
         [SerializeField] private LayerMask blockingLayer;
 
+        /// <summary>
+        /// Layer containing floor tiles. Use to determine the bounds of the known map.
+        /// </summary>
+        [SerializeField] private LayerMask floorLayer;
+
         private BoxCollider2D boxCollider;
         private Rigidbody2D rb2D;
 
@@ -84,9 +92,19 @@ namespace ProceduralRoguelike
             Vector2 start = transform.position;
             var end = start + direction * distance;
 
-            if (boxCollider != null) { boxCollider.enabled = false; }
+            // Check if target position exists (i.e. has been populated by the OverWorld/Cave).
+            var gameObjects = Utility.FindObjectsAt(start);
+            Utility.SetActiveBoxColliders(gameObjects, false);
+            var floorHit = Physics2D.Linecast(start, end);
+            if (floorHit.transform == null)
+            {
+                if (OnTileNotFound != null) { OnTileNotFound(end); }
+            }
+            Utility.SetActiveBoxColliders(gameObjects, true);
+
+            if (boxCollider != null ) { boxCollider.enabled = false; }
             hit = Physics2D.Linecast(start, end, blockingLayer);
-            if (boxCollider != null) { boxCollider.enabled = true; }
+            if (boxCollider != null ) { boxCollider.enabled = true; }
 
             if (hit.transform == null)
             {
