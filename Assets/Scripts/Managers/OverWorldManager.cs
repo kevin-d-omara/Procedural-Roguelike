@@ -42,7 +42,6 @@ namespace ProceduralRoguelike
             var passage = AddTile(passagePrefab, position, holders["Passages"]);
             var pController = passage.GetComponent<PassageController>();
             pController.HasBeenUsed = true;
-            pController.UpdateSprite();
 
             // Center tile placement on position.
             var startY = 1 - ((int)size.y + 1) / 2 + (int)position.y;

@@ -23,16 +23,24 @@ namespace ProceduralRoguelike
                 base.HasBeenUsed = value;
                 if (boxCollider == null) { boxCollider = GetComponent<BoxCollider2D>(); }
                 boxCollider.enabled = !HasBeenUsed;
+                UpdateSprite();
             }
         }
 
         // Componenets
         private TwoSidedTile twoSidedTileComponent;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             // Get references to all components.
             twoSidedTileComponent = GetComponent<TwoSidedTile>();
+        }
+
+        private void Start()
+        {
+            UpdateSprite();
         }
 
         protected override void OnTriggerEnter2D(Collider2D collision)
@@ -47,14 +55,20 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
-        /// Toggle the passage sprite to the opposite side.
+        /// Change the passage sprite to match the HasBeenUsed state.
         /// </summary>
         public void UpdateSprite()
         {
+            StartCoroutine(UpdateSpriteDelayed(0.25f));
+        }
+
+        private IEnumerator UpdateSpriteDelayed(float delay)
+        {
+            yield return new WaitForSeconds(delay);
             if (twoSidedTileComponent == null) twoSidedTileComponent = GetComponent<TwoSidedTile>();
 
             if (HasBeenUsed) { twoSidedTileComponent.SetSpriteToBack(); }
-            else             { twoSidedTileComponent.SetSpriteToFront(); }
+            else { twoSidedTileComponent.SetSpriteToFront(); }
         }
     }
 }

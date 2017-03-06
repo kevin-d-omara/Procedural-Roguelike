@@ -577,7 +577,6 @@ namespace ProceduralRoguelike
                 Visibility.Full);
             var pController = passage.GetComponent<PassageController>();
             pController.HasBeenUsed = true;
-            pController.UpdateSprite();
 
             // Create the cave exit.
             var exitPt = level[0][0].terminusTile;

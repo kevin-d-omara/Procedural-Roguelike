@@ -111,7 +111,6 @@ namespace ProceduralRoguelike
             if (OnPassageTransition != null) { OnPassageTransition(Timing.Start, passagePosition); }
             mainCameraController.FadeOut();
             yield return new WaitForSeconds(mainCameraController.FadeTime);
-            passageController.UpdateSprite();
 
             // Transition between worlds.
             if (entering)
