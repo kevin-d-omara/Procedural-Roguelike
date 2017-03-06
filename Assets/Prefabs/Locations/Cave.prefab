@@ -207,7 +207,7 @@ MonoBehaviour:
   itemSets:
   - {fileID: 11400000, guid: 566b7e11681b6d14fb53a3a09a86f54b, type: 2}
   obstacleDensity: 0.15
-  enemyDensity: 0.003
+  enemyDensity: 0.01
   itemDensity: 0.0025
   passageDensity: 0.002
   rockPrefab: {fileID: 1499576223543280, guid: 7626df20ce8a99e46aae8bb309306070, type: 2}
@@ -216,8 +216,8 @@ MonoBehaviour:
   bottleneckObstacleSets:
   - {fileID: 11400000, guid: 1c3fcc0147713ed449dead47ed2e44a6, type: 2}
   bottleneckObstacleDensity: 0.65
-  ambientVisibility: 0
-  entityVisibility: 0
+  ambientVisibility: 1
+  entityVisibility: 2
   essentialPathParameterSet:
   - {fileID: 11400000, guid: faaedf28de20d39479a9d27924b499c9, type: 2}
   majorPathParameterSet:

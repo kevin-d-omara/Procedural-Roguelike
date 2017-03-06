@@ -46,11 +46,11 @@ namespace ProceduralRoguelike
             switch(VisibilityLevel)
             {
                 case Visibility.Full:
-                    color.a = 1f;
+                    color = Color.white;
                     break;
 
                 case Visibility.Half:
-                    color.a = 0.5f;
+                    color = Color.gray;
                     break;
 
                 case Visibility.None:

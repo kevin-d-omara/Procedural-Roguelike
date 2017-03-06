@@ -82,6 +82,11 @@ namespace ProceduralRoguelike
         private List<Bounds> bottleneckRegions = new List<Bounds>();
 
         /// <summary>
+        /// Tiles which have been illuminated by a light source.
+        /// </summary>
+        private Dictionary<Vector2, Visibility> lightMap = new Dictionary<Vector2, Visibility>();
+
+        /// <summary>
         /// Pairs a tile's coordinates with it's choke and facing.
         /// </summary>
         private class Tile
@@ -164,6 +169,40 @@ namespace ProceduralRoguelike
             }
         }
 
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            Moveable.OnStartMove += UpdateEntityVisibility;
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            Moveable.OnStartMove -= UpdateEntityVisibility;
+        }
+
+        /// <summary>
+        /// Change visibility of moving object to lightmap value at destination.
+        /// </summary>
+        private void UpdateEntityVisibility(GameObject movingObject, Vector2 destination)
+        {
+            var visibleComponenet = movingObject.GetComponent<Visible>();
+            if (visibleComponenet != null)
+            {
+                Visibility _;
+                // Move into light (or half-light).
+                if (lightMap.TryGetValue(destination, out _))
+                {
+                    visibleComponenet.VisibilityLevel = lightMap[destination];
+                }
+                // Move into darkness.
+                else
+                {
+                    visibleComponenet.VisibilityLevel = Visibility.None;
+                }
+            }
+        }
+
         /// <summary>
         /// Check the tiles surrounding 'location' and creates tile which are defined the the cave
         /// system, or Rocks otherwise.
@@ -175,6 +214,17 @@ namespace ProceduralRoguelike
             foreach (Vector2 offset in offsets)
             {
                 var position = location + offset;
+
+                // Update light map.
+                Visibility visibility;
+                if (lightMap.TryGetValue(position, out visibility))
+                {
+                    lightMap[position] = Visibility.Full;
+                }
+                else
+                {
+                    lightMap.Add(position, Visibility.Full);
+                }
 
                 // Make pre-existing tiles visible.
                 if (caveFloor.Contains(position))

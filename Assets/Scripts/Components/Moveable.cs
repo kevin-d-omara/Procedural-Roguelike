@@ -16,6 +16,9 @@ namespace ProceduralRoguelike
         public delegate void CanMove(Vector2 destination);
         public event CanMove OnCanMove;
 
+        public delegate void StartMove(GameObject movingObject, Vector2 destination);
+        public static event StartMove OnStartMove;
+
         public delegate void EndedSuccessfulMove(Vector2 destination);
         public event EndedSuccessfulMove OnEndedSuccessfulMove;
 
@@ -89,9 +92,10 @@ namespace ProceduralRoguelike
             {
                 StartCoroutine(SmoothMovement(end));
                 Facing = direction;
-                if (OnCanMove != null)
+                if (OnCanMove != null) { OnCanMove(end); }
+                if (OnStartMove != null)
                 {
-                    OnCanMove(end);
+                    OnStartMove(gameObject, end);
                 }
                 return true;
             }
