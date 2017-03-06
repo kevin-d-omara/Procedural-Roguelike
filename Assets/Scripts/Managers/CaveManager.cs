@@ -701,7 +701,7 @@ namespace ProceduralRoguelike
                 visibility = Visibility.None;
             }
             floorTile.GetComponent<Visible>().VisibilityLevel = visibility;
-            var rockTile = AddTile(rockPrefab, position, holders["Obstacles"], visibility);
+            AddTile(rockPrefab, position, holders["Obstacles"], visibility);
             caveFloor.Add(position);
         }
 

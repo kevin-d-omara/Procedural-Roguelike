@@ -203,10 +203,11 @@ MonoBehaviour:
   obstacleSets:
   - {fileID: 11400000, guid: 564fde5313ae8cf4984e87cb6d00118f, type: 2}
   enemySets:
-  - {fileID: 11400000, guid: 28f5b3c50a067504e92aaa882853a578, type: 2}
+  - {fileID: 11400000, guid: 4e860909671ddd44ca395f778d808d20, type: 2}
+  - {fileID: 11400000, guid: 503a97ae6518464428084cb5b31fc92a, type: 2}
   itemSets:
   - {fileID: 11400000, guid: 566b7e11681b6d14fb53a3a09a86f54b, type: 2}
   obstacleDensity: 0.15
   enemyDensity: 0.01
-  itemDensity: 0.005
-  passageDensity: 1
+  itemDensity: 0
+  passageDensity: 0.005

@@ -11,42 +11,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e2a5d198de0b3f4b991be63384a0b8a, type: 3}
   m_Name: MajorFork
   m_EditorClassIdentifier: 
-  origin: {x: 43.748806, y: 37.254074}
-  _initialFacing: 37.900276
-  length: 20
+  origin: {x: 9.57338, y: 8.957294}
+  _initialFacing: 45.392033
+  length: 25
   _curvature: 15
   stepSize: 0.25
   inflectionRate: 0.4
   bottleneckRate: 0.025
   chamberNumber: 0.5
-  forkNumber: 3
+  forkNumber: 1.5
   choke:
-    min: 1
-    max: 1
-    jitterSize: 1
-    jitterRate: 1
-    _value: 1
-  bottleneck:
-    min: 1
-    max: 2
-    jitterSize: 1
-    jitterRate: 0.5
-    _value: 2
-  chamber:
     min: 2
     max: 2
-    jitterSize: 0
-    jitterRate: 0
+    jitterSize: 1
+    jitterRate: 1
     _value: 2
+  bottleneck:
+    min: 3
+    max: 4
+    jitterSize: 1
+    jitterRate: 0.5
+    _value: 4
+  chamber:
+    min: 3
+    max: 4
+    jitterSize: 1
+    jitterRate: 0.5
+    _value: 4
   chamberItemNumber:
-    min: 0
+    min: 1
     max: 1
     jitterSize: 0
     jitterRate: 0
-    _value: 0
+    _value: 1
   chamberEnemyNumber:
-    min: 0
+    min: 1
     max: 1
-    jitterSize: 0
-    jitterRate: 0
+    jitterSize: 1
+    jitterRate: 0.5
     _value: 0
