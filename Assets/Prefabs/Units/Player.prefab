@@ -140,7 +140,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ada6b7d9a6bbd264dbc537b687dabfd7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _radius: 1
+  _brightRadius: 1
+  dimModifierType: 0
+  dimModifierValue: 1
   fuel:
     _maxQuantity: 100
   burnRate: 1

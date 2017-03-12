@@ -50,7 +50,8 @@ namespace ProceduralRoguelike
 
         // TODO: create custom inspector for function parameter choice (i.e. y = m*x + b: m, b)
         public enum IntensityFunctionType { Linear, Logarithmic }
-        [SerializeField] private IntensityFunctionType intensityFunctionType;
+        [SerializeField] private IntensityFunctionType intensityFunctionType
+            = IntensityFunctionType.Linear;
 
         [Range(0, 3)]
         /// <summary>
@@ -85,7 +86,7 @@ namespace ProceduralRoguelike
                 fuel.Quantity = Mathf.Max(fuel.Quantity, 0f);
 
                 // Update intensity.
-                Radius = Mathf.Max(intensity(fuel.Quantity), 0);
+                BrightRadius = Mathf.Max(intensity(fuel.Quantity), 0);
             }
         }
 
