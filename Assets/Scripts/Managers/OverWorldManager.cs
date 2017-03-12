@@ -98,6 +98,16 @@ namespace ProceduralRoguelike
             }
         }
 
+        /// <summary>
+        /// Increase illumination of tiles near the end location and reduce illumination of tiles
+        /// near the start location. Use when a light source moves.
+        /// </summary>
+        public override void RevealDarkness(Vector2 startLocation, List<Vector2> startOffsets,
+                                            Vector2 endLocation, List<Vector2> endOffsets)
+        {
+            RevealDarkness(endLocation, endOffsets);
+        }
+
         private void OnIncreaseDifficulty(int difficulty)
         {
             // Increase obstacle density by multiplier (cumulative).

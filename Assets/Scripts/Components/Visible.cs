@@ -12,6 +12,8 @@ namespace ProceduralRoguelike
     [RequireComponent(typeof(SpriteRenderer))]
 	public class Visible : MonoBehaviour
 	{
+        public enum Type { Ambient, Entity }
+
         public Visibility VisibilityLevel
         {
             get { return _visibilityLevel; }
@@ -22,6 +24,12 @@ namespace ProceduralRoguelike
             }
         }
         [SerializeField] private Visibility _visibilityLevel;
+
+        /// <summary>
+        /// Type of visible object: Ambient or Entity.
+        /// </summary>
+        public Type ObjectType { get { return _objectType; } }
+        [SerializeField] private Type _objectType = Type.Ambient;
 
         // Components
         private SpriteRenderer spriteRenderer;

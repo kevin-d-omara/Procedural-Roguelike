@@ -11,6 +11,25 @@ namespace ProceduralRoguelike
         public static List<Vector2> DiagonalOffsets { get; private set; } 
         public static List<Vector2> SurroundingOffsets { get; private set; } 
 
+        /// <summary>
+        /// Get the circular offset pattern for the given radius.
+        /// </summary>
+        public static List<Vector2> GetCircularOffsets(int radius)
+        {
+            // Memoize offsets.
+            List<Vector2> offsets;
+            if (_circularOffsets.TryGetValue(radius, out offsets))
+            { }
+            else
+            {
+                offsets = CircleFill(radius);
+                _circularOffsets[radius] = offsets;
+            }
+            return offsets;
+        }
+        private static Dictionary<int, List<Vector2>> _circularOffsets
+                 = new Dictionary<int, List<Vector2>>();
+
         static GridAlgorithms()
         {
             OrthogonalOffsets = new List<Vector2>
@@ -127,7 +146,5 @@ namespace ProceduralRoguelike
 
             return offsets;
         }
-
-
 	}
 }

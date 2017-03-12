@@ -32,6 +32,8 @@ namespace ProceduralRoguelike
         [Header("Darkness level:")]
         [SerializeField] private Visibility ambientVisibility = Visibility.Full;
         [SerializeField] private Visibility entityVisibility  = Visibility.None;
+        [SerializeField] private Visibility unobservedAmbient = Visibility.Half;
+        [SerializeField] private Visibility unobservedEntity  = Visibility.None;
 
         [Header("Path parameters:")]
         [SerializeField] private List<PathParameters> essentialPathParameterSet;
@@ -181,6 +183,8 @@ namespace ProceduralRoguelike
             Moveable.OnStartMove -= UpdateEntityVisibility;
         }
 
+        // Cave creation ---------------------------------------------------------------------------
+
         /// <summary>
         /// Creates all the GameObjects defined by the cave system (i.e. Floor, Obstacles, Enemies,
         /// Chests, etc.).
@@ -215,24 +219,7 @@ namespace ProceduralRoguelike
             //PlotPaintedCave(false);
         }
 
-        /// <summary>
-        /// Initialize the light map to entity visibility level.
-        /// </summary>
-        private void BakeLightMap()
-        {
-            foreach (Vector2 position in caveFloor)
-            {
-                Visibility visibility;
-                if (lightMap.TryGetValue(position, out visibility))
-                {
-                    visibility = entityVisibility;
-                }
-                else
-                {
-                    lightMap.Add(position, visibility = entityVisibility);
-                }
-            }
-        }
+        // Runtime functions -----------------------------------------------------------------------
 
         /// <summary>
         /// Change visibility of moving object to lightmap value at destination.
@@ -302,10 +289,94 @@ namespace ProceduralRoguelike
             }
         }
 
-        private Vector2 Constrain(Vector2 pt)
+        /// <summary>
+        /// Increase illumination of tiles near the end location and reduce illumination of tiles
+        /// near the start location. Use when a light source moves.
+        /// </summary>
+        public override void RevealDarkness(Vector2 startLocation, List<Vector2> startOffsets,
+                                            Vector2 endLocation, List<Vector2> endOffsets)
         {
-            return new Vector2(Mathf.Round(pt.x), Mathf.Round(pt.y));
+            // Reduce illumination in starting location.
+            foreach (Vector2 offset in startOffsets)
+            {
+                var position = startLocation + offset;
+
+                // Update light map.
+                Visibility _;
+                if (lightMap.TryGetValue(position, out _))
+                {
+                    lightMap[position] = unobservedEntity;
+                }
+
+                // Make pre-existing tiles un-illuminated.
+                if (caveFloor.Contains(position))
+                {
+                    var gameObjects = Utility.FindObjectsAt(position);
+                    foreach (GameObject gObject in gameObjects)
+                    {
+                        var visibleComponenet = gObject.GetComponent<Visible>();
+                        if (visibleComponenet != null)
+                        {
+                            switch(visibleComponenet.ObjectType)
+                            {
+                                case Visible.Type.Ambient:
+                                    visibleComponenet.VisibilityLevel = unobservedAmbient;
+                                    break;
+                                case Visible.Type.Entity:
+                                    visibleComponenet.VisibilityLevel = unobservedEntity;
+                                    break;
+                                default:
+                                    throw new System.ArgumentException("Unsupported Visible.Type.");
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Increase illumination in ending location.
+            RevealDarkness(endLocation, endOffsets);
         }
+
+        /// <summary>
+        /// Create a floor and rock tile. Set the visibility to none or lightmap.
+        /// </summary>
+        protected override void OnTileNotFound(Vector2 position)
+        {
+            var floorTile = AddFloorTile(position);
+            Visibility visibility;
+            if (lightMap.TryGetValue(position, out visibility)) { }
+            else
+            {
+                visibility = Visibility.None;
+            }
+            floorTile.GetComponent<Visible>().VisibilityLevel = visibility;
+            AddTile(rockPrefab, position, holders["Obstacles"], visibility);
+            caveFloor.Add(position);
+        }
+
+        /// <summary>
+        /// Creates a new tile at the position specified and add it to the list of cave entities.
+        /// </summary>
+        private GameObject AddTile(GameObject prefab, Vector2 position, Transform holder,
+            Visibility visibility)
+        {
+            var addedTile = base.AddTile(prefab, position, holder);
+            caveEntity.Add(position);
+
+            addedTile.GetComponent<Visible>().VisibilityLevel = visibility;
+
+            return addedTile;
+        }
+
+        protected override GameObject AddFloorTile(Vector2 position)
+        {
+            var addedTile = base.AddFloorTile(position);
+            addedTile.GetComponent<Visible>().VisibilityLevel = ambientVisibility;
+
+            return addedTile;
+        }
+
+        // Utility functions -----------------------------------------------------------------------
 
         /// <summary>
         /// Determine if a point is inside a bottleneck region.
@@ -362,7 +433,7 @@ namespace ProceduralRoguelike
             }
         }
 
-        // -----------------------------------------------------------------------------------------
+        // Procedural subroutines. Each is called once during SetupCave() --------------------------
 
         /// <summary>
         /// Instantiate the Path's belonging to this cave.
@@ -498,9 +569,9 @@ namespace ProceduralRoguelike
                     foreach (Vector2 chamberPt in pathInfo.chamberTiles)
                     {
                         var sizeOfRegion = pathParameters[lvl].chamber.Value;
-                        var region = new LineOfSight(sizeOfRegion);
+                        var region = GridAlgorithms.GetCircularOffsets(sizeOfRegion);
                         var regionTiles = new List<Vector2>();
-                        foreach (Vector2 offset in region.Offsets)
+                        foreach (Vector2 offset in region)
                         {
                             var point = chamberPt + offset;
                             if (!caveFloor.Contains(point)) { caveFloor.Add(point); }
@@ -561,9 +632,9 @@ namespace ProceduralRoguelike
 
                             // diagonal
                             default:
-                                var region = new LineOfSight(choke);
+                                var region = GridAlgorithms.GetCircularOffsets(choke);
 
-                                foreach (Vector2 offset in region.Offsets)
+                                foreach (Vector2 offset in region)
                                 {
                                     var newPt = centerPt + offset;
                                     if (!caveFloor.Contains(newPt)) { caveFloor.Add(newPt); }
@@ -571,6 +642,25 @@ namespace ProceduralRoguelike
                                 break;
                         }
                     }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Initialize the light map to entity visibility level.
+        /// </summary>
+        private void BakeLightMap()
+        {
+            foreach (Vector2 position in caveFloor)
+            {
+                Visibility visibility;
+                if (lightMap.TryGetValue(position, out visibility))
+                {
+                    visibility = entityVisibility;
+                }
+                else
+                {
+                    lightMap.Add(position, visibility = entityVisibility);
                 }
             }
         }
@@ -612,10 +702,10 @@ namespace ProceduralRoguelike
             {
                 var centerPt = (Vector2)bound.center;
                 var radius = (int)bound.extents.x;
-                var region = new LineOfSight(radius);
+                var region = GridAlgorithms.GetCircularOffsets(radius);
 
                 // TODO: add jitter to *outer* size
-                foreach (Vector2 offset in region.Offsets)
+                foreach (Vector2 offset in region)
                 {
                     var position = centerPt + offset;
 
@@ -687,45 +777,6 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
-        /// Creates a new tile at the position specified and add it to the list of cave entities.
-        /// </summary>
-        private GameObject AddTile(GameObject prefab, Vector2 position, Transform holder,
-            Visibility visibility)
-        {
-            var addedTile = base.AddTile(prefab, position, holder);
-            caveEntity.Add(position);
-
-            addedTile.GetComponent<Visible>().VisibilityLevel = visibility;
-
-            return addedTile;
-        }
-
-        protected override GameObject AddFloorTile(Vector2 position)
-        {
-            var addedTile = base.AddFloorTile(position);
-            addedTile.GetComponent<Visible>().VisibilityLevel = ambientVisibility;
-
-            return addedTile;
-        }
-
-        /// <summary>
-        /// Create a floor and rock tile. Set the visibility to none or lightmap.
-        /// </summary>
-        protected override void OnTileNotFound(Vector2 position)
-        {
-            var floorTile = AddFloorTile(position);
-            Visibility visibility;
-            if (lightMap.TryGetValue(position, out visibility)) { }
-            else
-            {
-                visibility = Visibility.None;
-            }
-            floorTile.GetComponent<Visible>().VisibilityLevel = visibility;
-            AddTile(rockPrefab, position, holders["Obstacles"], visibility);
-            caveFloor.Add(position);
-        }
-
-        /// <summary>
         /// Fills the dungeon with random passages, obstacles, items, and enemies, according to the
         /// values this instance has.
         /// </summary>
@@ -785,7 +836,7 @@ namespace ProceduralRoguelike
                 var gameObjects = Utility.FindObjectsAt(position);
                 foreach (GameObject gObject in gameObjects)
                 {
-                    if (gObject.tag != "Floor"   && gObject.tag != "Bramble" &&
+                    if (gObject.tag != "Floor" && gObject.tag != "Bramble" &&
                         gObject.tag != "Passage" && gObject.tag != "Player")
                     {
                         Destroy(gObject);

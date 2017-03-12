@@ -219,8 +219,10 @@ MonoBehaviour:
   bottleneckObstacleSets:
   - {fileID: 11400000, guid: 1c3fcc0147713ed449dead47ed2e44a6, type: 2}
   bottleneckObstacleDensity: 0.65
-  ambientVisibility: 1
+  ambientVisibility: 2
   entityVisibility: 2
+  unobservedAmbient: 1
+  unobservedEntity: 2
   essentialPathParameterSet:
   - {fileID: 11400000, guid: faaedf28de20d39479a9d27924b499c9, type: 2}
   majorPathParameterSet:

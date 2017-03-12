@@ -192,6 +192,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _visibilityLevel: 0
+  _objectType: 1
 --- !u!212 &212515005305277816
 SpriteRenderer:
   m_ObjectHideFlags: 1

@@ -25,9 +25,6 @@ namespace ProceduralRoguelike
             remove { fuel.OnDepleted += value; }
         }
 
-        public delegate int ChangeIntensity(int radius);
-        public static event ChangeIntensity OnChangeIntensity;
-
         /// <summary>
         /// Fuel (quantity and maximum allowed).
         /// </summary>
@@ -88,13 +85,7 @@ namespace ProceduralRoguelike
                 fuel.Quantity = Mathf.Max(fuel.Quantity, 0f);
 
                 // Update intensity.
-                var newIntensity = Mathf.Max(intensity(fuel.Quantity), 0);
-                if (newIntensity != Radius)
-                {
-                    Radius = newIntensity;
-                    if (OnChangeIntensity!= null) { OnChangeIntensity(Radius); }
-                }
-
+                Radius = Mathf.Max(intensity(fuel.Quantity), 0);
             }
         }
 

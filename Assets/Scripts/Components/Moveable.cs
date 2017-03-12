@@ -47,7 +47,7 @@ namespace ProceduralRoguelike
         /// <summary>
         /// Speed (units/sec) of movement (i.e. 10 units/sec = 0.1 sec to move 1 units).
         /// </summary>
-        [Range(0.01f, 5f)]
+        [Range(0.01f, 15f)]
         public float speed = 2;
 
         /// <summary>

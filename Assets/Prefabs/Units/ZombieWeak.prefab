@@ -112,6 +112,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _visibilityLevel: 0
+  _objectType: 1
 --- !u!114 &114183675135667670
 MonoBehaviour:
   m_ObjectHideFlags: 1

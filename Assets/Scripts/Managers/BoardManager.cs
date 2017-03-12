@@ -67,12 +67,14 @@ namespace ProceduralRoguelike
         protected virtual void OnEnable()
         {
             LightSource.OnIlluminate += RevealDarkness;
+            LightSource.OnLightSourceMoved += RevealDarkness;
             Moveable.OnTileNotFound += OnTileNotFound;
         }
 
         protected virtual void OnDisable()
         {
             LightSource.OnIlluminate -= RevealDarkness;
+            LightSource.OnLightSourceMoved -= RevealDarkness;
             Moveable.OnTileNotFound -= OnTileNotFound;
         }
 
@@ -108,5 +110,24 @@ namespace ProceduralRoguelike
         /// <param name="location">Location in the world to center the offsets.</param>
         /// <param name="offsets">List of offsets specifying pattern to reveal.</param>
         public abstract void RevealDarkness(Vector2 location, List<Vector2> offsets);
+
+        /// <summary>
+        /// Increase illumination of tiles near the end location and reduce illumination of tiles
+        /// near the start location. Use when a light source moves.
+        /// </summary>
+        /// <param name="startLocation">Location in the world to de-illuminate.</param>
+        /// <param name="startOffsets">Pattern to de-illuminate.</param>
+        /// <param name="endLocation">Location in the world to illuminate.</param>
+        /// <param name="endOffsets">Pattern to illuminate.</param>
+        public abstract void RevealDarkness(Vector2 startLocation, List<Vector2> startOffsets,
+                                            Vector2 endLocation, List<Vector2> endOffsets);
+
+        /// <summary>
+        /// Snap point to nearest whole value x & y (i.e. [2.7, -3.7] -> [3.0, -4.0]).
+        /// </summary>
+        public static Vector2 Constrain(Vector2 pt)
+        {
+            return new Vector2(Mathf.Round(pt.x), Mathf.Round(pt.y));
+        }
     }
 }

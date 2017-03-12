@@ -77,7 +77,8 @@ namespace ProceduralRoguelike
 
         private void OnCanMove(Vector2 destination)
         {
-            lightSourceComponent.IlluminateDarkness(destination);
+            //lightSourceComponent.IlluminateDarkness(destination);
+            lightSourceComponent.MoveLightSource(transform.position, destination);
         }
 
         protected override void OnKilled()
