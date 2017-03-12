@@ -21,8 +21,6 @@ namespace ProceduralRoguelike
             set
             {
                 base.HasBeenUsed = value;
-                if (boxCollider == null) { boxCollider = GetComponent<BoxCollider2D>(); }
-                boxCollider.enabled = !HasBeenUsed;
                 UpdateSprite();
             }
         }
