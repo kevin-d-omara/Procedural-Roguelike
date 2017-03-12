@@ -9,61 +9,29 @@ namespace ProceduralRoguelike
     /// </summary>
     public class Health : MonoBehaviour
     {
-        public delegate void LostHitPoints(int damage);
-        public event LostHitPoints OnLostHitPoints;
-
-        public delegate void GainedHitPoints(int hitpoints);
-        public event GainedHitPoints OnGainedHitPoints;
-
-        public delegate void Killed();
-        public event Killed OnKilled;
-
-        /// <summary>
-        /// Total number of hit points this GameObject can have.
-        /// </summary>
-        [Range(1, 5)]
-        [SerializeField] private int _maxHitPoints;
-        public int MaxHitPoints
+        // Wrap events raised from hitPoints.
+        public event LimitedQuantityInt.LostQuantity OnLostHitPoints
         {
-            get { return _maxHitPoints; }
-            set
-            {
-                // Increase both MaxHitPoints and HitPoints.
-                var deltaHP = _maxHitPoints - HitPoints;
-                _maxHitPoints = value;
-                HitPoints += deltaHP;
-            }
+            add    { hitPoints.OnLostQuantity += value; }
+            remove { hitPoints.OnLostQuantity -= value; }
+        }
+
+        public event LimitedQuantityInt.GainedQuantity OnGainedHitPoints
+        {
+            add    { hitPoints.OnGainedQuantity += value; }
+            remove { hitPoints.OnGainedQuantity -= value; }
+        }
+
+        public event LimitedQuantityInt.Depleted OnKilled
+        {
+            add    { hitPoints.OnDepleted += value; }
+            remove { hitPoints.OnDepleted += value; }
         }
 
         /// <summary>
-        /// Number of remaining hit points. Range (-inf, MaxHitPoints]
+        /// Hit points (quantity and maximum allowed).
         /// </summary>
-        private int _hitPoints;
-        public int HitPoints
-        {
-            get { return _hitPoints; }
-            set
-            {
-                var deltaHP = _hitPoints - value;
-
-                if (deltaHP > 0)
-                {
-                    // Lost hit points.
-                    _hitPoints = value;
-                    if (_hitPoints <= 0)
-                    {
-                        if (OnKilled != null) { OnKilled(); }
-                    }
-                    if (OnLostHitPoints != null) { OnLostHitPoints(deltaHP); }
-                }
-                else if (deltaHP < 0)
-                {
-                    // Gained hit points
-                    _hitPoints = value < MaxHitPoints ? value : MaxHitPoints;
-                    if (OnGainedHitPoints != null) { OnGainedHitPoints(deltaHP); }
-                }
-            }
-        }
+        public LimitedQuantityInt hitPoints;
 
         /// <summary>
         /// True if GameObject is immune to regular attacks (i.e. only damageable by Dynamite).
@@ -72,7 +40,7 @@ namespace ProceduralRoguelike
 
         private void Awake()
         {
-            HitPoints = MaxHitPoints;
+            hitPoints.Quantity = hitPoints.MaxQuantity;
         }
 
         /// <summary>
@@ -84,11 +52,11 @@ namespace ProceduralRoguelike
         {
             if (isHardTarget)
             {
-                HitPoints -= isHardAttack ? damage : 0;
+                hitPoints.Quantity -= isHardAttack ? damage : 0;
             }
             else
             {
-                HitPoints -= damage;
+                hitPoints.Quantity -= damage;
             }
         }
     }

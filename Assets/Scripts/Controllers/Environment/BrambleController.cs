@@ -34,7 +34,7 @@ namespace ProceduralRoguelike
 
         private void OnTakeDamage(int damage)
         {
-            if (healthComponent.HitPoints <= healthComponent.MaxHitPoints / 2)
+            if (healthComponent.hitPoints.Quantity <= healthComponent.hitPoints.MaxQuantity / 2)
             {
                 // Set tile to damaged sprite.
                 twoSidedTileComponent.SetSpriteToBack();

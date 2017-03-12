@@ -25,7 +25,7 @@ namespace ProceduralRoguelike
         }
         public List<Vector2> Offsets { get; private set; }
 
-        private void Awake()
+        protected virtual void Awake()
         {
             Radius = _radius;
         }

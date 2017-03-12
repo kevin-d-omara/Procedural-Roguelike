@@ -27,7 +27,7 @@ GameObject:
   - component: {fileID: 114548093470887346}
   - component: {fileID: 114485446359621824}
   - component: {fileID: 114109688813074246}
-  - component: {fileID: 114291537587271594}
+  - component: {fileID: 114293879907041042}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -129,7 +129,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 731e44edfd933574994dfe3453736dea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114291537587271594
+--- !u!114 &114293879907041042
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -137,10 +137,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1416659830590262}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7fa57592080e2364c9fade2294612889, type: 3}
+  m_Script: {fileID: 11500000, guid: ada6b7d9a6bbd264dbc537b687dabfd7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _radius: 4
+  _radius: 1
+  fuel:
+    _maxQuantity: 100
+  burnRate: 1
+  burnRateModifier: 0
+  intensityFunctionType: 0
+  intensityModifier: 0
 --- !u!114 &114485446359621824
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -152,7 +158,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55627fbdf31f712469a1ab4459cfdb41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxHitPoints: 4
+  hitPoints:
+    _maxQuantity: 4
   isHardTarget: 0
 --- !u!114 &114548093470887346
 MonoBehaviour:
