@@ -182,6 +182,59 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
+        /// Creates all the GameObjects defined by the cave system (i.e. Floor, Obstacles, Enemies,
+        /// Chests, etc.).
+        /// </summary>
+        /// <param name="location">Location in the world to center the entrance passage.</param>
+        public void SetupCave(Vector2 position)
+        {
+            // DEBUG:
+            SetRandomState();
+
+            // Create logical cave
+            caveEntrance = position;
+            InstantiateCave();
+            RecordEssentialPathAndDetails();
+            SmoothDiagonalSteps();
+            RecordChamberTiles();
+            WidenPaths();
+            BakeLightMap();
+
+            // Create physical cave
+            LayCaveFloor();
+            // (optional) randomly pick entrance and exit locations (@ ForkPts and/or TerminusPts)
+            LayPassages();
+            LayBottleneckObstacles();
+            // SpawnGems()
+            PopulateChambers();
+            SpawnEntities();
+            UnblockEssentialPath();
+
+
+            // DEBUG:
+            //PlotPaintedCave(false);
+        }
+
+        /// <summary>
+        /// Initialize the light map to entity visibility level.
+        /// </summary>
+        private void BakeLightMap()
+        {
+            foreach (Vector2 position in caveFloor)
+            {
+                Visibility visibility;
+                if (lightMap.TryGetValue(position, out visibility))
+                {
+                    visibility = entityVisibility;
+                }
+                else
+                {
+                    lightMap.Add(position, visibility = entityVisibility);
+                }
+            }
+        }
+
+        /// <summary>
         /// Change visibility of moving object to lightmap value at destination.
         /// </summary>
         private void UpdateEntityVisibility(GameObject movingObject, Vector2 destination)
@@ -216,8 +269,8 @@ namespace ProceduralRoguelike
                 var position = location + offset;
 
                 // Update light map.
-                Visibility visibility;
-                if (lightMap.TryGetValue(position, out visibility))
+                Visibility _;
+                if (lightMap.TryGetValue(position, out _))
                 {
                     lightMap[position] = Visibility.Full;
                 }
@@ -252,39 +305,6 @@ namespace ProceduralRoguelike
         private Vector2 Constrain(Vector2 pt)
         {
             return new Vector2(Mathf.Round(pt.x), Mathf.Round(pt.y));
-        }
-
-        /// <summary>
-        /// Creates all the GameObjects defined by the cave system (i.e. Floor, Obstacles, Enemies,
-        /// Chests, etc.).
-        /// </summary>
-        /// <param name="location">Location in the world to center the entrance passage.</param>
-        public void SetupCave(Vector2 position)
-        {
-            // DEBUG:
-            SetRandomState();
-
-            // Create logical cave
-            caveEntrance = position;
-            InstantiateCave();
-            RecordEssentialPathAndDetails();
-            SmoothDiagonalSteps();
-            RecordChamberTiles();
-            WidenPaths();
-
-            // Create physical cave
-            LayCaveFloor();
-            // (optional) randomly pick entrance and exit locations (@ ForkPts and/or TerminusPts)
-            LayPassages();
-            LayBottleneckObstacles();
-            // SpawnGems()
-            PopulateChambers();
-            SpawnEntities();
-            UnblockEssentialPath();
-
-
-            // DEBUG:
-            //PlotPaintedCave(false);
         }
 
         /// <summary>
