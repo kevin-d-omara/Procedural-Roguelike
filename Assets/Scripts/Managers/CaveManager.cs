@@ -30,10 +30,12 @@ namespace ProceduralRoguelike
         // -----------------------------------------------------------------------------------------
 
         [Header("Darkness level:")]
-        [SerializeField] private Visibility ambientVisibility = Visibility.Full;
-        [SerializeField] private Visibility entityVisibility  = Visibility.None;
-        [SerializeField] private Visibility unobservedAmbient = Visibility.Half;
-        [SerializeField] private Visibility unobservedEntity  = Visibility.None;
+        [SerializeField] private Visibility ambientVisibility    = Visibility.None;
+        [SerializeField] private Visibility entityVisibility     = Visibility.None;
+        [SerializeField] private Visibility unobservedAmbient    = Visibility.Half;
+        [SerializeField] private Visibility unobservedEntity     = Visibility.None;
+        [SerializeField] private Visibility dimAmbientVisibility = Visibility.Half;
+        [SerializeField] private Visibility dimEntityVisibility  = Visibility.Half;
 
         [Header("Path parameters:")]
         [SerializeField] private List<PathParameters> essentialPathParameterSet;
@@ -84,7 +86,7 @@ namespace ProceduralRoguelike
         private List<Bounds> bottleneckRegions = new List<Bounds>();
 
         /// <summary>
-        /// Tiles which have been illuminated by a light source.
+        /// Tiles which have been illuminated by a light source. Used to update moving objects.
         /// </summary>
         private Dictionary<Vector2, Visibility> lightMap = new Dictionary<Vector2, Visibility>();
 
@@ -222,6 +224,115 @@ namespace ProceduralRoguelike
         // Runtime functions -----------------------------------------------------------------------
 
         /// <summary>
+        /// Fully illuminate the tiles surrounding location with a partially illuminated outer band.
+        /// Spawn a Rock for tiles which are not defined by the cave system.
+        /// </summary>
+        /// <param name="location">Location in the world to center the light.</param>
+        /// <param name="brightOffsets">Pattern of bright light to reveal.</param>
+        /// /// <param name="dimOffsetsBand">Pattern of dim light to reveal.</param>
+        public override void RevealDarkness(Vector2 location, List<Vector2> brightOffsets,
+            List<Vector2> dimOffsetsBand)
+        {
+            // Fully reveal all tiles within Bright range.
+            foreach (Vector2 brightOffset in brightOffsets)
+            {
+                var position = location + brightOffset;
+                SetTileIllumination(position, Visibility.Full, Visibility.Full);
+            }
+
+            // Dimly reveal all tiles in the outer Dim band.
+            foreach (Vector2 dimOffset in dimOffsetsBand)
+            {
+                var position = location + dimOffset;
+                SetTileIllumination(position, dimAmbientVisibility, dimEntityVisibility);
+            }
+        }
+
+        /// <summary>
+        /// Sets all tiles at the position to the appropriate visibility level for its type.
+        /// Spawn a Rock if the tile is not defined by the cave system.
+        /// </summary>
+        /// <param name="ambient">Visibility to set ambient objects to.</param>
+        /// <param name="entity">Visibility to set entity objects to.</param>
+        private void SetTileIllumination(Vector2 position, Visibility ambient, Visibility entity)
+        {
+            // Update light map.
+            Visibility _;
+            if (lightMap.TryGetValue(position, out _))
+            {
+                lightMap[position] = entity;
+            }
+            else
+            {
+                lightMap.Add(position, entity);
+            }
+
+            // Update illumination of pre-existing tiles.
+            if (caveFloor.Contains(position))
+            {
+                var gameObjects = Utility.FindObjectsAt(position);
+                foreach (GameObject gObject in gameObjects)
+                {
+                    var visibleComponenet = gObject.GetComponent<Visible>();
+                    if (visibleComponenet != null)
+                    {
+                        switch (visibleComponenet.ObjectType)
+                        {
+                            case Visible.Type.Ambient:
+                                visibleComponenet.VisibilityLevel = ambient;
+                                break;
+                            case Visible.Type.Entity:
+                                visibleComponenet.VisibilityLevel = entity;
+                                break;
+                            default:
+                                throw new System.ArgumentException("Unsupported Visible.Type.");
+                        }
+                    }
+                }
+            }
+            // Make non-existing tiles Rocks.
+            else
+            {
+                AddFloorTile(position);
+                caveFloor.Add(position);
+                AddTile(rockPrefab, position, holders["Obstacles"], ambient);
+            }
+        }
+
+        /// <summary>
+        /// Increase illumination of tiles near the end location and reduce illumination of tiles
+        /// near the start location. Use when a light source moves.
+        /// </summary>
+        public override void RevealDarkness(
+            Vector2 startLocation, List<Vector2> startBrightOffsets, List<Vector2> startDimOffsetsBand,
+            Vector2   endLocation, List<Vector2>   endBrightOffsets, List<Vector2>   endDimOffsetsBand)
+        {
+            // Reduce illumination in starting location.
+            foreach (Vector2 offset in startBrightOffsets)
+            {
+                var position = startLocation + offset;
+                SetTileIllumination(position, unobservedAmbient, unobservedEntity);
+            }
+            foreach (Vector2 offset in startDimOffsetsBand)
+            {
+                var position = startLocation + offset;
+                SetTileIllumination(position, unobservedAmbient, unobservedEntity);
+            }
+
+            // Increase illumination in ending location.
+            foreach (Vector2 offset in endBrightOffsets)
+            {
+                var position = endLocation + offset;
+                SetTileIllumination(position, Visibility.Full, Visibility.Full);
+            }
+            foreach (Vector2 offset in endDimOffsetsBand)
+            {
+                var position = endLocation + offset;
+                SetTileIllumination(position, dimAmbientVisibility, dimEntityVisibility);
+            }
+        }
+
+        /// <summary>
         /// Change visibility of moving object to lightmap value at destination.
         /// </summary>
         private void UpdateEntityVisibility(GameObject movingObject, Vector2 destination)
@@ -241,100 +352,6 @@ namespace ProceduralRoguelike
                     visibleComponenet.VisibilityLevel = Visibility.None;
                 }
             }
-        }
-
-        /// <summary>
-        /// Check the tiles surrounding 'location' and creates tile which are defined the the cave
-        /// system, or Rocks otherwise.
-        /// </summary>
-        /// <param name="location">Location in the world to center the offsets.</param>
-        /// <param name="offsets">List of offsets specifying pattern to reveal.</param>
-        public override void RevealDarkness(Vector2 location, List<Vector2> offsets)
-        {
-            foreach (Vector2 offset in offsets)
-            {
-                var position = location + offset;
-
-                // Update light map.
-                Visibility _;
-                if (lightMap.TryGetValue(position, out _))
-                {
-                    lightMap[position] = Visibility.Full;
-                }
-                else
-                {
-                    lightMap.Add(position, Visibility.Full);
-                }
-
-                // Make pre-existing tiles visible.
-                if (caveFloor.Contains(position))
-                {
-                    var gameObjects = Utility.FindObjectsAt(position);
-                    foreach (GameObject gObject in gameObjects)
-                    {
-                        var visibleComponenet = gObject.GetComponent<Visible>();
-                        if (visibleComponenet != null)
-                        {
-                            visibleComponenet.VisibilityLevel = Visibility.Full;
-                        }
-                    }
-                }
-                // Make non-existing tiles Rocks.
-                else
-                {
-                    AddFloorTile(position);
-                    caveFloor.Add(position);
-                    AddTile(rockPrefab, position, holders["Obstacles"], Visibility.Full);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Increase illumination of tiles near the end location and reduce illumination of tiles
-        /// near the start location. Use when a light source moves.
-        /// </summary>
-        public override void RevealDarkness(Vector2 startLocation, List<Vector2> startOffsets,
-                                            Vector2 endLocation, List<Vector2> endOffsets)
-        {
-            // Reduce illumination in starting location.
-            foreach (Vector2 offset in startOffsets)
-            {
-                var position = startLocation + offset;
-
-                // Update light map.
-                Visibility _;
-                if (lightMap.TryGetValue(position, out _))
-                {
-                    lightMap[position] = unobservedEntity;
-                }
-
-                // Make pre-existing tiles un-illuminated.
-                if (caveFloor.Contains(position))
-                {
-                    var gameObjects = Utility.FindObjectsAt(position);
-                    foreach (GameObject gObject in gameObjects)
-                    {
-                        var visibleComponenet = gObject.GetComponent<Visible>();
-                        if (visibleComponenet != null)
-                        {
-                            switch(visibleComponenet.ObjectType)
-                            {
-                                case Visible.Type.Ambient:
-                                    visibleComponenet.VisibilityLevel = unobservedAmbient;
-                                    break;
-                                case Visible.Type.Entity:
-                                    visibleComponenet.VisibilityLevel = unobservedEntity;
-                                    break;
-                                default:
-                                    throw new System.ArgumentException("Unsupported Visible.Type.");
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Increase illumination in ending location.
-            RevealDarkness(endLocation, endOffsets);
         }
 
         /// <summary>

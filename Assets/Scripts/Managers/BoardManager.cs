@@ -108,8 +108,10 @@ namespace ProceduralRoguelike
         /// Checks the tiles surrounding 'location' and creates tiles which are not yet revealed.
         /// </summary>
         /// <param name="location">Location in the world to center the offsets.</param>
-        /// <param name="offsets">List of offsets specifying pattern to reveal.</param>
-        public abstract void RevealDarkness(Vector2 location, List<Vector2> offsets);
+        /// <param name="brightOffsets">Pattern of full light to reveal.</param>
+        /// /// <param name="dimOffsetsBand">Pattern of dim light to reveal.</param>
+        public abstract void RevealDarkness(Vector2 location, List<Vector2> brightOffsets,
+            List<Vector2> dimOffsetsBand);
 
         /// <summary>
         /// Increase illumination of tiles near the end location and reduce illumination of tiles
@@ -119,8 +121,9 @@ namespace ProceduralRoguelike
         /// <param name="startOffsets">Pattern to de-illuminate.</param>
         /// <param name="endLocation">Location in the world to illuminate.</param>
         /// <param name="endOffsets">Pattern to illuminate.</param>
-        public abstract void RevealDarkness(Vector2 startLocation, List<Vector2> startOffsets,
-                                            Vector2 endLocation, List<Vector2> endOffsets);
+        public abstract void RevealDarkness(
+            Vector2 startLocation, List<Vector2> startOffsets, List<Vector2> startDimOffsetsBand,
+            Vector2   endLocation, List<Vector2>   endOffsets, List<Vector2>   endDimOffsetsBand);
 
         /// <summary>
         /// Snap point to nearest whole value x & y (i.e. [2.7, -3.7] -> [3.0, -4.0]).

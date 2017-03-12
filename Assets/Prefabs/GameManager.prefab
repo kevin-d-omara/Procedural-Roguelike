@@ -57,4 +57,4 @@ MonoBehaviour:
   overWorldPrefab: {fileID: 1014846886710200, guid: 7cf0bb6c3c54a994dbbdfd8a46feb099,
     type: 2}
   cavePrefab: {fileID: 1310007891075350, guid: 46cfd439a8e0a30458c00b0292ae30a3, type: 2}
-  startSize: {x: 1, y: 1}
+  startSize: {x: 3, y: 3}

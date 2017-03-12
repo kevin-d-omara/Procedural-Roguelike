@@ -142,7 +142,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _brightRadius: 1
   dimModifierType: 0
-  dimModifierValue: 1
+  dimModifierValue: 2
   fuel:
     _maxQuantity: 100
   burnRate: 1

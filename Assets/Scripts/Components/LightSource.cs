@@ -7,11 +7,13 @@ namespace ProceduralRoguelike
 {
 	public class LightSource : MonoBehaviour
 	{
-        public delegate void Illuminate(Vector2 location, List<Vector2> offsets);
+        public delegate void Illuminate(Vector2 location, List<Vector2> brightOffsets,
+            List<Vector2> dimOffsetsBand);
         public static event Illuminate OnIlluminate;
 
-        public delegate void LightSourceMoved(Vector2 startLocation, List<Vector2> startOffsets,
-                                              Vector2 endLocation,   List<Vector2> endOffsets);
+        public delegate void LightSourceMoved(
+            Vector2 startLocation, List<Vector2> startOffsets, List<Vector2> startDimOffsetsBand,
+            Vector2   endLocation, List<Vector2>   endOffsets, List<Vector2>   endDimOffsetsBand);
         public static event LightSourceMoved OnLightSourceMoved;
 
         public List<Vector2> BrightOffsets { get; private set; }
@@ -32,12 +34,14 @@ namespace ProceduralRoguelike
                     var oldBrightOffsets = BrightOffsets;
                     BrightOffsets = GridAlgorithms.GetCircularOffsets(_brightRadius);
 
+                    var oldDimOffsetsBand = DimOffsetsBand;
                     DimRadius = _brightRadius + DimModifier(_brightRadius);
 
                     if (OnLightSourceMoved != null)
                     {
-                        OnLightSourceMoved(lastLocationIlluminated, oldBrightOffsets,
-                                           lastLocationIlluminated, BrightOffsets);
+                        OnLightSourceMoved(
+                            lastLocationIlluminated, oldBrightOffsets, oldDimOffsetsBand,
+                            lastLocationIlluminated,    BrightOffsets,    DimOffsetsBand);
                     }
                 }
             }
@@ -115,28 +119,35 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
-        /// Illuminates darkness at the specified location.
-        /// </summary>
-        public void IlluminateDarkness(Vector2 location)
-        {
-            lastLocationIlluminated = location;
-            if (OnIlluminate != null) { OnIlluminate(location, BrightOffsets); }
-        }
-
-        /// <summary>
         /// Illuminates world at end location and de-illuminates world at start location. Use when
         /// Radius has not changed.
         /// </summary>
         public void MoveLightSource(Vector2 start, Vector2 end)
         {
             lastLocationIlluminated = end;
-            if (OnLightSourceMoved != null) { OnLightSourceMoved(start, BrightOffsets, end, BrightOffsets); }
+            if (OnLightSourceMoved != null)
+            {
+                OnLightSourceMoved(start, BrightOffsets, DimOffsetsBand,
+                                     end, BrightOffsets, DimOffsetsBand);
+            }
         }
 
+        /// <summary>
+        /// Illuminates darkness at the passage position.
+        /// </summary>
         private void OnPassageTransition(GameManager.Timing timing, Vector2 passagePosiiton)
         {
             lastLocationIlluminated = passagePosiiton;
             if (timing == GameManager.Timing.Middle) { IlluminateDarkness(passagePosiiton); }
+        }
+
+        /// <summary>
+        /// Illuminates darkness at the specified location.
+        /// </summary>
+        public void IlluminateDarkness(Vector2 location)
+        {
+            lastLocationIlluminated = location;
+            if (OnIlluminate != null) { OnIlluminate(location, BrightOffsets, DimOffsetsBand); }
         }
     }
 }

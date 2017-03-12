@@ -67,10 +67,11 @@ namespace ProceduralRoguelike
         /// Checks the tiles surrounding 'location' and creates tiles which are not yet illuminated.
         /// </summary>
         /// <param name="location">Location in the world to center the offsets.</param>
-        /// <param name="offsets">List of offsets specifying pattern to reveal.</param>
-        public override void RevealDarkness(Vector2 location, List<Vector2> offsets)
+        /// <param name="brightOffsets">List of offsets specifying pattern to reveal.</param>
+        public override void RevealDarkness(Vector2 location, List<Vector2> brightOffsets,
+            List<Vector2> dimOffsetsBand)
         {
-            foreach (Vector2 offset in offsets)
+            foreach (Vector2 offset in brightOffsets)
             {
                 var position = location + offset;
 
@@ -98,14 +99,11 @@ namespace ProceduralRoguelike
             }
         }
 
-        /// <summary>
-        /// Increase illumination of tiles near the end location and reduce illumination of tiles
-        /// near the start location. Use when a light source moves.
-        /// </summary>
-        public override void RevealDarkness(Vector2 startLocation, List<Vector2> startOffsets,
-                                            Vector2 endLocation, List<Vector2> endOffsets)
+        public override void RevealDarkness(
+            Vector2 startLocation, List<Vector2> startOffsets, List<Vector2> startDimOffsetsBand,
+            Vector2   endLocation, List<Vector2>   endOffsets, List<Vector2>   endDimOffsetsBand)
         {
-            RevealDarkness(endLocation, endOffsets);
+            RevealDarkness(endLocation, endOffsets, endDimOffsetsBand);
         }
 
         private void OnIncreaseDifficulty(int difficulty)
