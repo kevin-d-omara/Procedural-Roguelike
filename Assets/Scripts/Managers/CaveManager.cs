@@ -249,6 +249,49 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
+        /// Increase illumination of tiles near the end location and reduce illumination of tiles
+        /// near the start location. Use when a light source moves.
+        /// </summary>
+        public override void RevealDarkness(
+            Vector2 startLocation, List<Vector2> startBrightOffsets, List<Vector2> startDimOffsetsBand,
+            Vector2 endLocation, List<Vector2> endBrightOffsets, List<Vector2> endDimOffsetsBand)
+        {
+            var darkTiles = new HashSet<Vector2>();
+
+            // Calculate DarkTiles -> (startBright + startDim) - (endBright + endDim)
+            foreach (Vector2 offset in startBrightOffsets)
+            {
+                var position = startLocation + offset;
+                darkTiles.Add(position);
+            }
+            foreach (Vector2 offset in startDimOffsetsBand)
+            {
+                var position = startLocation + offset;
+                darkTiles.Add(position);
+            }
+
+            // Increase illumination in ending location.
+            foreach (Vector2 offset in endBrightOffsets)
+            {
+                var position = endLocation + offset;
+                SetTileIllumination(position, Visibility.Full, Visibility.Full);
+                if (darkTiles.Contains(position)) { darkTiles.Remove(position); }
+            }
+            foreach (Vector2 offset in endDimOffsetsBand)
+            {
+                var position = endLocation + offset;
+                SetTileIllumination(position, dimAmbientVisibility, dimEntityVisibility);
+                if (darkTiles.Contains(position)) { darkTiles.Remove(position); }
+            }
+
+            // Reduce illumination in starting location.
+            foreach (Vector2 position in darkTiles)
+            {
+                SetTileIllumination(position, unobservedAmbient, unobservedEntity);
+            }
+        }
+
+        /// <summary>
         /// Sets all tiles at the position to the appropriate visibility level for its type.
         /// Spawn a Rock if the tile is not defined by the cave system.
         /// </summary>
@@ -296,39 +339,6 @@ namespace ProceduralRoguelike
                 AddFloorTile(position);
                 caveFloor.Add(position);
                 AddTile(rockPrefab, position, holders["Obstacles"], ambient);
-            }
-        }
-
-        /// <summary>
-        /// Increase illumination of tiles near the end location and reduce illumination of tiles
-        /// near the start location. Use when a light source moves.
-        /// </summary>
-        public override void RevealDarkness(
-            Vector2 startLocation, List<Vector2> startBrightOffsets, List<Vector2> startDimOffsetsBand,
-            Vector2   endLocation, List<Vector2>   endBrightOffsets, List<Vector2>   endDimOffsetsBand)
-        {
-            // Reduce illumination in starting location.
-            foreach (Vector2 offset in startBrightOffsets)
-            {
-                var position = startLocation + offset;
-                SetTileIllumination(position, unobservedAmbient, unobservedEntity);
-            }
-            foreach (Vector2 offset in startDimOffsetsBand)
-            {
-                var position = startLocation + offset;
-                SetTileIllumination(position, unobservedAmbient, unobservedEntity);
-            }
-
-            // Increase illumination in ending location.
-            foreach (Vector2 offset in endBrightOffsets)
-            {
-                var position = endLocation + offset;
-                SetTileIllumination(position, Visibility.Full, Visibility.Full);
-            }
-            foreach (Vector2 offset in endDimOffsetsBand)
-            {
-                var position = endLocation + offset;
-                SetTileIllumination(position, dimAmbientVisibility, dimEntityVisibility);
             }
         }
 

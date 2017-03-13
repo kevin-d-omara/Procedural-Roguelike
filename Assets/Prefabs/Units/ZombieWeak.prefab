@@ -190,7 +190,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   wanderDistance: 10
   wanderCooldown: 1.75
-  threatDistance: 4
+  threatDistance: 5
   threatCooldown: 0.3
   target: {fileID: 1416659830590262, guid: 11a9655053daff04c87f701f5b02e756, type: 2}
 --- !u!212 &212937747364184936
