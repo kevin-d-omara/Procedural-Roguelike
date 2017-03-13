@@ -347,20 +347,44 @@ namespace ProceduralRoguelike
         /// </summary>
         private void UpdateEntityVisibility(GameObject movingObject, Vector2 destination)
         {
-            var visibleComponenet = movingObject.GetComponent<Visible>();
-            if (visibleComponenet != null)
+            var visibleComponent = movingObject.GetComponent<Visible>();
+            if (visibleComponent != null)
             {
+                var duration = 0.25f;
+                var checks = 2;
+
+                StartCoroutine(DoubleCheckEntityVisibility(visibleComponent, duration, checks));
+            }
+        }
+
+        /// <summary>
+        /// Repeatedly update entity visibility for a short duration. This handles the case when:
+        /// player moves -> entity moves -> player moves, which can leave the entity stuck in dim
+        /// lighting even when it should be dark.
+        /// </summary>
+        /// <param name="visibleComponent">Visible component of the entity to update.</param>
+        private IEnumerator DoubleCheckEntityVisibility(Visible visibleComponent, float duration,
+            int checks)
+        {
+            var waitTime = checks > 1 ? duration / (checks - 1) : duration;
+
+            for (int i = 0; i < checks; ++i)
+            {
+                Vector2 position = Constrain(visibleComponent.transform.position);
+
                 Visibility _;
                 // Move into light (or half-light).
-                if (lightMap.TryGetValue(destination, out _))
+                if (lightMap.TryGetValue(position, out _))
                 {
-                    visibleComponenet.VisibilityLevel = lightMap[destination];
+                    visibleComponent.VisibilityLevel = lightMap[position];
                 }
                 // Move into darkness.
                 else
                 {
-                    visibleComponenet.VisibilityLevel = Visibility.None;
+                    visibleComponent.VisibilityLevel = Visibility.None;
                 }
+
+                yield return new WaitForSeconds(waitTime);
             }
         }
 
