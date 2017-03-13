@@ -133,12 +133,15 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
-        /// Illuminates darkness at the passage position.
+        /// Illuminate darkness at the light source.
         /// </summary>
+        /// <param name="timing">Start, Middle, or End of transition. Only fires on middle.</param>
         private void OnPassageTransition(GameManager.Timing timing, Vector2 passagePosiiton)
         {
-            lastLocationIlluminated = passagePosiiton;
-            if (timing == GameManager.Timing.Middle) { IlluminateDarkness(passagePosiiton); }
+            if (timing == GameManager.Timing.Middle)
+            {
+                IlluminateDarkness(BoardManager.Constrain(transform.position));
+            }
         }
 
         /// <summary>
