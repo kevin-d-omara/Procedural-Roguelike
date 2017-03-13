@@ -19,6 +19,9 @@ namespace ProceduralRoguelike
         public delegate void EndedSuccessfulMove(Vector2 destination);
         public event EndedSuccessfulMove OnEndedSuccessfulMove;
 
+        public delegate void ReachedMiddleOfMove(Vector2 source, Vector2 destination);
+        public event ReachedMiddleOfMove OnReachedMiddleOfMove;
+
         public delegate void FlippedDirectionX(bool flipX);
         public event FlippedDirectionX OnFlippedDirectionX;
 
@@ -127,10 +130,20 @@ namespace ProceduralRoguelike
         /// <param name="end">Position to move to.</param>
         protected IEnumerator SmoothMovement(Vector3 end)
         {
-            var sqrRemainingDistance = (transform.position - end).sqrMagnitude;
+            var start = transform.position;
+            var sqrRemainingDistance = (start - end).sqrMagnitude;
+
+            var hasRaisedMiddleOfMove = false;
+            var midpoint = sqrRemainingDistance / 2f;
 
             while (sqrRemainingDistance > float.Epsilon)
             {
+                if (!hasRaisedMiddleOfMove && sqrRemainingDistance < midpoint)
+                {
+                    hasRaisedMiddleOfMove = true;
+                    if (OnReachedMiddleOfMove != null) { OnReachedMiddleOfMove(start, end); }
+                }
+
                 var newPostion = Vector3.MoveTowards(rb2D.position, end,
                     speed * Time.deltaTime);
                 rb2D.MovePosition(newPostion);

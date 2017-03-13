@@ -32,14 +32,14 @@ namespace ProceduralRoguelike
         protected override void OnEnable()
         {
             base.OnEnable();
-            moveableComponent.OnCanMove += OnCanMove;
+            moveableComponent.OnReachedMiddleOfMove += OnReachedMiddleOfMove;
             moveableComponent.OnCantMove += OnCantMove;
         }
 
         protected override void OnDisable()
         {
             base.OnDisable();
-            moveableComponent.OnCanMove -= OnCanMove;
+            moveableComponent.OnReachedMiddleOfMove -= OnReachedMiddleOfMove;
             moveableComponent.OnCantMove -= OnCantMove;
         }
 
@@ -75,10 +75,9 @@ namespace ProceduralRoguelike
             }
         }
 
-        private void OnCanMove(Vector2 destination)
+        private void OnReachedMiddleOfMove(Vector2 start, Vector2 destination)
         {
-            //lightSourceComponent.IlluminateDarkness(destination);
-            lightSourceComponent.MoveLightSource(transform.position, destination);
+            lightSourceComponent.MoveLightSource(start, destination);
         }
 
         protected override void OnKilled()
