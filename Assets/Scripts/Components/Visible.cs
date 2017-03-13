@@ -51,7 +51,6 @@ namespace ProceduralRoguelike
         /// </summary>
         public void UpdateSprite()
         {
-            var rate = 2f;
             Color color = spriteRenderer.color;
             switch(ObjectType)
             {
@@ -79,20 +78,24 @@ namespace ProceduralRoguelike
                     break;
 
                 case Type.Entity:
+                    var rate = 1.5f;
                     switch (VisibilityLevel)
                     {
                         case Visibility.Full:
+                            rate = 2.0f;
                             color = new Color(1f, 1f, 1f, 1f);
                             StartCoroutine(LerpColor(color, rate, Visibility.Full));
                             break;
 
                         case Visibility.Half:
+                            rate = 1.5f;
                             var brightness = 0.35f;
                             color = new Color(brightness, brightness, brightness, 1f);
                             StartCoroutine(LerpColor(color, rate, Visibility.Half));
                             break;
 
                         case Visibility.None:
+                            rate = 1.0f;
                             color.a = 0f;
                             StartCoroutine(LerpColor(color, rate, Visibility.None));
                             break;
@@ -122,12 +125,6 @@ namespace ProceduralRoguelike
                 speed *= -1f;
             }
             
-            // Kill speed for color channels which aren't supposed to change.
-            var speedR = target.r - start.r == 0 ? 0f : speed;
-            var speedG = target.g - start.g == 0 ? 0f : speed;
-            var speedB = target.b - start.b == 0 ? 0f : speed;
-            var speedA = target.a - start.a == 0 ? 0f : speed;
-
             // Calculate bounds for each color channel.
             var minR =  isMakingBrighter ? start.r : target.r;
             var maxR = !isMakingBrighter ? start.r : target.r;
@@ -138,6 +135,17 @@ namespace ProceduralRoguelike
             var minA =  isMakingBrighter ? start.a : target.a;
             var maxA = !isMakingBrighter ? start.a : target.a;
 
+            // Kill speed for color channels which aren't supposed to change, set otherwise.
+            var speedR = target.r - start.r == 0 ? 0f : speed * maxR / minR;
+            var speedG = target.g - start.g == 0 ? 0f : speed * maxR / minR;
+            var speedB = target.b - start.b == 0 ? 0f : speed * maxR / minR;
+            var speedA = target.a - start.a == 0 ? 0f : speed * maxR / minR;
+
+            var timeR = isMakingBrighter ? 0f : 1f;
+            var timeG = isMakingBrighter ? 0f : 1f;
+            var timeB = isMakingBrighter ? 0f : 1f;
+            var timeA = isMakingBrighter ? 0f : 1f;
+
             while (true)
             {
                 var current = spriteRenderer.color;
@@ -145,10 +153,15 @@ namespace ProceduralRoguelike
                 // Stop when another LerpColor is called or the target color is reached.
                 if (VisibilityLevel != targetVisibility || current == target) { break; }
 
-                var r = Mathf.Clamp(current.r + Time.deltaTime * speedR, minR, maxR);
-                var g = Mathf.Clamp(current.g + Time.deltaTime * speedG, minG, maxG);
-                var b = Mathf.Clamp(current.b + Time.deltaTime * speedB, minB, maxB);
-                var a = Mathf.Clamp(current.a + Time.deltaTime * speedA, minA, maxA);
+                timeR += Time.deltaTime * speedR;
+                timeG += Time.deltaTime * speedG;
+                timeB += Time.deltaTime * speedB;
+                timeA += Time.deltaTime * speedA;
+
+                var r = Mathf.SmoothStep(minR, maxR, timeR);
+                var g = Mathf.SmoothStep(minG, maxG, timeG);
+                var b = Mathf.SmoothStep(minB, maxB, timeB);
+                var a = Mathf.SmoothStep(minA, maxA, timeA);
                 spriteRenderer.color = new Color(r, g, b, a);
 
                 yield return new WaitForEndOfFrame();
