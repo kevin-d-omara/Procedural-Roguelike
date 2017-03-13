@@ -27,6 +27,9 @@ namespace ProceduralRoguelike
         protected Attack attackComponent;
         protected Health healthComponent;
 
+        // Optional Components
+        protected LightSource lightSourceComponent;
+
         // Animations
         // Names for the trigger associated with each basic animation.
         protected virtual string AnimationBasicAttack { get { return null; } }
@@ -38,11 +41,12 @@ namespace ProceduralRoguelike
         protected virtual void Awake()
         {
             // Get references to all components.
-            spriteRenderer = GetComponent<SpriteRenderer>();
-            animator = GetComponent<Animator>();
-            moveableComponent = GetComponent<Moveable>();
-            attackComponent = GetComponent<Attack>();
-            healthComponent = GetComponent<Health>();
+            spriteRenderer       = GetComponent<SpriteRenderer>();
+            animator             = GetComponent<Animator>();
+            moveableComponent    = GetComponent<Moveable>();
+            attackComponent      = GetComponent<Attack>();
+            healthComponent      = GetComponent<Health>();
+            lightSourceComponent = GetComponent<LightSource>();
 
             // Set state.
             IsPaused = false;
@@ -56,6 +60,11 @@ namespace ProceduralRoguelike
             healthComponent.OnLostHitPoints += OnTakeDamage;
             healthComponent.OnKilled += OnKilled;
             GameManager.OnPassageTransition += OnPassageTransition;
+
+            if (lightSourceComponent != null)
+            {
+                moveableComponent.OnReachedMiddleOfMove += OnReachedMiddleOfMove;
+            }
         }
 
         protected virtual void OnDisable()
@@ -64,6 +73,11 @@ namespace ProceduralRoguelike
             healthComponent.OnLostHitPoints -= OnTakeDamage;
             healthComponent.OnKilled += OnKilled;
             GameManager.OnPassageTransition -= OnPassageTransition;
+
+            if (lightSourceComponent != null)
+            {
+                moveableComponent.OnReachedMiddleOfMove -= OnReachedMiddleOfMove;
+            }
         }
 
 
@@ -116,6 +130,11 @@ namespace ProceduralRoguelike
                     if (AnimationBasicAttack != null) { animator.SetTrigger(AnimationBasicAttack); }
                 }
             }
+        }
+
+        protected virtual void OnReachedMiddleOfMove(Vector2 start, Vector2 destination)
+        {
+            lightSourceComponent.MoveLightSource(start, destination);
         }
 
         protected virtual void OnFlippedDirection(bool flipX)

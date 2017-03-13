@@ -14,20 +14,9 @@ namespace ProceduralRoguelike
         // Input values.
         private bool specialAttack;
 
-        // Componenets.
-        private LightSource lightSourceComponent;
-
         // Animations
         protected override string AnimationBasicAttack { get { return "playerChop"; } }
         protected override string AnimationHit         { get { return "playerHit"; } }
-
-        protected override void Awake()
-        {
-            base.Awake();
-             
-            // Get references to all components.
-            lightSourceComponent = GetComponent<LightSource>();
-        }
 
         protected override void OnEnable()
         {
@@ -73,11 +62,6 @@ namespace ProceduralRoguelike
                 moveableComponent.Facing = new Vector2(horizontalInput, verticalInput);
                 basicAttackDir = moveableComponent.Facing;
             }
-        }
-
-        private void OnReachedMiddleOfMove(Vector2 start, Vector2 destination)
-        {
-            lightSourceComponent.MoveLightSource(start, destination);
         }
 
         protected override void OnKilled()
