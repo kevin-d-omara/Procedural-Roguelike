@@ -27,25 +27,23 @@ namespace ProceduralRoguelike
             {
                 if (value < 0) { throw new System.ArgumentException("Radius cannot be negative."); }
 
-                if (value != _brightRadius)
+                _brightRadius = value;
+
+                var oldBrightOffsets = BrightOffsets;
+                BrightOffsets = GridAlgorithms.GetCircularOffsets(_brightRadius);
+
+                var oldDimOffsetsBand = DimOffsetsBand;
+                DimRadius = _brightRadius + DimModifier(_brightRadius);
+
+                if (OnLightSourceMoved != null)
                 {
-                    _brightRadius = value;
-
-                    var oldBrightOffsets = BrightOffsets;
-                    BrightOffsets = GridAlgorithms.GetCircularOffsets(_brightRadius);
-
-                    var oldDimOffsetsBand = DimOffsetsBand;
-                    DimRadius = _brightRadius + DimModifier(_brightRadius);
-
-                    if (OnLightSourceMoved != null)
-                    {
-                        OnLightSourceMoved(
-                            lastLocationIlluminated, oldBrightOffsets, oldDimOffsetsBand,
-                            lastLocationIlluminated,    BrightOffsets,    DimOffsetsBand);
-                    }
+                    OnLightSourceMoved(
+                        lastLocationIlluminated, oldBrightOffsets, oldDimOffsetsBand,
+                        lastLocationIlluminated,    BrightOffsets,    DimOffsetsBand);
                 }
             }
         }
+        [Range(0,10)]
         [SerializeField] private int _brightRadius;
 
         public int DimRadius
@@ -55,23 +53,20 @@ namespace ProceduralRoguelike
             {
                 if (value < 0) { throw new System.ArgumentException("Radius cannot be negative."); }
 
-                if (value != _dimRadius)
-                {
-                    _dimRadius = value;
-                    DimOffsets = GridAlgorithms.GetCircularOffsets(_dimRadius);
+                _dimRadius = value;
+                DimOffsets = GridAlgorithms.GetCircularOffsets(_dimRadius);
 
-                    // Calculate DimOffsetsBand
-                    var dimOffsetsBand = new HashSet<Vector2>();
-                    foreach (Vector2 dimOffset in DimOffsets)
-                    {
-                        dimOffsetsBand.Add(dimOffset);
-                    }
-                    foreach (Vector2 brightOffset in BrightOffsets)
-                    {
-                        dimOffsetsBand.Remove(brightOffset);
-                    }
-                    DimOffsetsBand = dimOffsetsBand.ToList();
+                // Calculate DimOffsetsBand
+                var dimOffsetsBand = new HashSet<Vector2>();
+                foreach (Vector2 dimOffset in DimOffsets)
+                {
+                    dimOffsetsBand.Add(dimOffset);
                 }
+                foreach (Vector2 brightOffset in BrightOffsets)
+                {
+                    dimOffsetsBand.Remove(brightOffset);
+                }
+                DimOffsetsBand = dimOffsetsBand.ToList();
             }
         }
         private int _dimRadius;
@@ -104,6 +99,8 @@ namespace ProceduralRoguelike
                 default:
                     throw new System.ArgumentException("Unsupported dim modifier function type.");
             }
+
+            //BrightOffsets = GridAlgorithms.GetCircularOffsets(_brightRadius);
 
             BrightRadius = _brightRadius;
         }
