@@ -35,7 +35,7 @@ namespace ProceduralRoguelike
         /// <summary>
         /// Visibility of tiles which have been previously seen, but are now out of the light.
         /// </summary>
-        [SerializeField] private Visibility unobservedVisibility = Visibility.Half;
+        [SerializeField] private Visibility previouslyLighted = Visibility.Half;
 
         [Header("Path parameters:")]
         [SerializeField] private List<PathParameters> essentialPathParameterSet;
@@ -334,7 +334,8 @@ namespace ProceduralRoguelike
                         {
                             case Visible.Type.Ambient:
                                 visibleComponenet.VisibilityLevel = 
-                                    (Visibility)Mathf.Max((int)unobservedVisibility,
+                                    (Visibility)Mathf.Max((int)ambientVisibility,
+                                                          (int)previouslyLighted,
                                                           (int)visibility.VisibilityLevel);
                                 break;
                             case Visible.Type.Entity:
@@ -351,7 +352,10 @@ namespace ProceduralRoguelike
             {
                 AddFloorTile(position);
                 caveFloor.Add(position);
-                AddTile(rockPrefab, position, holders["Obstacles"], visibility.VisibilityLevel);
+                var result = (Visibility)Mathf.Max((int)ambientVisibility,
+                                                   (int)previouslyLighted,
+                                                   (int)visibility.VisibilityLevel);
+                AddTile(rockPrefab, position, holders["Obstacles"], result);
             }
         }
 

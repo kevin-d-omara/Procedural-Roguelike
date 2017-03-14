@@ -121,9 +121,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fa57592080e2364c9fade2294612889, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _brightRadius: 1
+  _brightRadius: 0
   dimModifierType: 0
-  dimModifierValue: 1
+  dimModifierValue: 3
 --- !u!212 &212372413535190610
 SpriteRenderer:
   m_ObjectHideFlags: 1
