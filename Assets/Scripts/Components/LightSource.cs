@@ -100,8 +100,9 @@ namespace ProceduralRoguelike
                     throw new System.ArgumentException("Unsupported dim modifier function type.");
             }
 
-            //BrightOffsets = GridAlgorithms.GetCircularOffsets(_brightRadius);
-
+            // Prevent "oldOffsets" from being null during first OnLightSourceMoved event.
+            BrightOffsets = GridAlgorithms.GetCircularOffsets(_brightRadius);
+            DimRadius = _brightRadius + DimModifier(_brightRadius);
             BrightRadius = _brightRadius;
         }
 
