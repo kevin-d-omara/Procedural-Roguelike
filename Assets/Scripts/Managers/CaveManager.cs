@@ -828,12 +828,15 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
-        /// Fills the dungeon with random passages, obstacles, items, and enemies, according to the
+        /// Fill the dungeon with random passages, obstacles, items, and enemies, according to the
         /// values this instance has.
         /// </summary>
         private void SpawnEntities()
         {
-            foreach (Vector2 position in caveFloor)
+            // Prevent concurrent modification.
+            var tmpCaveFloor = new HashSet<Vector2>(caveFloor);
+
+            foreach (Vector2 position in tmpCaveFloor)
             {
                 if (!caveEntity.Contains(position))
                 {
