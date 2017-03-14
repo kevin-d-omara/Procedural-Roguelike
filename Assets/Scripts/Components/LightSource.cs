@@ -103,7 +103,6 @@ namespace ProceduralRoguelike
             // Prevent "oldOffsets" from being null during first OnLightSourceMoved event.
             BrightOffsets = GridAlgorithms.GetCircularOffsets(_brightRadius);
             DimRadius = _brightRadius + DimModifier(_brightRadius);
-            BrightRadius = _brightRadius;
         }
 
         private void OnEnable()
@@ -153,5 +152,7 @@ namespace ProceduralRoguelike
                 OnIlluminate(lastLocationIlluminated, BrightOffsets, DimOffsetsBand);
             }
         }
+
+        // TODO: add an OnDestroy() function to alert CaveManager to remove lighting contributions.
     }
 }

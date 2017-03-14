@@ -5,12 +5,7 @@ using UnityEngine;
 namespace ProceduralRoguelike
 {
     /// <summary>
-    /// Enums are ordered by increasing brightness. Thus, if (A > B) then A is brighter than B.
-    /// </summary>
-    public enum Visibility { None, Half, Full }
-
-    /// <summary>
-    /// Gives the attached GameObject three leveles of visibility: {0, 50, 100}%
+    /// Allows the attached GameObject's sprite to be affected by light levels.
     /// </summary>
     [RequireComponent(typeof(SpriteRenderer))]
 	public class Visible : MonoBehaviour

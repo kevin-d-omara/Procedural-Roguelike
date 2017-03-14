@@ -30,12 +30,12 @@ namespace ProceduralRoguelike
         // -----------------------------------------------------------------------------------------
 
         [Header("Darkness level:")]
-        [SerializeField] private Visibility ambientVisibility    = Visibility.None;
-        [SerializeField] private Visibility entityVisibility     = Visibility.None;
-        [SerializeField] private Visibility unobservedAmbient    = Visibility.Half;
-        [SerializeField] private Visibility unobservedEntity     = Visibility.None;
-        [SerializeField] private Visibility dimAmbientVisibility = Visibility.Half;
-        [SerializeField] private Visibility dimEntityVisibility  = Visibility.Half;
+        [SerializeField]
+        private Visibility ambientVisibility = Visibility.None;
+        /// <summary>
+        /// Visibility of tiles which have been previously seen, but are now out of the light.
+        /// </summary>
+        [SerializeField] private Visibility unobservedVisibility = Visibility.Half;
 
         [Header("Path parameters:")]
         [SerializeField] private List<PathParameters> essentialPathParameterSet;
@@ -88,7 +88,14 @@ namespace ProceduralRoguelike
         /// <summary>
         /// Tiles which have been illuminated by a light source. Used to update moving objects.
         /// </summary>
-        private Dictionary<Vector2, Visibility> lightMap = new Dictionary<Vector2, Visibility>();
+        private Dictionary<Vector2, AggregateVisibility> lightMap
+          = new Dictionary<Vector2, AggregateVisibility>();
+
+        /// <summary>
+        /// Tiles which have been previously illuminated by a light source. Used to keep ambient
+        /// objects in a minimum of dim light after being revealed (i.e. like Fog of War).
+        /// </summary>
+        private HashSet<Vector2> revealed = new HashSet<Vector2>();
 
         /// <summary>
         /// Pairs a tile's coordinates with it's choke and facing.
@@ -237,14 +244,14 @@ namespace ProceduralRoguelike
             foreach (Vector2 brightOffset in brightOffsets)
             {
                 var position = location + brightOffset;
-                SetTileIllumination(position, Visibility.Full, Visibility.Full);
+                SetTileIllumination(position, Visibility.Full, true);
             }
 
             // Dimly reveal all tiles in the outer Dim band.
             foreach (Vector2 dimOffset in dimOffsetsBand)
             {
                 var position = location + dimOffset;
-                SetTileIllumination(position, dimAmbientVisibility, dimEntityVisibility);
+                SetTileIllumination(position, Visibility.Half, true);
             }
         }
 
@@ -259,35 +266,31 @@ namespace ProceduralRoguelike
             var darkTiles = new HashSet<Vector2>();
 
             // Calculate DarkTiles -> (startBright + startDim) - (endBright + endDim)
+
+            // Reduce illumination in starting location -> remove contributions.
             foreach (Vector2 offset in startBrightOffsets)
             {
                 var position = startLocation + offset;
                 darkTiles.Add(position);
+                SetTileIllumination(position, Visibility.Full, false);
             }
             foreach (Vector2 offset in startDimOffsetsBand)
             {
                 var position = startLocation + offset;
                 darkTiles.Add(position);
+                SetTileIllumination(position, Visibility.Half, false);
             }
 
-            // Increase illumination in ending location.
+            // Increase illumination in ending location -> add contributions.
             foreach (Vector2 offset in endBrightOffsets)
             {
                 var position = endLocation + offset;
-                SetTileIllumination(position, Visibility.Full, Visibility.Full);
-                if (darkTiles.Contains(position)) { darkTiles.Remove(position); }
+                SetTileIllumination(position, Visibility.Full, true);
             }
             foreach (Vector2 offset in endDimOffsetsBand)
             {
                 var position = endLocation + offset;
-                SetTileIllumination(position, dimAmbientVisibility, dimEntityVisibility);
-                if (darkTiles.Contains(position)) { darkTiles.Remove(position); }
-            }
-
-            // Reduce illumination in starting location.
-            foreach (Vector2 position in darkTiles)
-            {
-                SetTileIllumination(position, unobservedAmbient, unobservedEntity);
+                SetTileIllumination(position, Visibility.Half, true);
             }
         }
 
@@ -295,19 +298,27 @@ namespace ProceduralRoguelike
         /// Sets all tiles at the position to the appropriate visibility level for its type.
         /// Spawn a Rock if the tile is not defined by the cave system.
         /// </summary>
-        /// <param name="ambient">Visibility to set ambient objects to.</param>
+        /// <param name="level">Visibility to set ambient objects to.</param>
         /// <param name="entity">Visibility to set entity objects to.</param>
-        private void SetTileIllumination(Vector2 position, Visibility ambient, Visibility entity)
+        /// <param name="isAddingContribution">True if adding a contribution, false if removing a 
+        /// contribution.</param>
+        private void SetTileIllumination(Vector2 position, Visibility level,
+            bool isAddingContribution)
         {
+            // Update revealed tiles.
+            if (!revealed.Contains(position)) { revealed.Add(position); }
+
             // Update light map.
-            Visibility _;
-            if (lightMap.TryGetValue(position, out _))
+            AggregateVisibility visibility;
+            if (lightMap.TryGetValue(position, out visibility))
             {
-                lightMap[position] = entity;
+                if (isAddingContribution) { visibility.AddContribution(level); }
+                else                      { visibility.RemoveContribution(level); }
             }
             else
             {
-                lightMap.Add(position, entity);
+                visibility = new AggregateVisibility(level);
+                lightMap.Add(position, visibility);
             }
 
             // Update illumination of pre-existing tiles.
@@ -319,16 +330,18 @@ namespace ProceduralRoguelike
                     var visibleComponenet = gObject.GetComponent<Visible>();
                     if (visibleComponenet != null)
                     {
-                        switch (visibleComponenet.ObjectType)
+                        switch(visibleComponenet.ObjectType)
                         {
                             case Visible.Type.Ambient:
-                                visibleComponenet.VisibilityLevel = ambient;
+                                visibleComponenet.VisibilityLevel = 
+                                    (Visibility)Mathf.Max((int)unobservedVisibility,
+                                                          (int)visibility.VisibilityLevel);
                                 break;
                             case Visible.Type.Entity:
-                                visibleComponenet.VisibilityLevel = entity;
+                                visibleComponenet.VisibilityLevel = visibility.VisibilityLevel;
                                 break;
                             default:
-                                throw new System.ArgumentException("Unsupported Visible.Type.");
+                                throw new System.ArgumentException("Unsupported object type.");
                         }
                     }
                 }
@@ -338,7 +351,7 @@ namespace ProceduralRoguelike
             {
                 AddFloorTile(position);
                 caveFloor.Add(position);
-                AddTile(rockPrefab, position, holders["Obstacles"], ambient);
+                AddTile(rockPrefab, position, holders["Obstacles"], visibility.VisibilityLevel);
             }
         }
 
@@ -372,16 +385,18 @@ namespace ProceduralRoguelike
             {
                 Vector2 position = Constrain(visibleComponent.transform.position);
 
-                Visibility _;
+                // TODO: COME BACK TO THIS SHORTLY -> switch(type: ambient/entity)
+                AggregateVisibility visibility;
                 // Move into light (or half-light).
-                if (lightMap.TryGetValue(position, out _))
+                if (lightMap.TryGetValue(position, out visibility))
                 {
-                    visibleComponent.VisibilityLevel = lightMap[position];
+                    visibleComponent.VisibilityLevel = visibility.VisibilityLevel;
                 }
                 // Move into darkness.
                 else
                 {
-                    visibleComponent.VisibilityLevel = Visibility.None;
+                    Debug.Log("THIS SHOULD NEVER HAPPEN!");
+                    visibleComponent.VisibilityLevel = ambientVisibility;
                 }
 
                 yield return new WaitForSeconds(waitTime);
@@ -394,14 +409,15 @@ namespace ProceduralRoguelike
         protected override void OnTileNotFound(Vector2 position)
         {
             var floorTile = AddFloorTile(position);
-            Visibility visibility;
+            AggregateVisibility visibility;
             if (lightMap.TryGetValue(position, out visibility)) { }
             else
             {
-                visibility = Visibility.None;
+                visibility = new AggregateVisibility(ambientVisibility);
+                lightMap.Add(position, visibility);
             }
-            floorTile.GetComponent<Visible>().VisibilityLevel = visibility;
-            AddTile(rockPrefab, position, holders["Obstacles"], visibility);
+            floorTile.GetComponent<Visible>().VisibilityLevel = visibility.VisibilityLevel;
+            AddTile(rockPrefab, position, holders["Obstacles"], visibility.VisibilityLevel);
             caveFloor.Add(position);
         }
 
@@ -704,14 +720,13 @@ namespace ProceduralRoguelike
         {
             foreach (Vector2 position in caveFloor)
             {
-                Visibility visibility;
+                AggregateVisibility visibility;
                 if (lightMap.TryGetValue(position, out visibility))
-                {
-                    visibility = entityVisibility;
-                }
+                { }
                 else
                 {
-                    lightMap.Add(position, visibility = entityVisibility);
+                    visibility = new AggregateVisibility(ambientVisibility);
+                    lightMap.Add(position, visibility);
                 }
             }
         }
@@ -741,7 +756,7 @@ namespace ProceduralRoguelike
 
             // Create the cave exit.
             var exitPt = level[0][0].terminusTile;
-            AddTile(passagePrefab, exitPt, holders["Passages"], entityVisibility);
+            AddTile(passagePrefab, exitPt, holders["Passages"], ambientVisibility);
         }
 
         /// <summary>
@@ -805,7 +820,7 @@ namespace ProceduralRoguelike
                             var randIdx = Random.Range(0, validPts.Count);
                             var randPt = validPts[randIdx];
 
-                            AddTile(items.RandomItem(), randPt, holders["Items"], entityVisibility);
+                            AddTile(items.RandomItem(), randPt, holders["Items"], ambientVisibility);
 
                             validPts.Remove(randPt);
                         }
@@ -818,7 +833,7 @@ namespace ProceduralRoguelike
                             var randomPt = validPts[randomIndex];
 
                             AddTile(enemies.RandomItem(), randomPt, holders["Enemies"],
-                                entityVisibility);
+                                ambientVisibility);
 
                             validPts.Remove(randomPt);
                         }
@@ -845,7 +860,7 @@ namespace ProceduralRoguelike
                     {
                         if (Random.Range(0f, 1f) < passageDensity)
                         {
-                            AddTile(passagePrefab, position, holders["Passages"], entityVisibility);
+                            AddTile(passagePrefab, position, holders["Passages"], ambientVisibility);
                         }
                         else if (Random.Range(0f, 1f) < obstacleDensity)
                         {
@@ -858,17 +873,17 @@ namespace ProceduralRoguelike
                     {
                         if (Random.Range(0f, 1f) < passageDensity)
                         {
-                            AddTile(passagePrefab, position, holders["Passages"], entityVisibility);
+                            AddTile(passagePrefab, position, holders["Passages"], ambientVisibility);
                         }
                         else if (Random.Range(0f, 1f) < itemDensity)
                         {
                             AddTile(items.RandomItem(), position, holders["Items"],
-                                entityVisibility);
+                                ambientVisibility);
                         }
                         else if (Random.Range(0f, 1f) < enemyDensity)
                         {
                             AddTile(enemies.RandomItem(), position, holders["Enemies"],
-                                entityVisibility);
+                                ambientVisibility);
                         }
                         else if (Random.Range(0f, 1f) < obstacleDensity)
                         {
