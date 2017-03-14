@@ -138,17 +138,20 @@ namespace ProceduralRoguelike
         {
             if (timing == GameManager.Timing.Middle)
             {
-                IlluminateDarkness(BoardManager.Constrain(transform.position));
+                IlluminateDarkness();
             }
         }
 
         /// <summary>
-        /// Illuminates darkness at the specified location.
+        /// Illuminates darkness at the light source's location.
         /// </summary>
-        public void IlluminateDarkness(Vector2 location)
+        public void IlluminateDarkness()
         {
-            lastLocationIlluminated = location;
-            if (OnIlluminate != null) { OnIlluminate(location, BrightOffsets, DimOffsetsBand); }
+            lastLocationIlluminated = BoardManager.Constrain(transform.position);
+            if (OnIlluminate != null)
+            {
+                OnIlluminate(lastLocationIlluminated, BrightOffsets, DimOffsetsBand);
+            }
         }
     }
 }
