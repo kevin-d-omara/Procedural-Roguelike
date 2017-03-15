@@ -25,8 +25,8 @@ namespace ProceduralRoguelike
         /// Type of visible object: Ambient or Entity.
         /// </summary>
         public Type ObjectType { get { return _objectType; } }
-        [SerializeField] private Type _objectType = Type.Ambient;
-        public enum Type { Ambient, Entity }
+        [SerializeField] private Type _objectType = Type.Terrain;
+        public enum Type { Terrain, Entity }
 
         // Components
         private SpriteRenderer spriteRenderer;
@@ -52,7 +52,7 @@ namespace ProceduralRoguelike
             Color color = spriteRenderer.color;
             switch(ObjectType)
             {
-                case Type.Ambient:
+                case Type.Terrain:
                     switch (VisibilityLevel)
                     {
                         case Visibility.Full:
