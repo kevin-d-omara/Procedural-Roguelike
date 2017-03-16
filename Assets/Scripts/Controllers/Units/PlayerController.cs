@@ -21,14 +21,12 @@ namespace ProceduralRoguelike
         protected override void OnEnable()
         {
             base.OnEnable();
-            moveableComponent.OnReachedMiddleOfMove += OnReachedMiddleOfMove;
             moveableComponent.OnCantMove += OnCantMove;
         }
 
         protected override void OnDisable()
         {
             base.OnDisable();
-            moveableComponent.OnReachedMiddleOfMove -= OnReachedMiddleOfMove;
             moveableComponent.OnCantMove -= OnCantMove;
         }
 
