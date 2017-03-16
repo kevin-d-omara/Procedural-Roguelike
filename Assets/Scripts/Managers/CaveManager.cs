@@ -263,21 +263,15 @@ namespace ProceduralRoguelike
             Vector2 startLocation, List<Vector2> startBrightOffsets, List<Vector2> startDimOffsetsBand,
             Vector2 endLocation, List<Vector2> endBrightOffsets, List<Vector2> endDimOffsetsBand)
         {
-            var darkTiles = new HashSet<Vector2>();
-
-            // Calculate DarkTiles -> (startBright + startDim) - (endBright + endDim)
-
             // Reduce illumination in starting location -> remove contributions.
             foreach (Vector2 offset in startBrightOffsets)
             {
                 var position = startLocation + offset;
-                darkTiles.Add(position);
                 SetTileIllumination(position, Visibility.Full, false);
             }
             foreach (Vector2 offset in startDimOffsetsBand)
             {
                 var position = startLocation + offset;
-                darkTiles.Add(position);
                 SetTileIllumination(position, Visibility.Half, false);
             }
 
