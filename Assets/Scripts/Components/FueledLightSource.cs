@@ -84,7 +84,6 @@ namespace ProceduralRoguelike
                 // Burn fuel.
                 var updatedFuel = fuel.Quantity - Time.deltaTime * (burnRate + burnRateModifier);
                 fuel.Quantity = updatedFuel > 0f ? updatedFuel : 0f;
-                Debug.Log(fuel.Quantity);
 
                 // Update intensity.
                 BrightRadius = intensity(fuel.Quantity) + intensityModifier;

@@ -206,7 +206,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e7b4088a3b6b16d4f8ce42aaf63ff34f, type: 2}
   itemSets:
   - {fileID: 11400000, guid: 566b7e11681b6d14fb53a3a09a86f54b, type: 2}
-  obstacleDensity: 0.1
+  obstacleDensity: 0
   enemyDensity: 0.01
   itemDensity: 0.0025
   passageDensity: 0.001
@@ -216,8 +216,10 @@ MonoBehaviour:
   bottleneckObstacleSets:
   - {fileID: 11400000, guid: 1c3fcc0147713ed449dead47ed2e44a6, type: 2}
   bottleneckObstacleDensity: 0.65
-  ambientVisibility: 0
-  previouslyLighted: 1
+  ambientLight: 0
+  previouslySeen: 1
+  startsRevealed: 0
+  hiddenEntities: 1
   essentialPathParameterSet:
   - {fileID: 11400000, guid: faaedf28de20d39479a9d27924b499c9, type: 2}
   majorPathParameterSet:

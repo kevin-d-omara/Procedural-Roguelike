@@ -31,15 +31,15 @@ namespace ProceduralRoguelike
 
         [Header("Darkness:")]
         [SerializeField]
-        private Visibility ambientLight = Visibility.None;
+        private Illumination ambientLight = Illumination.None;
         private bool ambientIsNotDark;
 
-        private Dictionary<Vector2, AggregateVisibility> lightMap
-          = new Dictionary<Vector2, AggregateVisibility>();
+        private Dictionary<Vector2, AggregateIllumination> lightMap
+          = new Dictionary<Vector2, AggregateIllumination>();
 
         [Header("Sight:")]
         [SerializeField]
-        private Visibility previouslySeen = Visibility.Half;
+        private Illumination previouslySeen = Illumination.Half;
         [SerializeField] private bool startsRevealed = false;
         [SerializeField] private bool hiddenEntities = true;
 
@@ -180,19 +180,19 @@ namespace ProceduralRoguelike
                 pathParameters[i].chamberItemNumber.SetValue();
             }
 
-            ambientIsNotDark = ambientLight > Visibility.None;
+            ambientIsNotDark = ambientLight > Illumination.None;
         }
 
         protected override void OnEnable()
         {
             base.OnEnable();
-            Moveable.OnStartMove += UpdateEntityVisibility;
+            Moveable.OnStartMove += UpdateEntityIllumination;
         }
 
         protected override void OnDisable()
         {
             base.OnDisable();
-            Moveable.OnStartMove -= UpdateEntityVisibility;
+            Moveable.OnStartMove -= UpdateEntityIllumination;
         }
 
         // Cave creation ---------------------------------------------------------------------------
@@ -247,14 +247,14 @@ namespace ProceduralRoguelike
             foreach (Vector2 brightOffset in brightOffsets)
             {
                 var position = location + brightOffset;
-                SetTileIllumination(position, Visibility.Full, true);
+                SetTileIllumination(position, Illumination.Full, true);
             }
 
             // Dimly reveal all tiles in the outer Dim band.
             foreach (Vector2 dimOffset in dimOffsetsBand)
             {
                 var position = location + dimOffset;
-                SetTileIllumination(position, Visibility.Half, true);
+                SetTileIllumination(position, Illumination.Half, true);
             }
         }
 
@@ -273,10 +273,10 @@ namespace ProceduralRoguelike
             var endDimPositions     = GridAlgorithms.GetPositionsFrom(endDimOffsetsBand,   endLocation);
 
             // Set tile illumination only where there is no overlap between start and end positions.
-            SetTileIllumination(endBrightPosition, startBrightPosition, Visibility.Full, true);
-            SetTileIllumination(startBrightPosition, endBrightPosition, Visibility.Full, false);
-            SetTileIllumination(endDimPositions, startDimPositions, Visibility.Half, true);
-            SetTileIllumination(startDimPositions, endDimPositions, Visibility.Half, false);
+            SetTileIllumination(endBrightPosition, startBrightPosition, Illumination.Full, true);
+            SetTileIllumination(startBrightPosition, endBrightPosition, Illumination.Full, false);
+            SetTileIllumination(endDimPositions, startDimPositions, Illumination.Half, true);
+            SetTileIllumination(startDimPositions, endDimPositions, Illumination.Half, false);
         }
 
         /// <summary>
@@ -288,7 +288,7 @@ namespace ProceduralRoguelike
         /// <param name="isAddingContribution">True if adding light, false if removing.</param>
         private void SetTileIllumination(HashSet<Vector2> targetPositions,
                                          HashSet<Vector2> avoidedPositions,
-                                         Visibility level, bool isAddingContribution)
+                                         Illumination level, bool isAddingContribution)
         {
             foreach (Vector2 position in targetPositions)
             {
@@ -300,34 +300,30 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
-        /// Sets all tiles at the position to the appropriate visibility level for its type.
-        /// Spawn a Rock if the tile is not defined by the cave system.
+        /// Add or remove a light contribution at the position. Update illumination of tiles at the
+        /// position. Spawn a Rock if the position is not yet defined by the cave system.
         /// </summary>
-        /// <param name="level">Visibility to set ambient objects to.</param>
-        /// <param name="entity">Visibility to set entity objects to.</param>
-        /// <param name="isAddingContribution">True if adding a contribution, false if removing a 
-        /// contribution.</param>
-        private void SetTileIllumination(Vector2 position, Visibility level,
+        private void SetTileIllumination(Vector2 position, Illumination contribution,
             bool isAddingContribution)
         {
             // Update revealed tiles.
             if (!sightMap.Contains(position)) { sightMap.Add(position); }
 
             // Update light map.
-            AggregateVisibility visibility;
-            if (lightMap.TryGetValue(position, out visibility))
+            AggregateIllumination light;
+            if (lightMap.TryGetValue(position, out light))
             {
-                if (isAddingContribution) { visibility.AddContribution(level); }
-                else { visibility.RemoveContribution(level); }
+                if (isAddingContribution) { light.AddContribution(contribution); }
+                else                      { light.RemoveContribution(contribution); }
             }
             else
             {
-                visibility = AddBakedToLightMap(position);
+                light = AddBakedToLightMap(position);
 
-                if (isAddingContribution) { visibility.AddContribution(level); }
-                else { visibility.RemoveContribution(level); }
+                if (isAddingContribution) { light.AddContribution(contribution); }
+                else                      { light.RemoveContribution(contribution); }
 
-                if (!sightMap.Contains(position) && visibility.VisibilityLevel > Visibility.None)
+                if (!sightMap.Contains(position) && light.Brightness > Illumination.None)
                 {
                     sightMap.Add(position);
                 }
@@ -339,10 +335,10 @@ namespace ProceduralRoguelike
                 var gameObjects = Utility.FindObjectsAt(position);
                 foreach (GameObject gObject in gameObjects)
                 {
-                    var visibleComponent = gObject.GetComponent<Visible>();
-                    if (visibleComponent != null)
+                    var illuminateableComponent = gObject.GetComponent<Illuminateable>();
+                    if (illuminateableComponent != null)
                     {
-                        UpdateObjectVisibility(visibleComponent, position, visibility, true);
+                        UpdateObjectIllumination(illuminateableComponent, position, light, true);
                     }
                 }
             }
@@ -354,35 +350,35 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
-        /// Updates the visible component to match the light map and sight map.
+        /// Updates the illuminateable component to match the light map and sight map.
         /// </summary>
-        private void UpdateObjectVisibility(Visible component, Vector2 position)
+        private void UpdateObjectIllumination(Illuminateable component, Vector2 position)
         {
-            AggregateVisibility light;
+            AggregateIllumination light;
             lightMap.TryGetValue(position, out light);
 
-            UpdateObjectVisibility(component, position, light, sightMap.Contains(position));
+            UpdateObjectIllumination(component, position, light, sightMap.Contains(position));
         }
 
         /// <summary>
-        /// Update the visible component to match the light map and sight map.
+        /// Update the illuminateable component to match the light map and sight map.
         /// </summary>
-        private void UpdateObjectVisibility(Visible component, Vector2 position,
-                                            AggregateVisibility light, bool inSightMap)
+        private void UpdateObjectIllumination(Illuminateable component, Vector2 position,
+            AggregateIllumination light, bool inSightMap)
         {
             switch (component.ObjectType)
             {
-                case Visible.Type.Terrain:
-                    component.VisibilityLevel = !inSightMap ?
-                        light.VisibilityLevel :
-                        (Visibility)Mathf.Max((int)previouslySeen,
-                                              (int)light.VisibilityLevel);
+                case Illuminateable.Type.Terrain:
+                    component.Brightness = !inSightMap ?
+                        light.Brightness :
+                        (Illumination)Mathf.Max((int)previouslySeen,
+                                                (int)light.Brightness);
                     break;
-                case Visible.Type.Entity:
-                    component.VisibilityLevel = hiddenEntities || !inSightMap ?
-                        light.VisibilityLevel :
-                        (Visibility)Mathf.Max((int)previouslySeen,
-                                              (int)light.VisibilityLevel);
+                case Illuminateable.Type.Entity:
+                    component.Brightness = hiddenEntities || !inSightMap ?
+                        light.Brightness :
+                        (Illumination)Mathf.Max((int)previouslySeen,
+                                                (int)light.Brightness);
                     break;
                 default:
                     throw new System.ArgumentException("Unsupported object type.");
@@ -390,28 +386,28 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
-        /// Change visibility of moving object to lightmap value at destination.
+        /// Change illumination of moving object to lightmap value at destination.
         /// </summary>
-        private void UpdateEntityVisibility(GameObject movingObject, Vector2 destination)
+        private void UpdateEntityIllumination(GameObject movingObject, Vector2 destination)
         {
-            var visibleComponent = movingObject.GetComponent<Visible>();
-            if (visibleComponent != null)
+            var illuminateableComponent = movingObject.GetComponent<Illuminateable>();
+            if (illuminateableComponent != null)
             {
                 // Beware: magic numbers ahead!
                 var duration = 0.25f;
                 var checks = 2;
 
-                StartCoroutine(DoubleCheckObjectVisibility(visibleComponent, duration, checks));
+                StartCoroutine(DoubleCheckObjectIllumination(illuminateableComponent, duration,
+                    checks));
             }
         }
 
         /// <summary>
-        /// Repeatedly update object visibility for a short duration. This handles the case when:
+        /// Repeatedly update object illumination for a short duration. This handles the case when:
         /// player moves -> object moves -> player moves, which can leave the object stuck in dim
         /// lighting even when it should be dark.
         /// </summary>
-        /// <param name="visibleComponent">Visible component of the object to update.</param>
-        private IEnumerator DoubleCheckObjectVisibility(Visible visibleComponent, float duration,
+        private IEnumerator DoubleCheckObjectIllumination(Illuminateable component, float duration,
             int numberOfChecks)
         {
             // ex: duration = 1 second; checks = 3:
@@ -421,8 +417,8 @@ namespace ProceduralRoguelike
 
             for (int i = 0; i < numberOfChecks; ++i)
             {
-                var position = Constrain(visibleComponent.transform.position);
-                UpdateObjectVisibility(visibleComponent, position);
+                var position = Constrain(component.transform.position);
+                UpdateObjectIllumination(component, position);
 
                 yield return new WaitForSeconds(waitTime);
             }
@@ -446,7 +442,7 @@ namespace ProceduralRoguelike
 
             var addedTile = base.AddTile(prefab, position, holder);
             caveEntity.Add(position);
-            UpdateObjectVisibility(addedTile.GetComponent<Visible>(), position);
+            UpdateObjectIllumination(addedTile.GetComponent<Illuminateable>(), position);
             return addedTile;
         }
 
@@ -455,12 +451,12 @@ namespace ProceduralRoguelike
             if (!caveFloor.Contains(position)) { caveFloor.Add(position); }
 
             // Update light map and sight map.
-            AggregateVisibility visibility;
-            if (lightMap.TryGetValue(position, out visibility)) { }
+            AggregateIllumination light;
+            if (lightMap.TryGetValue(position, out light)) { }
             else { AddBakedToLightMap(position); }
 
             var addedTile = base.AddFloorTile(position);
-            UpdateObjectVisibility(addedTile.GetComponent<Visible>(), position);
+            UpdateObjectIllumination(addedTile.GetComponent<Illuminateable>(), position);
             return addedTile;
         }
 
@@ -468,14 +464,14 @@ namespace ProceduralRoguelike
         /// Add a new location to the light map and sight map. Initialized with baked ambient
         /// lighting.
         /// </summary>
-        private AggregateVisibility AddBakedToLightMap(Vector2 position)
+        private AggregateIllumination AddBakedToLightMap(Vector2 position)
         {
-            var visibility = new AggregateVisibility(ambientLight);
-            lightMap.Add(position, visibility);
+            var light = new AggregateIllumination(ambientLight);
+            lightMap.Add(position, light);
 
             if (startsRevealed || ambientIsNotDark) { sightMap.Add(position); }
 
-            return visibility;
+            return light;
         }
 
         // Utility functions -----------------------------------------------------------------------
@@ -755,8 +751,8 @@ namespace ProceduralRoguelike
         {
             foreach (Vector2 position in caveFloor)
             {
-                AggregateVisibility visibility;
-                if (lightMap.TryGetValue(position, out visibility)) { }
+                AggregateIllumination light;
+                if (lightMap.TryGetValue(position, out light)) { }
                 else { AddBakedToLightMap(position); }
             }
         }

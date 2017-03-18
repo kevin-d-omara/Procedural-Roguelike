@@ -83,7 +83,7 @@ namespace ProceduralRoguelike
         /// </summary>
         protected virtual GameObject AddTile(GameObject prefab, Vector2 position, Transform holder)
         {
-            var instance = Instantiate(prefab, position, Quaternion.identity)  as GameObject;
+            var instance = Instantiate(prefab, position, Quaternion.identity) as GameObject;
             instance.transform.SetParent(holder);
             return instance;
         }
