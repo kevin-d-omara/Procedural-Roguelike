@@ -77,7 +77,7 @@ namespace ProceduralRoguelike
         private DimModifierFunction DimModifier;
         private delegate int DimModifierFunction(int brightRadius);
         
-        private enum DimModifierType { Flat, Fraction }
+        private enum DimModifierType { Flat, Matched, Fraction }
         [SerializeField] private DimModifierType dimModifierType = DimModifierType.Flat;
 
         [Range(0, 4)]
@@ -92,9 +92,12 @@ namespace ProceduralRoguelike
                 case DimModifierType.Flat:
                     DimModifier = (int brightRadius) => { return dimModifierValue; };
                     break;
+                case DimModifierType.Matched:
+                    DimModifier = (int brightRadius) => { return brightRadius; };
+                    break;
                 case DimModifierType.Fraction:
                     DimModifier = (int brightRadius) => { return Mathf.CeilToInt(1f
-                        / (float)dimModifierValue); };
+                        / (float)dimModifierValue * brightRadius); };
                     break;
                 default:
                     throw new System.ArgumentException("Unsupported dim modifier function type.");

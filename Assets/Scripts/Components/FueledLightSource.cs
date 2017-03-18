@@ -30,16 +30,16 @@ namespace ProceduralRoguelike
         /// </summary>
         public LimitedQuantityFloat fuel;
 
-        [Range(0.0f, 5.0f)]
         /// <summary>
         /// Fuel per second consumed.
         /// </summary>
+        [Range(0.0f, 5.0f)]
         public float burnRate = 1.0f;
 
-        [Range(-2.0f, 2.0f)]
         /// <summary>
         /// Value added to BurnRate.
         /// </summary>
+        [Range(-2.0f, 2.0f)]
         public float burnRateModifier = 0.0f;
 
         /// <summary>
@@ -53,10 +53,10 @@ namespace ProceduralRoguelike
         [SerializeField] private IntensityFunctionType intensityFunctionType
             = IntensityFunctionType.Linear;
 
-        [Range(0, 3)]
         /// <summary>
         /// Value added to Intensity.
         /// </summary>
+        [Range(0, 3)]
         public int intensityModifier = 0;
 
         protected override void Awake()
@@ -82,11 +82,12 @@ namespace ProceduralRoguelike
             if (fuel.Quantity > 0)
             {
                 // Burn fuel.
-                fuel.Quantity -= Time.deltaTime * (burnRate + burnRateModifier);
-                fuel.Quantity = Mathf.Max(fuel.Quantity, 0f);
+                var updatedFuel = fuel.Quantity - Time.deltaTime * (burnRate + burnRateModifier);
+                fuel.Quantity = updatedFuel > 0f ? updatedFuel : 0f;
+                Debug.Log(fuel.Quantity);
 
                 // Update intensity.
-                BrightRadius = Mathf.Max(intensity(fuel.Quantity), 0);
+                BrightRadius = intensity(fuel.Quantity) + intensityModifier;
             }
         }
 
