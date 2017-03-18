@@ -153,6 +153,16 @@ namespace ProceduralRoguelike
             }
         }
 
-        // TODO: add an OnDestroy() function to alert CaveManager to remove lighting contributions.
+        /// <summary>
+        /// Notify OverWorld/Cave to remove this light source's contributions.
+        /// </summary>
+        private void OnDestroy()
+        {
+            if (OnLightSourceMoved != null)
+            {
+                OnLightSourceMoved(lastLocationIlluminated, BrightOffsets, DimOffsetsBand,
+                    Vector2.zero, new List<Vector2>(), new List<Vector2>());
+            }
+        }
     }
 }
