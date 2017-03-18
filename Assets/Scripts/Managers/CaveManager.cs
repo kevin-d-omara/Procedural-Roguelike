@@ -366,6 +366,8 @@ namespace ProceduralRoguelike
         private void UpdateObjectIllumination(Illuminateable component, Vector2 position,
             AggregateIllumination light, bool inSightMap)
         {
+            if (component == null) { return; }
+
             switch (component.ObjectType)
             {
                 case Illuminateable.Type.Terrain:
