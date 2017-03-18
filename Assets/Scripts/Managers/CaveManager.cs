@@ -30,15 +30,17 @@ namespace ProceduralRoguelike
         // -----------------------------------------------------------------------------------------
 
         [Header("Darkness:")]
-        [SerializeField] private Visibility ambientLight = Visibility.None;
-                         private bool ambientIsNotDark;
+        [SerializeField]
+        private Visibility ambientLight = Visibility.None;
+        private bool ambientIsNotDark;
 
         private Dictionary<Vector2, AggregateVisibility> lightMap
           = new Dictionary<Vector2, AggregateVisibility>();
 
         [Header("Sight:")]
-        [SerializeField] private Visibility previouslySeen = Visibility.Half;
-        [SerializeField] private bool startsRevealed  = false;
+        [SerializeField]
+        private Visibility previouslySeen = Visibility.Half;
+        [SerializeField] private bool startsRevealed = false;
         [SerializeField] private bool hiddenEntities = true;
 
         /// <summary>
@@ -48,7 +50,8 @@ namespace ProceduralRoguelike
         private HashSet<Vector2> sightMap = new HashSet<Vector2>();
 
         [Header("Path parameters:")]
-        [SerializeField] private List<PathParameters> essentialPathParameterSet;
+        [SerializeField]
+        private List<PathParameters> essentialPathParameterSet;
         [SerializeField] private List<PathParameters> majorPathParameterSet;
         [SerializeField] private List<PathParameters> minorPathParameterSet;
         [SerializeField] [Range(0f, 1f)] private float majorLevelChance = 1f;
@@ -263,28 +266,62 @@ namespace ProceduralRoguelike
             Vector2 startLocation, List<Vector2> startBrightOffsets, List<Vector2> startDimOffsetsBand,
             Vector2 endLocation, List<Vector2> endBrightOffsets, List<Vector2> endDimOffsetsBand)
         {
-            // Reduce illumination in starting location -> remove contributions.
+            // Record position of all affected tiles.
+            var startBrightPosition = new HashSet<Vector2>();
             foreach (Vector2 offset in startBrightOffsets)
             {
-                var position = startLocation + offset;
-                SetTileIllumination(position, Visibility.Full, false);
-            }
-            foreach (Vector2 offset in startDimOffsetsBand)
-            {
-                var position = startLocation + offset;
-                SetTileIllumination(position, Visibility.Half, false);
+                startBrightPosition.Add(startLocation + offset);
             }
 
-            // Increase illumination in ending location -> add contributions.
+            var startDimPositions = new HashSet<Vector2>();
+            foreach (Vector2 offset in startDimOffsetsBand)
+            {
+                startDimPositions.Add(startLocation + offset);
+            }
+
+            var endBrightPosition = new HashSet<Vector2>();
             foreach (Vector2 offset in endBrightOffsets)
             {
-                var position = endLocation + offset;
-                SetTileIllumination(position, Visibility.Full, true);
+                endBrightPosition.Add(endLocation + offset);
             }
+
+            var endDimPositions = new HashSet<Vector2>();
             foreach (Vector2 offset in endDimOffsetsBand)
             {
-                var position = endLocation + offset;
-                SetTileIllumination(position, Visibility.Half, true);
+                endDimPositions.Add(endLocation + offset);
+            }
+
+            // Set tile illumination only where there is no overlap between start and end positions.
+            foreach (Vector2 position in endBrightPosition)
+            {
+                if (!startBrightPosition.Contains(position))
+                {
+                    SetTileIllumination(position, Visibility.Full, true);
+                }
+            }
+
+            foreach (Vector2 position in startBrightPosition)
+            {
+                if (!endBrightPosition.Contains(position))
+                {
+                    SetTileIllumination(position, Visibility.Full, false);
+                }
+            }
+
+            foreach (Vector2 position in endDimPositions)
+            {
+                if (!startDimPositions.Contains(position))
+                {
+                    SetTileIllumination(position, Visibility.Half, true);
+                }
+            }
+
+            foreach (Vector2 position in startDimPositions)
+            {
+                if (!endDimPositions.Contains(position))
+                {
+                    SetTileIllumination(position, Visibility.Half, false);
+                }
             }
         }
 
@@ -307,14 +344,14 @@ namespace ProceduralRoguelike
             if (lightMap.TryGetValue(position, out visibility))
             {
                 if (isAddingContribution) { visibility.AddContribution(level); }
-                else                      { visibility.RemoveContribution(level); }
+                else { visibility.RemoveContribution(level); }
             }
             else
             {
                 visibility = AddBakedToLightMap(position);
 
                 if (isAddingContribution) { visibility.AddContribution(level); }
-                else                      { visibility.RemoveContribution(level); }
+                else { visibility.RemoveContribution(level); }
 
                 if (!sightMap.Contains(position) && visibility.VisibilityLevel > Visibility.None)
                 {
@@ -429,7 +466,7 @@ namespace ProceduralRoguelike
         /// Creates a new tile at the position specified and add it to the list of cave entities.
         /// </summary>
         private GameObject AddTile(GameObject prefab, Vector2 position, Transform holder)
-            // TODO: handle override^
+        // TODO: handle override^
         {
             if (!caveFloor.Contains(position)) { AddFloorTile(position); }
 
@@ -637,9 +674,9 @@ namespace ProceduralRoguelike
                             var dy = (int)(curr.y - prev.y);
 
                             if (Random.Range(0.0f, 1.0f) <= 0.5f) { dx = 0; }
-                            else                                  { dy = 0; }
+                            else { dy = 0; }
                             var newVec = prev + new Vector2(dx, dy);
-                                caveEssentialPath.Add(newVec);
+                            caveEssentialPath.Add(newVec);
                         }
 
                         prev = curr;
