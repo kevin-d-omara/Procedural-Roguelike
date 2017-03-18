@@ -84,17 +84,19 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
-        /// Calculates the offsets defining a circle of a specific radius. Uses Dungeons & Dragons
-        /// movement rules: adjacent moves cost 1, diagonal moves alternate between cost 1 and 2.
+        /// Calculates the offsets defining a grid-based circle of a specific radius. Uses Dungeons
+        /// & Dragons movement rules: adjacent moves cost 1, diagonal moves alternate between cost 1
+        /// and 2. The center offset is the first step (cost=1).
         /// </summary>
-        /// <returns>The list of offsets defining a circle of the specified radius.</returns>
 		public static List<Vector2> CircleFill(int radius)
         {
+            if (radius == 0) { return new List<Vector2>(); }
+
             var offsets = new List<Vector2>();
             var visited = new Dictionary<Vector2, Node>();
             var frontier = new Queue<Node>();
 
-            var startNode = new Node(Vector2.zero, false, 0);
+            var startNode = new Node(Vector2.zero, false, 1);
             visited.Add(Vector2.zero, startNode);
             frontier.Enqueue(startNode);
 
