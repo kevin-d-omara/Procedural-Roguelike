@@ -132,5 +132,13 @@ namespace ProceduralRoguelike
         {
             return new Vector2(Mathf.Round(pt.x), Mathf.Round(pt.y));
         }
+
+        /// <summary>
+        /// Snap point to nearest whole value x & y (i.e. [2.7, -3.7] -> [3.0, -4.0]).
+        /// </summary>
+        public static Vector2 Constrain(float x, float y)
+        {
+            return new Vector2(Mathf.Round(x), Mathf.Round(y));
+        }
     }
 }

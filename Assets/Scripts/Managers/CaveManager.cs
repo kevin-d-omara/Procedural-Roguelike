@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,6 +29,25 @@ namespace ProceduralRoguelike
         [SerializeField]
         protected float bottleneckObstacleDensity = 0.65f;
         // -----------------------------------------------------------------------------------------
+
+        [Header("Light Shaft Parameters:")]
+        [SerializeField] private LightShaftParameters lightShaft;
+
+        [Serializable]
+        private class LightShaftParameters
+        {
+            [Range(0f, 1f)] public float density = 0.03f;
+            [Range(0f, 1f)] public float chainChance = 0.5f;
+            public RandomKnobInt clusterSize;
+            public RandomKnobFloat scatterDistance;
+            public Illumination illumination = Illumination.Low;
+
+            public void Initialize()
+            {
+                clusterSize.SetValue();
+                scatterDistance.SetValue();
+            }
+        }
 
         [Header("Darkness:")]
         [SerializeField]
@@ -157,7 +177,7 @@ namespace ProceduralRoguelike
                 essentialPathParameterSet.Count)]);
             if (Random.value <= majorLevelChance)
             {
-                pathParameters.Add(majorPathParameterSet[Random.Range(0,
+                pathParameters.Add(majorPathParameterSet[Random.Range(0, 
                     majorPathParameterSet.Count)]);
             }
             if (Random.value <= minorLevelChance)
@@ -172,13 +192,8 @@ namespace ProceduralRoguelike
             pathParameters[0] = UnityEngine.Object.Instantiate(pathParameters[0]);
 
             // Set all knobs to a random value.
-            for (int i = 0; i < pathParameters.Count; ++i)
-            {
-                pathParameters[i].choke.SetValue();
-                pathParameters[i].bottleneck.SetValue();
-                pathParameters[i].chamber.SetValue();
-                pathParameters[i].chamberItemNumber.SetValue();
-            }
+            for (int i = 0; i < pathParameters.Count; ++i) { pathParameters[i].Initialize(); }
+            lightShaft.Initialize();
 
             ambientIsNotDark = ambientLight > Illumination.None;
         }
@@ -186,13 +201,13 @@ namespace ProceduralRoguelike
         protected override void OnEnable()
         {
             base.OnEnable();
-            Moveable.OnStartMove += UpdateEntityIllumination;
+            Moveable.OnStartMove += UpdateMovingObjectIllumination;
         }
 
         protected override void OnDisable()
         {
             base.OnDisable();
-            Moveable.OnStartMove -= UpdateEntityIllumination;
+            Moveable.OnStartMove -= UpdateMovingObjectIllumination;
         }
 
         // Cave creation ---------------------------------------------------------------------------
@@ -214,7 +229,6 @@ namespace ProceduralRoguelike
             SmoothDiagonalSteps();
             RecordChamberTiles();
             WidenPaths();
-            //BakeLightMap();   // TODO: remove this unneeded line
 
             // Create physical cave
             LayCaveFloor();
@@ -225,6 +239,7 @@ namespace ProceduralRoguelike
             PopulateChambers();
             SpawnEntities();
             UnblockEssentialPath();
+            LaySunShafts();
 
 
             // DEBUG:
@@ -247,14 +262,14 @@ namespace ProceduralRoguelike
             foreach (Vector2 brightOffset in brightOffsets)
             {
                 var position = location + brightOffset;
-                SetTileIllumination(position, Illumination.Full, true);
+                AlterTileIllumination(position, Illumination.Full, true);
             }
 
             // Dimly reveal all tiles in the outer Dim band.
             foreach (Vector2 dimOffset in dimOffsetsBand)
             {
                 var position = location + dimOffset;
-                SetTileIllumination(position, Illumination.Half, true);
+                AlterTileIllumination(position, Illumination.Half, true);
             }
         }
 
@@ -273,28 +288,29 @@ namespace ProceduralRoguelike
             var endDimPositions     = GridAlgorithms.GetPositionsFrom(endDimOffsetsBand,   endLocation);
 
             // Set tile illumination only where there is no overlap between start and end positions.
-            SetTileIllumination(endBrightPosition, startBrightPosition, Illumination.Full, true);
-            SetTileIllumination(startBrightPosition, endBrightPosition, Illumination.Full, false);
-            SetTileIllumination(endDimPositions, startDimPositions, Illumination.Half, true);
-            SetTileIllumination(startDimPositions, endDimPositions, Illumination.Half, false);
+            AlterTileIllumination(endBrightPosition, startBrightPosition, Illumination.Full, true);
+            AlterTileIllumination(startBrightPosition, endBrightPosition, Illumination.Full, false);
+            AlterTileIllumination(endDimPositions, startDimPositions, Illumination.Half, true);
+            AlterTileIllumination(startDimPositions, endDimPositions, Illumination.Half, false);
         }
 
         /// <summary>
-        /// Sets lighting at each Target position which is not overlapping any Avoided position.
+        /// Add or remove a light contribution at each Target position which is not overlapping any
+        /// Avoided positions.
         /// </summary>
         /// <param name="targetPositions">Positions to attempt to light.</param>
         /// <param name="avoidedPositions">Positions to avoid lighting.</param>
         /// <param name="level">Level of light to apply.</param>
         /// <param name="isAddingContribution">True if adding light, false if removing.</param>
-        private void SetTileIllumination(HashSet<Vector2> targetPositions,
-                                         HashSet<Vector2> avoidedPositions,
-                                         Illumination level, bool isAddingContribution)
+        private void AlterTileIllumination(HashSet<Vector2> targetPositions,
+                                           HashSet<Vector2> avoidedPositions,
+                                           Illumination level, bool isAddingContribution)
         {
             foreach (Vector2 position in targetPositions)
             {
                 if (!avoidedPositions.Contains(position))
                 {
-                    SetTileIllumination(position, level, isAddingContribution);
+                    AlterTileIllumination(position, level, isAddingContribution);
                 }
             }
         }
@@ -303,7 +319,7 @@ namespace ProceduralRoguelike
         /// Add or remove a light contribution at the position. Update illumination of tiles at the
         /// position. Spawn a Rock if the position is not yet defined by the cave system.
         /// </summary>
-        private void SetTileIllumination(Vector2 position, Illumination contribution,
+        private void AlterTileIllumination(Vector2 position, Illumination contribution,
             bool isAddingContribution)
         {
             // Update revealed tiles.
@@ -332,15 +348,7 @@ namespace ProceduralRoguelike
             // Update illumination of pre-existing tiles.
             if (caveFloor.Contains(position))
             {
-                var gameObjects = Utility.FindObjectsAt(position);
-                foreach (GameObject gObject in gameObjects)
-                {
-                    var illuminateableComponent = gObject.GetComponent<Illuminateable>();
-                    if (illuminateableComponent != null)
-                    {
-                        UpdateObjectIllumination(illuminateableComponent, position, light, true);
-                    }
-                }
+                UpdateObjectIllumination(position);
             }
             // Make non-existing tiles Rocks.
             else
@@ -350,7 +358,23 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
-        /// Updates the illuminateable component to match the light map and sight map.
+        /// Update all illuminateable objects at the position.
+        /// </summary>
+        private void UpdateObjectIllumination(Vector2 position)
+        {
+            var gameObjects = Utility.FindObjectsAt(position);
+            foreach (GameObject gObject in gameObjects)
+            {
+                var illuminateableComponent = gObject.GetComponent<Illuminateable>();
+                if (illuminateableComponent != null)
+                {
+                    UpdateObjectIllumination(illuminateableComponent, position);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Update the illuminateable component to match the light map and sight map.
         /// </summary>
         private void UpdateObjectIllumination(Illuminateable component, Vector2 position)
         {
@@ -390,7 +414,7 @@ namespace ProceduralRoguelike
         /// <summary>
         /// Change illumination of moving object to lightmap value at destination.
         /// </summary>
-        private void UpdateEntityIllumination(GameObject movingObject, Vector2 destination)
+        private void UpdateMovingObjectIllumination(GameObject movingObject, Vector2 destination)
         {
             var illuminateableComponent = movingObject.GetComponent<Illuminateable>();
             if (illuminateableComponent != null)
@@ -932,6 +956,50 @@ namespace ProceduralRoguelike
                     {
                         Destroy(gObject);
                     }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Place groupings of sun shafts throughout the cave.
+        /// </summary>
+        private void LaySunShafts()
+        {
+            var numMainShafts = Mathf.CeilToInt((float)caveFloor.Count * lightShaft.density);
+            var validPositions = caveFloor.ToList();
+            var occupiedPositions = new HashSet<Vector2>();
+
+            // Create each cluster.
+            for (int i = 0; i < numMainShafts; ++i)
+            {
+                lightShaft.Initialize();
+                var index = Random.Range(0, validPositions.Count - 1);
+                var startPosition = validPositions[index];
+                var isChain = Random.value <= lightShaft.chainChance;
+                var offset = Vector2.zero;
+
+                // Create shafts in cluster.
+                var numSubShafts = lightShaft.clusterSize.Value;
+                for (int j = 0; j < numSubShafts; ++j)
+                {
+                    var position = startPosition + offset;
+                    if (occupiedPositions.Contains(position)) { continue; }
+
+                    if (lightShaft.illumination > Illumination.None)
+                    {
+                        AlterTileIllumination(position, lightShaft.illumination, true);
+                    }
+                    else
+                    {
+                        if (!sightMap.Contains(position)) { sightMap.Add(position); }
+                        UpdateObjectIllumination(position);
+                    }
+                    
+
+                    if (isChain) { startPosition = position; }
+                    var distance = lightShaft.scatterDistance.Value;
+                    var angle = Random.Range(0f, 2 * Mathf.PI);
+                    offset = Constrain(distance * Mathf.Cos(angle), distance * Mathf.Sin(angle));
                 }
             }
         }
