@@ -64,18 +64,18 @@ namespace ProceduralRoguelike
             {
                 case Illumination.Full:
                     color = Color.white;
-                    rate = 2.0f;
+                    rate = 3.0f;
                     break;
 
                 case Illumination.Half:
                     intensity = 0.5f;
-                    rate = 1.5f;
+                    rate = 3.0f;
                     color = new Color(intensity, intensity, intensity, 1f);
                     break;
 
                 case Illumination.Low:
                     intensity = 0.3f;
-                    rate = 1.0f;
+                    rate = 2.0f;
                     color = new Color(intensity, intensity, intensity, 1f);
                     break;
 
