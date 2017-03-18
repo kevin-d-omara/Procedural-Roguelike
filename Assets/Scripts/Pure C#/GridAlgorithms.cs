@@ -91,10 +91,12 @@ namespace ProceduralRoguelike
 		public static List<Vector2> CircleFill(int radius)
         {
             var offsets = new List<Vector2>();
-
             var visited = new Dictionary<Vector2, Node>();
             var frontier = new Queue<Node>();
-            frontier.Enqueue(new Node(Vector2.zero, false, 0));
+
+            var startNode = new Node(Vector2.zero, false, 0);
+            visited.Add(Vector2.zero, startNode);
+            frontier.Enqueue(startNode);
 
             // Expands from the center using a breadth-first flood fill algorithm.
             while (frontier.Count > 0)
@@ -145,6 +147,19 @@ namespace ProceduralRoguelike
             }
 
             return offsets;
+        }
+
+        /// <summary>
+        /// Returns the positions which are offset from location.
+        /// </summary>
+        public static HashSet<Vector2> GetPositionsFrom(List<Vector2> offsets, Vector2 location)
+        {
+            var positions = new HashSet<Vector2>();
+            foreach (Vector2 offset in offsets)
+            {
+                positions.Add(location + offset);
+            }
+            return positions;
         }
 	}
 }

@@ -19,7 +19,7 @@ namespace ProceduralRoguelike
                 UpdateSprite();
             }
         }
-        [SerializeField] private Visibility _visibilityLevel;
+        private Visibility _visibilityLevel = Visibility.Full;
 
         /// <summary>
         /// Type of visible object: Ambient or Entity.
@@ -60,8 +60,13 @@ namespace ProceduralRoguelike
                             break;
 
                         case Visibility.Half:
-                            var brightness = 0.35f;
+                            var brightness = 0.4f;
                             color = new Color(brightness, brightness, brightness, 1f);
+                            break;
+
+                        case Visibility.Low:
+                            var lowBrightness = 0.2f;
+                            color = new Color(lowBrightness, lowBrightness, lowBrightness, 1f);
                             break;
 
                         case Visibility.None:

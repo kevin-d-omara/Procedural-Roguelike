@@ -8,7 +8,7 @@ namespace ProceduralRoguelike
     /// <summary>
     /// Enums are ordered by increasing brightness (A > B == A brighter B).
     /// </summary>
-    public enum Visibility { None, Half, Full }
+    public enum Visibility { None, Low, Half, Full }
 
     /// <summary>
     /// Container for multiple light source contributions. Maintains the highest visibility.

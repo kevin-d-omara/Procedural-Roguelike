@@ -267,60 +267,34 @@ namespace ProceduralRoguelike
             Vector2 endLocation, List<Vector2> endBrightOffsets, List<Vector2> endDimOffsetsBand)
         {
             // Record position of all affected tiles.
-            var startBrightPosition = new HashSet<Vector2>();
-            foreach (Vector2 offset in startBrightOffsets)
-            {
-                startBrightPosition.Add(startLocation + offset);
-            }
-
-            var startDimPositions = new HashSet<Vector2>();
-            foreach (Vector2 offset in startDimOffsetsBand)
-            {
-                startDimPositions.Add(startLocation + offset);
-            }
-
-            var endBrightPosition = new HashSet<Vector2>();
-            foreach (Vector2 offset in endBrightOffsets)
-            {
-                endBrightPosition.Add(endLocation + offset);
-            }
-
-            var endDimPositions = new HashSet<Vector2>();
-            foreach (Vector2 offset in endDimOffsetsBand)
-            {
-                endDimPositions.Add(endLocation + offset);
-            }
+            var startBrightPosition = GridAlgorithms.GetPositionsFrom(startBrightOffsets,  startLocation);
+            var startDimPositions   = GridAlgorithms.GetPositionsFrom(startDimOffsetsBand, startLocation);
+            var endBrightPosition   = GridAlgorithms.GetPositionsFrom(endBrightOffsets,    endLocation);
+            var endDimPositions     = GridAlgorithms.GetPositionsFrom(endDimOffsetsBand,   endLocation);
 
             // Set tile illumination only where there is no overlap between start and end positions.
-            foreach (Vector2 position in endBrightPosition)
-            {
-                if (!startBrightPosition.Contains(position))
-                {
-                    SetTileIllumination(position, Visibility.Full, true);
-                }
-            }
+            SetTileIllumination(endBrightPosition, startBrightPosition, Visibility.Full, true);
+            SetTileIllumination(startBrightPosition, endBrightPosition, Visibility.Full, false);
+            SetTileIllumination(endDimPositions, startDimPositions, Visibility.Half, true);
+            SetTileIllumination(startDimPositions, endDimPositions, Visibility.Half, false);
+        }
 
-            foreach (Vector2 position in startBrightPosition)
+        /// <summary>
+        /// Sets lighting at each Target position which is not overlapping any Avoided position.
+        /// </summary>
+        /// <param name="targetPositions">Positions to attempt to light.</param>
+        /// <param name="avoidedPositions">Positions to avoid lighting.</param>
+        /// <param name="level">Level of light to apply.</param>
+        /// <param name="isAddingContribution">True if adding light, false if removing.</param>
+        private void SetTileIllumination(HashSet<Vector2> targetPositions,
+                                         HashSet<Vector2> avoidedPositions,
+                                         Visibility level, bool isAddingContribution)
+        {
+            foreach (Vector2 position in targetPositions)
             {
-                if (!endBrightPosition.Contains(position))
+                if (!avoidedPositions.Contains(position))
                 {
-                    SetTileIllumination(position, Visibility.Full, false);
-                }
-            }
-
-            foreach (Vector2 position in endDimPositions)
-            {
-                if (!startDimPositions.Contains(position))
-                {
-                    SetTileIllumination(position, Visibility.Half, true);
-                }
-            }
-
-            foreach (Vector2 position in startDimPositions)
-            {
-                if (!endDimPositions.Contains(position))
-                {
-                    SetTileIllumination(position, Visibility.Half, false);
+                    SetTileIllumination(position, level, isAddingContribution);
                 }
             }
         }
