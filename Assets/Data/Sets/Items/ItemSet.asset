@@ -14,3 +14,5 @@ MonoBehaviour:
   list:
   - item: {fileID: 1545690713873162, guid: ae7205f8e64ccef4dadb09a7cada17d4, type: 2}
     weight: 10
+  - item: {fileID: 1640065070310644, guid: 1d6bd28a43d06824dbd11fa2f710b51b, type: 2}
+    weight: 10
