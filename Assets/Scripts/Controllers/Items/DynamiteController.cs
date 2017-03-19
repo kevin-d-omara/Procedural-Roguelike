@@ -36,7 +36,7 @@ namespace ProceduralRoguelike
 
             // Explode!!
             var offsets = GridAlgorithms.GetCircularOffsets(blastRadius);
-            var location = BoardManager.Constrain(transform.position);
+            var location = Utility.Constrain(transform.position);
             var positions = GridAlgorithms.GetPositionsFrom(offsets, location);
 
             boxCollider.enabled = false;

@@ -149,7 +149,7 @@ namespace ProceduralRoguelike
         /// </summary>
         public void IlluminateDarkness()
         {
-            lastLocationIlluminated = BoardManager.Constrain(transform.position);
+            lastLocationIlluminated = Utility.Constrain(transform.position);
             if (OnIlluminate != null)
             {
                 OnIlluminate(lastLocationIlluminated, BrightOffsets, DimOffsetsBand);

@@ -63,7 +63,7 @@ namespace ProceduralRoguelike
         {
             if (useDynamite)
             {
-                var position = BoardManager.Constrain(transform.position);
+                var position = Utility.Constrain(transform.position);
                 var instance = Instantiate(dynamitePrefab, position, Quaternion.identity)
                     as GameObject;
                 var dynamite = instance.GetComponent<DynamiteController>();

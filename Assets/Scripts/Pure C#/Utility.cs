@@ -7,7 +7,7 @@ namespace ProceduralRoguelike
 	public static class Utility
 	{
         /// <summary>
-        /// Find all GameObjects at the specified position. Discludes objects on the
+        /// Return all GameObjects at the specified position. Discludes objects on the
         /// IgnoreRaycastLayer.
         /// </summary>
         /// <returns>Array of all GameObjects at position.</returns>
@@ -24,10 +24,9 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
-        /// Find all components of type T at the specified position. Discludes objects on the
-        /// IgnoreRayCastLayer.
+        /// Return all components (objects) of type T at the specified position. Discludes objects
+        /// on the IgnoreRayCastLayer.
         /// </summary>
-        /// <typeparam name="T">Type of component to return.</typeparam>
         /// <returns>List of all Components at position.</returns>
         public static List<T> FindComponentsAt<T>(Vector2 position)
         {
@@ -78,6 +77,14 @@ namespace ProceduralRoguelike
                     Mathf.Abs(V.x) > 0 ? Mathf.Sign(V.x) : 0,
                     Mathf.Abs(V.y) > 0 ? Mathf.Sign(V.y) : 0
                 );
+        }
+
+        /// <summary>
+        /// Snap point to nearest whole value x & y (i.e. [2.7, -3.7] -> [3.0, -4.0]).
+        /// </summary>
+        public static Vector2 Constrain(Vector2 pt)
+        {
+            return new Vector2(Mathf.Round(pt.x), Mathf.Round(pt.y));
         }
     }
 }

@@ -44,6 +44,7 @@ namespace ProceduralRoguelike
             };
             SurroundingOffsets = new List<Vector2>
             {
+                // Orthogonal + Diagonal offsets.
                 new Vector2(1,0), new Vector2(0,1), new Vector2(-1,0), new Vector2(0,-1),
                 new Vector2(1,1), new Vector2(-1,1), new Vector2(-1,-1), new Vector2(1,-1)
             };

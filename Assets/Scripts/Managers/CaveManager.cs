@@ -296,7 +296,8 @@ namespace ProceduralRoguelike
 
         /// <summary>
         /// Add or remove a light contribution at each Target position which is not overlapping any
-        /// Avoided positions.
+        /// Avoided positions. Update illuminateable components at each valid position. Spawn a Rock
+        /// if the position is not yet defined by the cave system.
         /// </summary>
         /// <param name="targetPositions">Positions to attempt to light.</param>
         /// <param name="avoidedPositions">Positions to avoid lighting.</param>
@@ -316,13 +317,13 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
-        /// Add or remove a light contribution at the position. Update illumination of tiles at the
-        /// position. Spawn a Rock if the position is not yet defined by the cave system.
+        /// Add or remove a light contribution at the position. Update illuminateable components at
+        /// the position. Spawn a Rock if the position is not yet defined by the cave system.
         /// </summary>
         private void AlterTileIllumination(Vector2 position, Illumination contribution,
             bool isAddingContribution)
         {
-            // Update revealed tiles.
+            // Update sight map.
             if (!sightMap.Contains(position)) { sightMap.Add(position); }
 
             // Update light map.
@@ -338,11 +339,6 @@ namespace ProceduralRoguelike
 
                 if (isAddingContribution) { light.AddContribution(contribution); }
                 else                      { light.RemoveContribution(contribution); }
-
-                if (!sightMap.Contains(position) && light.Brightness > Illumination.None)
-                {
-                    sightMap.Add(position);
-                }
             }
 
             // Update illumination of pre-existing tiles.
@@ -350,7 +346,7 @@ namespace ProceduralRoguelike
             {
                 UpdateObjectIllumination(position);
             }
-            // Make non-existing tiles Rocks.
+            // Or create a Rock if no tile yet exists.
             else
             {
                 AddTile(rockPrefab, position, holders["Obstacles"]);
@@ -389,14 +385,10 @@ namespace ProceduralRoguelike
         /// </summary>
         private void UpdateObjectIllumination(Vector2 position)
         {
-            var gameObjects = Utility.FindObjectsAt(position);
-            foreach (GameObject gObject in gameObjects)
+            var components = Utility.FindComponentsAt<Illuminateable>(position);
+            foreach (Illuminateable component in components)
             {
-                var illuminateableComponent = gObject.GetComponent<Illuminateable>();
-                if (illuminateableComponent != null)
-                {
-                    UpdateObjectIllumination(illuminateableComponent, position);
-                }
+                UpdateObjectIllumination(component, position);
             }
         }
 
@@ -416,7 +408,7 @@ namespace ProceduralRoguelike
         /// </summary>
         protected override void UpdateObjectIllumination(Illuminateable component)
         {
-            var position = Constrain(component.transform.position);
+            var position = Utility.Constrain(component.transform.position);
             UpdateObjectIllumination(component, position);
         }
 
@@ -425,15 +417,14 @@ namespace ProceduralRoguelike
         /// </summary>
         private void UpdateMovingObjectIllumination(GameObject movingObject, Vector2 destination)
         {
-            var illuminateableComponent = movingObject.GetComponent<Illuminateable>();
-            if (illuminateableComponent != null)
+            var component = movingObject.GetComponent<Illuminateable>();
+            if (component != null)
             {
                 // Beware: magic numbers ahead!
                 var duration = 0.25f;
                 var checks = 2;
 
-                StartCoroutine(DoubleCheckObjectIllumination(illuminateableComponent, duration,
-                    checks));
+                StartCoroutine(DoubleCheckObjectIllumination(component, duration, checks));
             }
         }
 
@@ -452,10 +443,10 @@ namespace ProceduralRoguelike
 
             for (int i = 0; i < numberOfChecks; ++i)
             {
-                // Exit if object has been destroyed.
+                // Check if object has been destroyed.
                 if (component == null) { break; }
 
-                var position = Constrain(component.transform.position);
+                var position = Utility.Constrain(component.transform.position);
                 UpdateObjectIllumination(component, position);
 
                 yield return new WaitForSeconds(waitTime);
@@ -473,8 +464,7 @@ namespace ProceduralRoguelike
         /// <summary>
         /// Creates a new tile at the position specified and add it to the list of cave entities.
         /// </summary>
-        private GameObject AddTile(GameObject prefab, Vector2 position, Transform holder)
-        // TODO: handle override^
+        protected override GameObject AddTile(GameObject prefab, Vector2 position, Transform holder)
         {
             if (!caveFloor.Contains(position)) { AddFloorTile(position); }
 
@@ -528,7 +518,7 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
-        /// Wire up the set of Feature Points to the Feature Tiles.
+        /// Wire up the set of Feature Points (Vector2) to the Feature Tiles.
         /// </summary>
         /// <param name="featurePoints">i.e. pathInfo.path.InflectionPts</param>
         /// <param name="featureTiles">i.e. pathInfo.inflectionTiles</param>
@@ -536,7 +526,7 @@ namespace ProceduralRoguelike
         {
             foreach (Path.FeaturePoint featurePt in featurePoints)
             {
-                var pt = Constrain(featurePt.Pt);
+                var pt = Utility.Constrain(featurePt.Pt);
 
                 if (caveFloor.Contains(pt))
                 {
@@ -557,7 +547,7 @@ namespace ProceduralRoguelike
         {
             foreach (Vector2 featurePt in featurePoints)
             {
-                var pt = Constrain(featurePt);
+                var pt = Utility.Constrain(featurePt);
 
                 if (caveFloor.Contains(pt))
                 {
@@ -572,7 +562,7 @@ namespace ProceduralRoguelike
         // Procedural subroutines. Each is called once during SetupCave() --------------------------
 
         /// <summary>
-        /// Instantiate the Path's belonging to this cave.
+        /// Instantiate the Paths belonging to this cave.
         /// </summary>
         /// <param name="location">Location in the world to center the entrance passage.</param>
         private void InstantiateCave()
@@ -613,7 +603,7 @@ namespace ProceduralRoguelike
                     var points = pathInfo.path.Main;
                     for (int i = 0; i < points.Length; ++i)
                     {
-                        var pt = Constrain(points[i].Pt);
+                        var pt = Utility.Constrain(points[i].Pt);
                         if (!caveFloor.Contains(pt))
                         {
                             caveFloor.Add(pt);
@@ -625,8 +615,8 @@ namespace ProceduralRoguelike
                     // Record feature tile locations.
                     if (pathInfo.tiles.Count > 0)
                     {
-                        pathInfo.originTile = Constrain(pathInfo.path.Main[0].Pt);
-                        pathInfo.terminusTile = Constrain(pathInfo.path.Main[
+                        pathInfo.originTile = Utility.Constrain(pathInfo.path.Main[0].Pt);
+                        pathInfo.terminusTile = Utility.Constrain(pathInfo.path.Main[
                             pathInfo.path.Main.Length - 1].Pt);
                     }
                     MarkFeaturePoints(pathInfo.path.InflectionPts, pathInfo.inflectionTiles);
@@ -981,7 +971,7 @@ namespace ProceduralRoguelike
             var validPositions = caveFloor.ToList();
             var occupiedPositions = new HashSet<Vector2>();
 
-            // Create each cluster.
+            // Create each grouping.
             for (int i = 0; i < numMainShafts; ++i)
             {
                 lightShaft.Initialize();
@@ -990,7 +980,7 @@ namespace ProceduralRoguelike
                 var isChain = Random.value <= lightShaft.chainChance;
                 var offset = Vector2.zero;
 
-                // Create shafts in cluster.
+                // Create each shaft in the grouping.
                 var numSubShafts = lightShaft.clusterSize.Value;
                 for (int j = 0; j < numSubShafts; ++j)
                 {
@@ -1007,11 +997,12 @@ namespace ProceduralRoguelike
                         UpdateObjectIllumination(position);
                     }
                     
-
                     if (isChain) { startPosition = position; }
                     var distance = lightShaft.scatterDistance.Value;
                     var angle = Random.Range(0f, 2 * Mathf.PI);
-                    offset = Constrain(distance * Mathf.Cos(angle), distance * Mathf.Sin(angle));
+                    var offsetX = distance * Mathf.Cos(angle);
+                    var offsetY = distance * Mathf.Sin(angle);
+                    offset = Utility.Constrain(new Vector2(offsetX, offsetY));
                 }
             }
         }
