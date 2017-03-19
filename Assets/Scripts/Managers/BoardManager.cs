@@ -68,6 +68,7 @@ namespace ProceduralRoguelike
         {
             LightSource.OnIlluminate += RevealDarkness;
             LightSource.OnLightSourceMoved += RevealDarkness;
+            Illuminateable.OnObjectCreated += UpdateObjectIllumination;
             Moveable.OnTileNotFound += OnTileNotFound;
         }
 
@@ -75,6 +76,7 @@ namespace ProceduralRoguelike
         {
             LightSource.OnIlluminate -= RevealDarkness;
             LightSource.OnLightSourceMoved -= RevealDarkness;
+            Illuminateable.OnObjectCreated -= UpdateObjectIllumination;
             Moveable.OnTileNotFound -= OnTileNotFound;
         }
 
@@ -124,6 +126,11 @@ namespace ProceduralRoguelike
         public abstract void RevealDarkness(
             Vector2 startLocation, List<Vector2> startOffsets, List<Vector2> startDimOffsetsBand,
             Vector2   endLocation, List<Vector2>   endOffsets, List<Vector2>   endDimOffsetsBand);
+
+        /// <summary>
+        /// Update the illuminateable component to match the lighting at its position.
+        /// </summary>
+        protected abstract void UpdateObjectIllumination(Illuminateable component);
 
         /// <summary>
         /// Snap point to nearest whole value x & y (i.e. [2.7, -3.7] -> [3.0, -4.0]).

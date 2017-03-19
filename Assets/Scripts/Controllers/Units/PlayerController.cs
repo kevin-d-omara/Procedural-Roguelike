@@ -12,7 +12,10 @@ namespace ProceduralRoguelike
     public class PlayerController : UnitController
     {
         // Input values.
-        private bool specialAttack;
+        private bool useDynamite;
+
+        // Prefabs
+        [SerializeField] private GameObject dynamitePrefab;
 
         // Animations
         protected override string AnimationBasicAttack { get { return "playerChop"; } }
@@ -41,13 +44,7 @@ namespace ProceduralRoguelike
 
             // Attack input.
             basicAttack = (int)Input.GetAxisRaw("Chop Attack") == 1;
-            specialAttack = (int)Input.GetAxisRaw("Throw Dynamite") == 1;
-        }
-
-        protected override void ResetInputs()
-        {
-            base.ResetInputs();
-            specialAttack = false;
+            useDynamite = Input.GetButtonDown("Use Dynamite");
         }
 
         protected override void HandleMovement()
@@ -59,6 +56,19 @@ namespace ProceduralRoguelike
             {
                 moveableComponent.Facing = new Vector2(horizontalInput, verticalInput);
                 basicAttackDir = moveableComponent.Facing;
+            }
+        }
+
+        protected override void HandleSpecialActions()
+        {
+            if (useDynamite)
+            {
+                var position = BoardManager.Constrain(transform.position);
+                var instance = Instantiate(dynamitePrefab, position, Quaternion.identity)
+                    as GameObject;
+                var dynamite = instance.GetComponent<DynamiteController>();
+
+                dynamite.LightFuse();
             }
         }
 

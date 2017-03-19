@@ -358,6 +358,33 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
+        /// Update the illuminateable component to match the light map and sight map.
+        /// </summary>
+        private void UpdateObjectIllumination(Illuminateable component, Vector2 position,
+            AggregateIllumination light, bool inSightMap)
+        {
+            if (component == null) { return; }
+
+            switch (component.ObjectType)
+            {
+                case Illuminateable.Type.Terrain:
+                    component.Brightness = !inSightMap ?
+                        light.Brightness :
+                        (Illumination)Mathf.Max((int)previouslySeen,
+                                                (int)light.Brightness);
+                    break;
+                case Illuminateable.Type.Entity:
+                    component.Brightness = hiddenEntities || !inSightMap ?
+                        light.Brightness :
+                        (Illumination)Mathf.Max((int)previouslySeen,
+                                                (int)light.Brightness);
+                    break;
+                default:
+                    throw new System.ArgumentException("Unsupported object type.");
+            }
+        }
+
+        /// <summary>
         /// Update all illuminateable objects at the position.
         /// </summary>
         private void UpdateObjectIllumination(Vector2 position)
@@ -387,28 +414,10 @@ namespace ProceduralRoguelike
         /// <summary>
         /// Update the illuminateable component to match the light map and sight map.
         /// </summary>
-        private void UpdateObjectIllumination(Illuminateable component, Vector2 position,
-            AggregateIllumination light, bool inSightMap)
+        protected override void UpdateObjectIllumination(Illuminateable component)
         {
-            if (component == null) { return; }
-
-            switch (component.ObjectType)
-            {
-                case Illuminateable.Type.Terrain:
-                    component.Brightness = !inSightMap ?
-                        light.Brightness :
-                        (Illumination)Mathf.Max((int)previouslySeen,
-                                                (int)light.Brightness);
-                    break;
-                case Illuminateable.Type.Entity:
-                    component.Brightness = hiddenEntities || !inSightMap ?
-                        light.Brightness :
-                        (Illumination)Mathf.Max((int)previouslySeen,
-                                                (int)light.Brightness);
-                    break;
-                default:
-                    throw new System.ArgumentException("Unsupported object type.");
-            }
+            var position = Constrain(component.transform.position);
+            UpdateObjectIllumination(component, position);
         }
 
         /// <summary>
@@ -443,6 +452,9 @@ namespace ProceduralRoguelike
 
             for (int i = 0; i < numberOfChecks; ++i)
             {
+                // Exit if object has been destroyed.
+                if (component == null) { break; }
+
                 var position = Constrain(component.transform.position);
                 UpdateObjectIllumination(component, position);
 

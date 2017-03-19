@@ -10,6 +10,9 @@ namespace ProceduralRoguelike
     [RequireComponent(typeof(SpriteRenderer))]
     public class Illuminateable : MonoBehaviour
     {
+        public delegate void ObjectCreated(Illuminateable illuminateableComponent);
+        public static event ObjectCreated OnObjectCreated;
+
         public enum Type { Terrain, Entity }
 
         /// <summary>
@@ -48,7 +51,7 @@ namespace ProceduralRoguelike
 
         private void Start()
         {
-            UpdateSprite();
+            if (OnObjectCreated != null) { OnObjectCreated(this); }
         }
 
         /// <summary>

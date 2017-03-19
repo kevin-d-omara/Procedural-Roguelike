@@ -88,6 +88,7 @@ namespace ProceduralRoguelike
             GetInputs();
             HandleMovement();
             HandleBasicAttack();
+            HandleSpecialActions();
             ResetInputs();
         }
 
@@ -95,17 +96,6 @@ namespace ProceduralRoguelike
         /// Records the values of each relevant input channel.
         /// </summary>
         protected abstract void GetInputs();
-
-        /// <summary>
-        /// Sets all input values to 0. Prevents glitches where a unit continually moves after a
-        /// single input.
-        /// </summary>
-        protected virtual void ResetInputs()
-        {
-            horizontalInput = 0;
-            verticalInput = 0;
-            basicAttack = false;
-        }
 
         /// <summary>
         /// Passes input along to the Moveable componenet and other interested componenets.
@@ -130,6 +120,23 @@ namespace ProceduralRoguelike
                     if (AnimationBasicAttack != null) { animator.SetTrigger(AnimationBasicAttack); }
                 }
             }
+        }
+
+        /// <summary>
+        /// Do nothing. Must override in child class to gain functionality. Called before
+        /// ResetInputs().
+        /// </summary>
+        protected virtual void HandleSpecialActions() { }
+
+        /// <summary>
+        /// Sets all input values to 0. Prevents glitches where a unit continually moves after a
+        /// single input.
+        /// </summary>
+        protected virtual void ResetInputs()
+        {
+            horizontalInput = 0;
+            verticalInput = 0;
+            basicAttack = false;
         }
 
         protected virtual void OnReachedMiddleOfMove(Vector2 start, Vector2 destination)

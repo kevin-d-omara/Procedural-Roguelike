@@ -129,6 +129,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 731e44edfd933574994dfe3453736dea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dynamitePrefab: {fileID: 1640065070310644, guid: 1d6bd28a43d06824dbd11fa2f710b51b,
+    type: 2}
 --- !u!114 &114413478497068394
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -234,7 +234,7 @@ MonoBehaviour:
       jitterSize: 0.5
       jitterRate: 0.25
       _value: 0
-    illumination: 3
+    illumination: 1
   ambientLight: 0
   previouslySeen: 1
   startsRevealed: 0

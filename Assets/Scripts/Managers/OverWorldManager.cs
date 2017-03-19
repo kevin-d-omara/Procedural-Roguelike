@@ -106,6 +106,11 @@ namespace ProceduralRoguelike
             RevealDarkness(endLocation, endOffsets, endDimOffsetsBand);
         }
 
+        protected override void UpdateObjectIllumination(Illuminateable component)
+        {
+            component.UpdateSprite();
+        }
+
         private void OnIncreaseDifficulty(int difficulty)
         {
             // Increase obstacle density by multiplier (cumulative).

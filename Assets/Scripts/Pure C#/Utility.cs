@@ -7,7 +7,7 @@ namespace ProceduralRoguelike
 	public static class Utility
 	{
         /// <summary>
-        /// Finds all GameObjects at the specified position. Discludes objects on the
+        /// Find all GameObjects at the specified position. Discludes objects on the
         /// IgnoreRaycastLayer.
         /// </summary>
         /// <returns>Array of all GameObjects at position.</returns>
@@ -24,7 +24,30 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
-        /// Enables/Disables all BoxColliders at the specified position.
+        /// Find all components of type T at the specified position. Discludes objects on the
+        /// IgnoreRayCastLayer.
+        /// </summary>
+        /// <typeparam name="T">Type of component to return.</typeparam>
+        /// <returns>List of all Components at position.</returns>
+        public static List<T> FindComponentsAt<T>(Vector2 position)
+        {
+            var components = new List<T>();
+
+            var gameObjects = FindObjectsAt(position);
+            foreach (GameObject gameObject in gameObjects)
+            {
+                var component = gameObject.GetComponent<T>();
+                if (component != null)
+                {
+                    components.Add(component);
+                }
+            }
+
+            return components;
+        }
+
+        /// <summary>
+        /// Enable/Disable all BoxColliders at the specified position.
         /// </summary>
         public static void SetActiveBoxColliders(GameObject[] gameObjects, bool shouldEnable)
         {
@@ -36,7 +59,7 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
-        /// Transforms X into -1, 0, or 1.
+        /// Transform X into -1, 0, or 1.
         /// </summary>
         /// <returns>Negative one, zero, or positive one.</returns>
         public static int MakeUnitLength(float x)
@@ -45,7 +68,7 @@ namespace ProceduralRoguelike
         }
 
         /// <summary>
-        /// Transforms V into a vector whose components x, y = -1, 0, or 1.
+        /// Transform V into a vector whose components x, y = -1, 0, or 1.
         /// </summary>
         /// <returns>Vector with x, y ϵ {-1, 0, 1}.</returns>
         public static Vector2 MakeUnitLength(Vector2 V)
