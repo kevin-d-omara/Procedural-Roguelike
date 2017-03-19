@@ -21,14 +21,12 @@ GameObject:
   - component: {fileID: 4900531522944710}
   - component: {fileID: 212372413535190610}
   - component: {fileID: 61470754252773690}
-  - component: {fileID: 114307426023129986}
-  - component: {fileID: 114145718427511974}
-  - component: {fileID: 114760101307191048}
+  - component: {fileID: 114196035627770126}
   - component: {fileID: 114163892158133236}
   - component: {fileID: 114893338132408572}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: GlowCaps
-  m_TagString: Bramble
+  m_TagString: Floor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -55,25 +53,11 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
---- !u!114 &114145718427511974
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1271830819450386}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55627fbdf31f712469a1ab4459cfdb41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hitPoints:
-    _maxQuantity: 4
-  isHardTarget: 0
 --- !u!114 &114163892158133236
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -86,7 +70,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _objectType: 0
---- !u!114 &114307426023129986
+--- !u!114 &114196035627770126
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -94,21 +78,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1271830819450386}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c8be0ea2d0f628d45858b944206941d7, type: 3}
+  m_Script: {fileID: 11500000, guid: 8ca867962ecbb354dbd6af66efadaf64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114760101307191048
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1271830819450386}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c338fc69d58f854fa4caa477b4b3b49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  twoSidedTileSet: {fileID: 11400000, guid: 671d2cbfb98b7bd4ebc6ad77302920e2, type: 2}
+  oneSidedTileSet: {fileID: 11400000, guid: 25324fdd1f7d15c4f90951acde5c0e80, type: 2}
 --- !u!114 &114893338132408572
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -122,7 +95,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _brightRadius: 0
   dimModifierType: 0
-  dimModifierValue: 4
+  dimModifierValue: 3
 --- !u!212 &212372413535190610
 SpriteRenderer:
   m_ObjectHideFlags: 1
