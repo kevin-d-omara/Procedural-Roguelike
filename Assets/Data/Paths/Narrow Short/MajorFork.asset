@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e2a5d198de0b3f4b991be63384a0b8a, type: 3}
+  m_Name: MajorFork
+  m_EditorClassIdentifier: 
+  origin: {x: 70.46031, y: -19.366545}
+  _initialFacing: -34.14756
+  length: 12
+  _curvature: 15
+  stepSize: 0.25
+  inflectionRate: 0.4
+  bottleneckRate: 0
+  chamberNumber: 1
+  forkNumber: 1
+  choke:
+    min: 1
+    max: 1
+    jitterSize: 0
+    jitterRate: 0
+    _value: 1
+  bottleneck:
+    min: 0
+    max: 0
+    jitterSize: 0
+    jitterRate: 0
+    _value: 0
+  chamber:
+    min: 2
+    max: 2
+    jitterSize: 0
+    jitterRate: 0
+    _value: 2
+  chamberItemNumber:
+    min: 1
+    max: 1
+    jitterSize: 0
+    jitterRate: 0
+    _value: 1
+  chamberEnemyNumber:
+    min: 0
+    max: 1
+    jitterSize: 0
+    jitterRate: 0
+    _value: 0

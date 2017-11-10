@@ -210,4 +210,4 @@ MonoBehaviour:
   obstacleDensity: 0.15
   enemyDensity: 0.01
   itemDensity: 0
-  passageDensity: 1
+  passageDensity: 0.005

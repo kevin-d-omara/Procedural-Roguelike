@@ -9,26 +9,26 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6e2a5d198de0b3f4b991be63384a0b8a, type: 3}
-  m_Name: MinorFork
+  m_Name: EssentialPath
   m_EditorClassIdentifier: 
-  origin: {x: 20.552559, y: 20.1089}
-  _initialFacing: -15.535416
-  length: 15
-  _curvature: 10
+  origin: {x: 0, y: 0}
+  _initialFacing: 0
+  length: 40
+  _curvature: 15
   stepSize: 0.25
-  inflectionRate: 0.65
-  bottleneckRate: 0
-  chamberNumber: 0.75
-  forkNumber: 0
+  inflectionRate: 0.4
+  bottleneckRate: 0.025
+  chamberNumber: 2
+  forkNumber: 1
   choke:
     min: 1
     max: 1
     jitterSize: 1
-    jitterRate: 1
-    _value: 1
+    jitterRate: 0.5
+    _value: 0
   bottleneck:
-    min: 0
-    max: 0
+    min: 2
+    max: 2
     jitterSize: 0
     jitterRate: 0
     _value: 0
@@ -37,16 +37,16 @@ MonoBehaviour:
     max: 2
     jitterSize: 0
     jitterRate: 0
-    _value: 2
+    _value: 0
   chamberItemNumber:
-    min: 1
+    min: 0
     max: 1
     jitterSize: 0
     jitterRate: 0
-    _value: 1
+    _value: 0
   chamberEnemyNumber:
-    min: 0
-    max: 1
+    min: 1
+    max: 2
     jitterSize: 0
     jitterRate: 0
     _value: 0
