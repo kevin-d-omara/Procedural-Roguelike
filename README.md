@@ -9,6 +9,8 @@ All procedural aspects are driven by intuitive parameters.
 
 [Download the demo.](https://github.com/kevin-d-omara/Procedural-Roguelike/releases/latest "https://github.com/kevin-d-omara/Procedural-Roguelike/releases/latest")
 
+[![Demo Video](<https://user-images.githubusercontent.com/11803661/32682722-626c9ebc-c62b-11e7-8c3b-c6442349e0a0.png>)](https://youtu.be/x5smQ3RO1sQ)
+
 ## Controls
 Control | Keys
 --- | :---:
@@ -43,9 +45,6 @@ Long, narrow passageways:
 
 Short, wide passageways:
 ![Wide Short Passageways](https://user-images.githubusercontent.com/11803661/32679278-b5b9a544-c61a-11e7-90a3-611e57be79f5.png)
-
-## Demo
-[![Demo Video](<https://user-images.githubusercontent.com/11803661/32682722-626c9ebc-c62b-11e7-8c3b-c6442349e0a0.png>)](https://youtu.be/x5smQ3RO1sQ)
 
 ## Screenshots
 An end room with treasure and a terrifying foe!
